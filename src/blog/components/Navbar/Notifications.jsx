@@ -1,19 +1,19 @@
 import { Button } from "@mui/material";
 import React from "react";
-import { chatData } from "./data";
+import { chatData } from "../../data/chatData";
 
-const Messages = () => {
+const Notifications = () => {
   const style = {
     top: "70px",
     right: "50px",
     width: "380px",
-    zIndex: "99999",
+    zIndex: "9999",
     borderRadius:"10px"
   };
   return (
     <div className="bg-white position-absolute shadow p-5 " style={style}>
       <div className="d-flex justify-content-between align-items-center">
-        <h5 className="text-black font-weight-bold">Messages</h5>
+        <h5 className="text-black font-weight-bold">Notifications</h5>
       </div>
       <div className="mt-3">
         {chatData?.map((item) => (
@@ -45,4 +45,4 @@ const Messages = () => {
   );
 };
 
-export default Messages;
+export default Notifications;

@@ -1,6 +1,4 @@
 import React, {  useState } from "react";
-import "./App.css";
-
 
 const ReadMore = ({ children }) => {
   const text = children;
@@ -9,12 +7,14 @@ const ReadMore = ({ children }) => {
     setIsReadMore(!isReadMore);
   };
   return (
-    <p className="text">
+    <>
+    <span className="text" >
       {isReadMore ? text.slice(0, 150) : text}
-      <span onClick={toggleReadMore} className="read-or-hide">
-        {isReadMore ? "...read more" : " show less"}
+      <span onClick={toggleReadMore} className="read-or-hide" style={{color:"gray",cursor:"pointer"}}>
+        {isReadMore ? " ...Read more" : " ...Show less"}
       </span>
-    </p>
+    </span>
+    </>
   );
 };
 

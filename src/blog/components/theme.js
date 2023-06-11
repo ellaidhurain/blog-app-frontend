@@ -8,12 +8,11 @@ import { blue } from '@mui/material/colors';
 export const theme = createTheme({
     //we can store color in palatte
  palette:{
-    primary:{
-       
-        main:  blue[500],
+    primary:{  
+        main: blue[500],
     },
     secondary:{
-        main: blue[500],
+        main: blue[600],
     },
     //custom color
     otherColor:{
@@ -30,12 +29,3 @@ export const theme = createTheme({
     },
   },
 });
-
-//theme variables
-//.palette
-// .typography
-// .spacing
-// .breakpoints
-// .zIndex
-// .transitions
-// .components

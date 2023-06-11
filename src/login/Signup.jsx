@@ -9,7 +9,7 @@ import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { Box, Button, TextField, Typography } from "@mui/material";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
-import { LoginImage } from "../blog/components/lottiefiles";
+import { LoginImage } from "./lottiefiles";
 
 const Signup = (props) => {
   const [loading, setLoading] = useState(false);

@@ -2,8 +2,8 @@ import React from "react";
 import { Box } from "@mui/material";
 import Typography from "@mui/material/Typography";
 import StandardImageList from "./imageList";
-import AlignItemsList from "./UserList";
-import ScrollPage from "./ScrollPage";
+import UserList from "./UserList";
+import ScrollPage from "../scroll/ScrollPage";
 
 export default function Rightbar() {
   return (
@@ -14,7 +14,7 @@ export default function Rightbar() {
             Latest Blogs
           </Typography>
           <StandardImageList />
-          <AlignItemsList />
+          <UserList />
         </Box>
       </Box>
       {/* <ScrolltoTop/> */}

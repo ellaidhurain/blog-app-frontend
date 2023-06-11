@@ -1,8 +1,7 @@
-import avatar from '../images/use2.png';
-import avatar2 from '../images/use3.png';
-import avatar3 from '../images/use4.png';
-import avatar4 from '../images/use5.png';
-
+import avatar from '../assets/images/use2.png';
+import avatar2 from '../assets/images/use3.png';
+import avatar3 from '../assets/images/use4.png';
+import avatar4 from '../assets/images/use5.png';
 
 export const chatData = [
     {

@@ -1,30 +1,28 @@
 import React, { useState } from "react";
-import { AppBar, styled, alpha, Grid } from "@mui/material";
-import { Box, TextField, Stack, ButtonGroup } from "@mui/material";
-import Toolbar from "@mui/material/Toolbar";
-import IconButton from "@mui/material/IconButton";
-import Typography from "@mui/material/Typography";
-import InputBase from "@mui/material/InputBase";
-import Badge from "@mui/material/Badge";
-import MenuItem from "@mui/material/MenuItem";
-import Menu from "@mui/material/Menu";
-import MenuIcon from "@mui/icons-material/Menu";
-import SearchIcon from "@mui/icons-material/Search";
-import AccountCircle from "@mui/icons-material/AccountCircle";
-import MailIcon from "@mui/icons-material/Mail";
-import NotificationsIcon from "@mui/icons-material/Notifications";
-import MoreIcon from "@mui/icons-material/MoreVert";
-import CabinIcon from "@mui/icons-material/Cabin";
-import Avatar from "@mui/material/Avatar";
+import {
+  AppBar,
+  styled,
+  Typography,
+  Paper,
+  Toolbar,
+  IconButton,
+  InputBase,
+  Divider,
+  Menu,
+  MenuItem,
+  Badge,
+  Avatar,
+} from "@mui/material";
+import {
+  Cabin as CabinIcon,
+  Search as SearchIcon,
+  Mail as MailIcon,
+  Notifications as NotificationsIcon,
+  Person as PersonIcon,
+  Logout as LogoutIcon,
+} from "@mui/icons-material";
 import axios from "axios";
-import PersonIcon from "@mui/icons-material/Person";
-import LogoutIcon from "@mui/icons-material/Logout";
 import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import InputAdornment from "@mui/material/InputAdornment";
-import DirectionsIcon from "@mui/icons-material/Directions";
-import Divider from "@mui/material/Divider";
-import Paper from "@mui/material/Paper";
 
 import Notifications from "./Notifications";
 import Messages from "./Messages";
@@ -34,8 +32,7 @@ const MyToolbar = styled(Toolbar)({
   justifyContent: "space-between",
 });
 
-
-const Icons = styled(Box)(({ theme }) => ({
+const Icons = styled("div")(({ theme }) => ({
   display: "none",
   alignItems: "center",
   gap: "20px",
@@ -44,7 +41,7 @@ const Icons = styled(Box)(({ theme }) => ({
   },
 }));
 
-const UserBox = styled(Box)(({ theme }) => ({
+const UserBox = styled("div")(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   gap: "20px",
@@ -55,21 +52,27 @@ const UserBox = styled(Box)(({ theme }) => ({
 
 export const Navbar = () => {
   const navigate = useNavigate();
-  const [open, setOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
   const [isClicked, setIsClicked] = useState(false);
   const [isChat, setIsChat] = useState(false);
 
   const logout = async () => {
-    const res = await axios
-      .post("http://localhost:5000/api/user/logout")
-      .catch((err) => console.log(err))
-      .then(() => localStorage.removeItem("userId"))
-      .then(() => {
-        navigate("/");
-        console.log("logged out");
-      });
+    try {
+      await axios.post("http://localhost:5000/api/user/logout");
+      localStorage.removeItem("userId");
+      navigate("/");
+      console.log("logged out");
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
-    return res
+  const handleMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
   };
 
   return (
@@ -92,7 +95,6 @@ export const Navbar = () => {
             width: 400,
           }}
         >
-        
           <InputBase
             sx={{ ml: 1, flex: 1 }}
             placeholder="Search here..."
@@ -102,23 +104,29 @@ export const Navbar = () => {
             <SearchIcon />
           </IconButton>
           <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
-          
         </Paper>
         <Icons size="large" aria-label="show 4 new mails" color="inherit">
-          <Badge badgeContent={4} color="error" type="button" className="position-relative">
-            <MailIcon onClick={()=>setIsChat(!isChat)}/>
+          <Badge
+            badgeContent={4}
+            color="error"
+            className="position-relative"
+          >
+            <MailIcon onClick={() => setIsChat(!isChat)} />
           </Badge>
-          
-          <Badge onClick={()=>setIsClicked(!isClicked)} badgeContent={17} color="error" type="button" className="position-relative">
+          <Badge
+            onClick={() => setIsClicked(!isClicked)}
+            badgeContent={17}
+            color="error"
+            className="position-relative"
+          >
             <NotificationsIcon />
           </Badge>
-          {isChat&& <Messages/>}
-          {isClicked&&<Notifications/>}
-       
+          {isChat && <Messages />}
+          {isClicked && <Notifications />}
           <Avatar
             alt="Remy Sharp"
             src="/static/use2.png"
-            onClick={(e) => setOpen(true)}
+            onClick={handleMenuOpen}
           />
         </Icons>
 
@@ -126,16 +134,16 @@ export const Navbar = () => {
           <Avatar
             alt="Remy Sharp"
             src="/static/use2.png"
-            onClick={(e) => setOpen(true)}
+            onClick={handleMenuOpen}
           />
           <Typography>ellai</Typography>
         </UserBox>
       </MyToolbar>
       <Menu
         id="demo-positioned-menu"
-        aria-labelledby="demo-positioned-button"
-        open={open}
-        onClose={(e) => setOpen(false)}
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleMenuClose}
         anchorOrigin={{
           vertical: "top",
           horizontal: "right",
@@ -145,8 +153,7 @@ export const Navbar = () => {
           horizontal: "right",
         }}
       >
-        <MenuItem onClick={(e) => setOpen(false)}>
-          {" "}
+        <MenuItem>
           <IconButton>
             <PersonIcon />
           </IconButton>

@@ -1,6 +1,6 @@
 import React from "react";
 import axios from "axios";
-import { App } from "../blog/components/App";
+import { App } from "../App";
 
 
 axios.defaults.withCredentials = true;

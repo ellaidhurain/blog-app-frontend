@@ -14,7 +14,6 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { toast } from "react-toastify";
-import styled from "@emotion/styled";
 import { Allblogs, Feed } from "./Feed";
 import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
@@ -26,26 +25,30 @@ import Typography from "@mui/material/Typography";
 import { red } from "@mui/material/colors";
 import ShareIcon from "@mui/icons-material/Share";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import FavoriteBorder from "@mui/icons-material/FavoriteBorder";
 import Favorite from "@mui/icons-material/Favorite";
 import Checkbox from "@mui/material/Checkbox";
 import CommentIcon from "@mui/icons-material/Comment";
-import Comments from "./Comments";
+import Comments from "../components/comments/Comments";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { makeStyles } from "@mui/styles";
 import { Button } from "@mui/material";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import InsertEmoticonIcon from "@mui/icons-material/InsertEmoticon";
 import VideoChatIcon from "@mui/icons-material/VideoChat";
 import AudioFileIcon from "@mui/icons-material/AudioFile";
 import ImageIcon from "@mui/icons-material/Image";
 import InsertInvitationIcon from "@mui/icons-material/InsertInvitation";
-import AddBlog from "./AddBlog";
-import Context from "../../Context/context";
+import AddBlog from "../components/leftbar/AddBlog";
+import Context from "../Context/context";
 import ReadMore from "./Readmore";
+import { styled } from "@mui/system";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  deleteBlogRequest,
+  getOneUserRequest,
+  updateBlogRequest,
+} from "../services/api/blogApi";
+import { deleteBlog, updateBlog } from "../store/slice/blogSlice";
 
 const StyledModel = styled(Modal)({
   display: "flex",
@@ -61,22 +64,25 @@ const UserBox = styled(Box)(({ theme }) => ({
   marginLeft: "10px",
 }));
 
+
 export const UserBlogs = (props) => {
-  const ctx = useContext(Context); //global store
-  console.log(ctx);
+  const ctx = useContext(Context); //global provider
+
+  const { userData } = useSelector((state) => state.blog);
+  // console.log(userData);
 
   return (
     <Box flex={4}>
-      {ctx.userData &&
-        ctx.userData.blogs &&
-        ctx.userData.blogs.map((blog, index) => (
+      {userData &&
+        userData.blogs &&
+        userData.blogs.map((blog, index) => (
           <MyBlogs
             blogId={blog._id}
             key={index}
             title={blog.title}
             description={blog.description}
             imageURL={blog.image}
-            userName={ctx.userData.Name}
+            userName={userData.Name}
           />
         ))}
       <AddBlog setUserData={ctx.setUserData} />
@@ -94,76 +100,72 @@ export default function MyBlogs({
   const navigate = useNavigate();
   const ctx = useContext(Context); //global store
   const id = useParams().blogId;
+  const dispatch = useDispatch();
 
   const [inputs, setInputs] = useState({});
   const [liked, setLiked] = useState(false);
   const [comments, setComments] = useState(false);
   const [open, setOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [previewImage, setPreviewImage] = useState(null);
+
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
+  useEffect(()=>{
+    dispatch(getOneUserRequest(id))
+  },[id])
+
   useEffect(() => {
-    setInputs({
+   setInputs({
       title: title,
       description: description,
       image: imageURL,
     });
-  }, [id]);
+  }, [id]); // render when id changes
 
-  //---------//---------//
-
-  const updateRequest = async () => {
-    const res = await axios
-      .put(`http://localhost:5000/api/blog/updateOneBlog/${blogId}`, {
-        title: inputs.title,
-        description: inputs.description,
-        image: inputs.image,
-      })
-      .catch((err) => console.log(err));
-
-    const data = res.data;
-    return data;
-  };
-
-  const handleUpdate = (e) => {
+  const handleUpdate = async (e) => {
     e.preventDefault();
-    updateRequest().then((data) => {
-      toast.success("succesfully updated");
+
+    try {
+      await dispatch(updateBlogRequest({ blogId, inputs }));
+      toast.success("Successfully updated");
       handleClose();
-      ctx.getOneUserRequest();
-    });
-  };
-
-  //---------//---------//
-
-  const deleteRequest = async () => {
-    //save api response in variable called res
-    const res = await axios
-      .delete(`http://localhost:5000/api/blog/deleteOneBlog/${blogId}`, {
-        withCredentials: true,
-      })
-      .catch((err) => console.log(err));
-    const data = res.data;
-    return data;
+      dispatch(getOneUserRequest(id)); // Fetch the updated view
+    } catch (error) {
+      console.log("Update failed:", error);
+      toast.error("Update failed", error);
+    }
   };
 
   const handleDelete = (e) => {
     e.preventDefault();
-    deleteRequest().then(() => {
-      toast.success("successfully deleted");
-      ctx.getOneUserRequest();
-    });
+
+    dispatch(deleteBlogRequest({ blogId }))
+      .then(() => {
+        toast.success("successfully deleted");
+        dispatch(getOneUserRequest(id)); // we need to call this to get updated view
+      })
+      .catch((error) => {
+        toast.error(error);
+      });
+
+    // dispatch(deleteBlog({blogId}));
   };
 
-  const onChangeHandle = (e) => {
+  const handleInputChange = (e) => {
+    e.preventDefault();
     setInputs({
-      ...inputs,
+      ...inputs, // make a copy and update
       [e.target.name]: e.target.value,
     });
-    e.preventDefault();
   };
 
-  //---------//---------//
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    setSelectedImage(file);
+    setPreviewImage(URL.createObjectURL(file));
+  };
 
   const date = new Date();
   const timestamp = date.toDateString();
@@ -193,18 +195,18 @@ export default function MyBlogs({
                 {ctx.userData.Name ? ctx.userData.Name.charAt(0) : ""}
               </Avatar>
             }
-            action={
-              <IconButton aria-label="settings">
-                <MoreHorizIcon />
-              </IconButton>
-            }
+            // action={
+            //   <IconButton aria-label="settings">
+            //     <MoreHorizIcon />
+            //   </IconButton>
+            // }
             title={ctx.userData.Name}
             subheader={timestamp}
           />
 
           <CardContent onClick={handleComments}>
             <Typography variant="body2" color="text.primary">
-              <h3>{title}</h3>
+              <span>{title}</span>
               <ReadMore>{description}</ReadMore>
             </Typography>
           </CardContent>
@@ -216,42 +218,43 @@ export default function MyBlogs({
             alt="Paella dish"
           />
           <div className="d-flex justify-content-between pt-2 px-4">
-          <small style={{color:"gray"}} className="px-4">20 likes</small>
-          <small style={{color:"gray"}}>10 comments</small>
+            <small style={{ color: "gray" }} className="px-4">
+              20 likes
+            </small>
+            <small style={{ color: "gray" }}>10 comments</small>
           </div>
           <hr className="mx-4"></hr>
 
           <CardActions disableSpacing className="d-flex justify-content-end">
-            <IconButton aria-label="add to favorites">
+            {/* <IconButton aria-label="add to favorites"  onClick={increase}>
               <Checkbox
-                onClick={increase}
                 icon={<FavoriteBorder />}
                 checkedIcon={<Favorite sx={{ color: "red" }} />}
               />
-            </IconButton>
+            </IconButton> */}
             {liked && "Liked"}
 
-            <IconButton
+            {/* <IconButton
               aria-label="delete"
               sx={{ marginLeft: "10px" }}
               onClick={handleComments}
             >
               <CommentIcon />
-            </IconButton>
+            </IconButton> */}
             <Box style={{ fontSize: "15px" }} pr={3}>
               10 comments
             </Box>
 
             <Box>
-              <IconButton aria-label="share" sx={{ marginLeft: "10px" }}>
+              {/* <IconButton aria-label="share" sx={{ marginLeft: "10px" }}>
                 <ShareIcon />
               </IconButton>
-              <IconButton aria-label="delete" sx={{ marginLeft: "10px" }}>
-                <EditIcon onClick={handleOpen} />
+              <IconButton aria-label="delete" onClick={handleOpen} sx={{ marginLeft: "10px" }}>
+                <EditIcon  />
               </IconButton>
-              <IconButton aria-label="delete" sx={{ marginLeft: "10px" }}>
-                <DeleteIcon onClick={handleDelete} />
-              </IconButton>
+              <IconButton aria-label="delete" onClick={handleDelete} sx={{ marginLeft: "10px" }}>
+                <DeleteIcon  />
+              </IconButton> */}
             </Box>
           </CardActions>
           {comments && <Comments />}
@@ -267,11 +270,11 @@ export default function MyBlogs({
             aria-describedby="modal-modal-description"
           >
             <Box
-              width={700}
-              height={600}
+              width={550}
+              height={550}
               bgcolor={"background.default"}
               color={"text.primary"}
-              p={2}
+              p={4}
               borderRadius={5}
             >
               <Typography variant="h6" color="grey" textAlign="center">
@@ -285,44 +288,61 @@ export default function MyBlogs({
               </UserBox>
               <TextField
                 name="title"
-                sx={{ width: "100%", pt: 5 }}
+                sx={{ width: "100%", pt: 2 }}
                 id="standard-multiline-static"
                 rows={4}
                 label="title"
                 variant="standard"
-                onChange={onChangeHandle}
+                onChange={handleInputChange}
                 value={inputs.title}
+                placeholder="title"
               />
 
               <TextField
                 name="description"
-                sx={{ width: "100%", pt: 5, mt: 2, mb: 3 }}
+                sx={{ width: "100%", pt: 2 }}
                 id="standard-multiline-static"
-                onChange={onChangeHandle}
+                onChange={handleInputChange}
                 rows={4}
                 label="description"
                 variant="standard"
                 value={inputs.description}
                 multiline
+                placeholder="description"
               />
 
               <TextField
                 name="image"
-                sx={{ width: "100%", pt: 5 }}
+                sx={{ width: "100%", pt: 2 }}
                 id="standard-multiline-static"
                 rows={4}
                 label="imageURL"
                 placeholder="paste image url here"
                 variant="standard"
-                onChange={onChangeHandle}
+                onChange={handleInputChange}
                 value={inputs.image}
               />
-              <Stack direction="row" gap={1} mt={2} mb={3}>
-                <InsertEmoticonIcon color="success" />
-                <VideoChatIcon color="secondary" />
-                <AudioFileIcon color="success" />
-                <ImageIcon color="error" />
-                <Input type="file" />
+
+              <Stack
+                direction="row"
+                gap={1}
+                mb={3}
+                className="d-flex justify-content-between align-items-center"
+              >
+                <label htmlFor="image-input" m={0}>
+                  <IconButton component="span" m={0}>
+                    <ImageIcon color="error" sx={{ fontSize: "40px" }} />
+                  </IconButton>
+                </label>
+                <img width="80px" src={previewImage} />
+
+                <input
+                  id="image-input"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  style={{ display: "none" }}
+                />
               </Stack>
 
               <ButtonGroup
@@ -331,20 +351,6 @@ export default function MyBlogs({
                 aria-label="outlined primary button group"
               >
                 <Button onClick={handleUpdate}>Post</Button>
-                <Button sx={{ width: "100px" }}>
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DatePicker
-                      label="Basic example"
-                      // value={value}
-                      onChange={(newValue) => {
-                        // setValue(newValue);
-                      }}
-                      renderInput={(params) => (
-                        <InsertInvitationIcon {...params} />
-                      )}
-                    />
-                  </LocalizationProvider>
-                </Button>
               </ButtonGroup>
             </Box>
           </StyledModel>

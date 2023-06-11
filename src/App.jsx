@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import { Navbar } from "./Navbar";
-import { Leftbar } from "./Leftbar";
+import { Navbar } from "./blog/components/Navbar/Navbar";
+import { Leftbar } from "./blog/components/leftbar/Leftbar";
 import { Box, Stack, createTheme, ThemeProvider } from "@mui/material";
-import Rightbar from "./Rightbar";
+import Rightbar from "./blog/components/Rightbar/Rightbar";
 import { Outlet, Route, Routes } from "react-router-dom";
-import MyBlogs, { UserBlogs } from "./MyBlogs";
-import Feed from "./Feed";
+import { UserBlogs } from "./blog/pages/MyBlogs";
+import Feed from "./blog/pages/Feed";
 
 export const App = () => {
   const [mode, setMode] = useState("light");

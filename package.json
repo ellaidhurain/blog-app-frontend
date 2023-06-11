@@ -5,16 +5,12 @@
   "main": "server.js",
   "private": true,
   "dependencies": {
-    "@emotion/react": "^11.10.5",
-    "@emotion/styled": "^11.10.5",
+    "@emotion/react": "^11.10.6",
+    "@emotion/styled": "^11.10.6",
     "@hookform/resolvers": "^2.9.8",
     "@lottiefiles/react-lottie-player": "^3.4.9",
-    "@material-ui/core": "^4.12.4",
-    "@mui/icons-material": "^5.10.9",
-    "@mui/material": "^5.10.13",
-    "@mui/styled-engine-sc": "^5.10.6",
-    "@mui/styles": "^5.10.7",
-    "@mui/x-date-pickers": "^5.0.8",
+    "@mui/icons-material": "^5.11.16",
+    "@mui/system": "^5.12.0",
     "@popperjs/core": "^2.11.6",
     "@reduxjs/toolkit": "^1.8.5",
     "@testing-library/jest-dom": "^5.16.5",
@@ -58,12 +54,10 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d build"
-
+    "deploy": "gh-pages -d build",
+    "build":"react-scripts build"
   },
   "eslintConfig": {
     "extends": [
@@ -86,6 +80,7 @@
   "devDependencies": {
     "@redux-devtools/core": "^3.13.1",
     "@types/react-material-ui-form-validator": "^2.1.1",
+    "@vitejs/plugin-react": "^4.0.0",
     "assert": "^2.0.0",
     "buffer": "^6.0.3",
     "crypto-browserify": "^3.12.0",

@@ -7,7 +7,7 @@ import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
 
-export default function AlignItemsList() {
+export default function UserList() {
   return (
     <List sx={{ width: 350, maxWidth: 360,border:"1px solid rgba(0,0,0,0.15)", bgcolor: 'background.paper' , borderRadius: "10px"}}>
       <ListItem alignItems="flex-start">
