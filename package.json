@@ -1,5 +1,5 @@
 {
-  "homepage": "https://ellaidhurain.github.io/liveapp",
+  "homepage": "https://ellaidhurain.github.io/blog-app-frontend",
   "name": "my-app",
   "version": "0.1.0",
   "main": "server.js",
@@ -78,21 +78,7 @@
     ]
   },
   "devDependencies": {
-    "@redux-devtools/core": "^3.13.1",
-    "@types/react-material-ui-form-validator": "^2.1.1",
-    "@vitejs/plugin-react": "^4.0.0",
-    "assert": "^2.0.0",
-    "buffer": "^6.0.3",
-    "crypto-browserify": "^3.12.0",
-    "gh-pages": "^4.0.0",
-    "https-browserify": "^1.0.0",
-    "nodemon": "^2.0.20",
-    "os-browserify": "^0.3.0",
-    "process": "^0.11.10",
-    "react-app-rewired": "^2.2.1",
-    "stream-browserify": "^3.0.0",
-    "stream-http": "^3.2.0",
-    "url": "^0.11.0"
+
   },
   "browser": {
     "crypto": false
