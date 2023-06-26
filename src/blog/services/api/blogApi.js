@@ -1,16 +1,24 @@
 import { createAsyncThunk, isRejectedWithValue } from "@reduxjs/toolkit";
 import axios from "axios";
 
-//Redux Thunk: Middleware for handling asynchronous actions in Redux
+const api = axios.create({
+  baseURL: "http://localhost:5000/api/blog", 
+  withCredentials: true, // Enable sending cookies with requests
+});
+
+// Redux AsyncThunk is a Middleware for handling asynchronous actions in Redux and do operations on promise obj handled by redux
+// const url = "https://blog-app-api-production-7b00.up.railway.app"
+const url = "http://localhost:5000/api/user"
 
 export const getOneUserRequest = createAsyncThunk(
   "blog/getOneUserRequest",
-  async (id) => {
+  async () => {
+   
     try {
       const res = await axios.get(
-        `http://localhost:5000/api/blog/getOneUser/${id}`
+        `${url}/getUser`
       );
-        // console.log(res.data);
+      // console.log(res.data);
       return res.data;
     } catch (err) {
       console.log("Error:", err);
@@ -23,8 +31,8 @@ export const getAllBlogsRequest = createAsyncThunk(
   "blog/getAllBlogsRequest",
   async () => {
     try {
-      const res = await axios.get(
-        `http://localhost:5000/api/blog/getAllBlogs`,
+      const res = await api.get(
+        `/getAllBlogs`,
         {
           withCredentials: true,
         }
@@ -42,10 +50,10 @@ export const refreshTokenRequest = createAsyncThunk(
   "blog/refreshToken",
   async () => {
     try {
-      const res = await axios.get(`http://localhost:5000/api/blog/refresh`, {
+      const res = await api.get(`/refresh`, {
         withCredentials: true,
       });
-      //   console.log(res.data);
+        console.log(res.data);
       return res.data;
     } catch (err) {
       console.log(err);
@@ -57,8 +65,8 @@ export const refreshTokenRequest = createAsyncThunk(
 export const postBlogRequest = createAsyncThunk(
   "blog/postBlogRequest",
   async ({ post }) => {
-    const res = await axios
-      .post(`http://localhost:5000/api/blog/addBlog`, {
+    const res = await api
+      .post(`addBlog`, {
         title: post.title,
         description: post.description,
         image: post.image,
@@ -75,8 +83,8 @@ export const updateBlogRequest = createAsyncThunk(
   //When using createAsyncThunk, the payload creator function should only take one argument, which is an object containing the parameters you need.
   async ({ blogId, inputs }) => {
     try {
-      const res = await axios.put(
-        `http://localhost:5000/api/blog/updateOneBlog/${blogId}`,
+      const res = await api.put(
+        `updateOneBlog/${blogId}`,
         {
           title: inputs.title,
           description: inputs.description,
@@ -97,8 +105,8 @@ export const deleteBlogRequest = createAsyncThunk(
   "blog/blogDeleteRequest",
   async ({ blogId }) => {
     try {
-      const res = await axios.delete(
-        `http://localhost:5000/api/blog/deleteOneBlog/${blogId}`,
+      const res = await api.delete(
+        `/deleteOneBlog/${blogId}`,
         {
           withCredentials: true,
         }
@@ -117,8 +125,8 @@ export const getCommentRequest = createAsyncThunk(
   "blog/getCommentRequest",
   async () => {
     try {
-      const res = await axios.get(
-        `http://localhost:5000/api/blog/getAllComments`,
+      const res = await api.get(
+        `/getAllComments`,
         {
           withCredentials: true,
         }
@@ -135,8 +143,8 @@ export const addCommentRequest = createAsyncThunk(
   "blog/addCommentRequest",
   async ({ comment,userId,blogId }) => {
     try {
-      const res = await axios.get(
-        `http://localhost:5000/api/blog/http://localhost:5000/api/blog/addComment`,
+      const res = await api.get(
+        `/addComment`,
         {
           comment: comment,
           user: userId,
@@ -156,8 +164,8 @@ export const updateCommentRequest = createAsyncThunk(
   "blog/addCommentRequest",
   async ({ comment,userId,blogId,commentId }) => {
     try {
-      const res = await axios.get(
-      `http://localhost:5000/api/blog/http://localhost:5000/api/blog/updateComment/${commentId}`,
+      const res = await api.get(
+      `/updateComment/${commentId}`,
         {
           comment: comment,
           user: userId,
@@ -177,8 +185,8 @@ export const deleteCommentRequest = createAsyncThunk(
   "blog/deleteCommentRequest",
   async ({commentId}) => {
     try {
-      const res = await axios.delete(
-        `http://localhost:5000/api/blog/http://localhost:5000/api/blog/deleteComment/${commentId}`,
+      const res = await api.delete(
+        `/deleteComment/${commentId}`,
       )
       return res.data
     } catch (err) {
@@ -191,8 +199,8 @@ export const addLikeRequest = createAsyncThunk(
   "blog/addLikeRequest",
   async ({userId,blogId}) => {
     try {
-      const res = await axios.delete(
-        `http://localhost:5000/api/blog/addLike`,
+      const res = await api.post(
+        `/addLike`,
       {
         user:userId,
         blog:blogId
@@ -208,8 +216,8 @@ export const removeLikeRequest = createAsyncThunk(
   "blog/removeLikeRequest",
   async ({likeId}) => {
     try {
-      const res = await axios.delete(
-        `http://localhost:5000/api/blog/http://localhost:5000/api/blog/removeLike/${likeId}`,
+      const res = await api.delete(
+        `/removeLike/${likeId}`,
       )
       return res.data
     } catch (err) {

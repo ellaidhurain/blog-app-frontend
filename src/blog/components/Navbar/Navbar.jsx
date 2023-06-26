@@ -26,6 +26,8 @@ import { useNavigate } from "react-router-dom";
 
 import Notifications from "./Notifications";
 import Messages from "./Messages";
+import { useDispatch, useSelector } from "react-redux";
+import { setLogout } from "../../store/slice/loginSlice";
 
 const MyToolbar = styled(Toolbar)({
   display: "flex",
@@ -55,13 +57,15 @@ export const Navbar = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [isClicked, setIsClicked] = useState(false);
   const [isChat, setIsChat] = useState(false);
+  
+  const dispatch = useDispatch();
 
   const logout = async () => {
     try {
       await axios.post("http://localhost:5000/api/user/logout");
       localStorage.removeItem("userId");
       navigate("/");
-      console.log("logged out");
+      dispatch(setLogout())
     } catch (err) {
       console.log(err);
     }
@@ -78,25 +82,28 @@ export const Navbar = () => {
   return (
     <AppBar position="sticky">
       <MyToolbar>
-        <CabinIcon sx={{ display: { xs: "block", sm: "none" } }} />
+        <CabinIcon sx={{ display: { xs: "block", sm: "none" },marginRight:"8px",  }} />
         <Typography
           px={2}
           variant="h5"
-          sx={{ display: { xs: "none", sm: "block" } }}
+          sx={{ display: { xs: "none", sm: "block" }, "&:hover":{
+            cursor:"pointer"
+          } }}
+          
         >
-          Blogin
+          BlogSnaps
         </Typography>
         <Paper
           component="form"
           sx={{
             p: "2px 4px",
             display: "flex",
-            alignItems: "center",
+            alignItems: "left",
             width: 400,
           }}
         >
           <InputBase
-            sx={{ ml: 1, flex: 1 }}
+            sx={{ ml: 1, flex: 1}}
             placeholder="Search here..."
             inputProps={{ "aria-label": "search blogs..." }}
           />
@@ -106,12 +113,12 @@ export const Navbar = () => {
           <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
         </Paper>
         <Icons size="large" aria-label="show 4 new mails" color="inherit">
-          <Badge
-            badgeContent={4}
-            color="error"
-            className="position-relative"
-          >
-            <MailIcon onClick={() => setIsChat(!isChat)} />
+          <Badge badgeContent={4} color="error" className="position-relative">
+            <MailIcon onClick={() => setIsChat(!isChat)} sx={{
+              "&:hover":{
+                cursor:"pointer"
+              }
+            }}/>
           </Badge>
           <Badge
             onClick={() => setIsClicked(!isClicked)}
@@ -119,7 +126,11 @@ export const Navbar = () => {
             color="error"
             className="position-relative"
           >
-            <NotificationsIcon />
+            <NotificationsIcon sx={{
+               "&:hover":{
+                cursor:"pointer"
+              }
+            }}/>
           </Badge>
           {isChat && <Messages />}
           {isClicked && <Notifications />}
@@ -127,14 +138,29 @@ export const Navbar = () => {
             alt="Remy Sharp"
             src="/static/use2.png"
             onClick={handleMenuOpen}
+            sx={{
+              backgroundColor:"#fff",
+              color:"gray",
+              "&:hover":{
+                cursor:"pointer"
+              }
+            }}
           />
         </Icons>
 
-        <UserBox>
+        <UserBox >
           <Avatar
             alt="Remy Sharp"
             src="/static/use2.png"
             onClick={handleMenuOpen}
+            sx={{
+              backgroundColor:"#fff",
+              color:"gray",
+              marginLeft:"8px",
+              "&:hover":{
+                cursor:"pointer"
+              }
+            }}
           />
           <Typography>ellai</Typography>
         </UserBox>
@@ -153,13 +179,26 @@ export const Navbar = () => {
           horizontal: "right",
         }}
       >
-        <MenuItem>
+        <MenuItem
+          sx={{
+            "& .MuiTouchRipple-root": {
+              display: "none",
+            },
+          }}
+        >
           <IconButton>
             <PersonIcon />
           </IconButton>
           Profile
         </MenuItem>
-        <MenuItem onClick={logout}>
+        <MenuItem
+          onClick={logout}
+          sx={{
+            "& .MuiTouchRipple-root": {
+              display: "none",
+            },
+          }}
+        >
           <IconButton>
             <LogoutIcon />
           </IconButton>

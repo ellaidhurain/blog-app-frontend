@@ -1,38 +1,32 @@
-import React, { useState } from "react";
-import { Navbar } from "./blog/components/Navbar/Navbar";
-import { Leftbar } from "./blog/components/leftbar/Leftbar";
-import { Box, Stack, createTheme, ThemeProvider } from "@mui/material";
-import Rightbar from "./blog/components/Rightbar/Rightbar";
-import { Outlet, Route, Routes } from "react-router-dom";
-import { UserBlogs } from "./blog/pages/MyBlogs";
-import Feed from "./blog/pages/Feed";
+import React, { useEffect } from "react";
+import { Navigate, Outlet, Route, Routes } from "react-router";
+import {  useDispatch, useSelector } from "react-redux";
+import { ToastContainer } from "react-toastify";
+import Login from "./login/Login";
+import Signup from "./login/Signup";
+import Home from "./login/Home";
+import { setLogin, setLogout } from "./blog/store/slice/loginSlice";
 
-export const App = () => {
-  const [mode, setMode] = useState("light");
+const App = () => {
 
-  const darkTheme = createTheme({
-    palette: {
-      mode: mode,
-    },
-  });
-
+  let isLogged = localStorage.getItem("userId");
+  
   return (
-    <ThemeProvider theme={darkTheme}>
-      <Box bgcolor={"rgba(0,0,0,0.04)"} color={"text.primary"}>
-        <Navbar />
-        <Stack direction="row" spacing={2} justifyContent="space-between">
-          <Leftbar setMode={setMode} mode={mode} />
-          <Routes>
-            <Route path='/feed' element={<Feed />} />
-            <Route path="/myBlogs" element={<UserBlogs />} />
-          </Routes>
-          <Outlet />
-          <Rightbar />
-        </Stack>
-      </Box>
-    </ThemeProvider>
+    <>
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route
+          path="/*" // catch-all route any path that hasn't been matched by previous defined routes.
+          element={isLogged ? <Home /> : <Navigate to="/" />}
+        />
+
+      </Routes>
+      <ToastContainer />
+     
+    </>
   );
 };
 
-//Box -div
-//Container -having default margin and padding
+export default App;

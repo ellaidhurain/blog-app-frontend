@@ -8,6 +8,7 @@ import {
   updateBlogRequest,
 } from "../../services/api/blogApi";
 
+
 const blogSlice = createSlice({
   name: "blog",
   initialState: {
@@ -16,8 +17,13 @@ const blogSlice = createSlice({
     isLoadingUser: false,
     isLoadingBlogs: false,
     error: null,
+    mode:"light"
   },
   reducers: {
+    setMode: (state,action) =>{
+      state.mode = action.payload
+    },
+
     addBlog: (state, action) => {
       state.blogs.push(action.payload);
     },
@@ -42,7 +48,7 @@ const blogSlice = createSlice({
         state.isLoadingUser = true;
       })
       .addCase(getOneUserRequest.fulfilled, (state, action) => {
-        state.userData = action.payload.user;
+        state.userData = action.payload;
         state.isLoadingUser = false;
       })
       .addCase(getOneUserRequest.rejected, (state, action) => {
@@ -103,4 +109,4 @@ const blogSlice = createSlice({
 });
 
 export default blogSlice.reducer;
-export const { addBlog,updateBlog,deleteBlog } = blogSlice.actions
+export const { addBlog,updateBlog,deleteBlog,setMode } = blogSlice.actions

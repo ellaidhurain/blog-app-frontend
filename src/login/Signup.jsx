@@ -1,162 +1,192 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Formik, Field, Form, ErrorMessage } from "formik";
-import * as Yup from "yup";
 import "./App.css";
-import axios from "axios";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { Box, Button, TextField, Typography } from "@mui/material";
-import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import { LoginImage } from "./lottiefiles";
+import { signupRequest } from "../blog/services/api/userApi";
+import { useForm } from "react-hook-form";
 
-const Signup = (props) => {
-  const [loading, setLoading] = useState(false);
-  const [passwordType, setPasswordType] = useState("password");
-  const [passwordInput, setPasswordInput] = useState("");
-
-  const handlePasswordChange = (e) => {
-    setPasswordInput(e.target.value);
-  };
-  const togglePassword = () => {
-    if (passwordType === "password") {
-      setPasswordType("text");
-      return;
-    }
-    setPasswordType("password");
-  };
-
-  const initialValues = {
+const Signup = () => {
+  const { loading } = useSelector((state) => state.signup);
+  const [inputs, setInputs] = useState({
     Name: "",
     Email: "",
     Password: "",
-  };
-
-  const validationSchema = Yup.object().shape({
-    Name: Yup.string()
-      .test(
-        "len",
-        "The username must be between 3 and 20 characters.",
-        (val) =>
-          val && val.toString().length >= 3 && val.toString().length <= 20
-      )
-      .required("This field is required!"),
-    Email: Yup.string()
-      .email("This is not a valid email.")
-      .required("This field is required!"),
-    Password: Yup.string()
-      .test(
-        "len",
-        "The password must be between 6 and 40 characters.",
-        (val) =>
-          val && val.toString().length >= 6 && val.toString().length <= 40
-      )
-      .required("This field is required!"),
+    occupation: "",
+    picturePath: "",
   });
 
   const navigate = useNavigate();
-  const onSubmit = async (data) => {
-    const { Name, Email, Password } = data;
-    const API_URL = "http://localhost:5000/api/user/signup";
+  const dispatch = useDispatch();
 
-    await axios({
-      method: "post",
-      url: API_URL,
-      data: {
-        Name,
-        Email,
-        Password,
-      },
-      withCredentials: true,
-    })
-      .then(() => {
-        toast.success("Registration success");
-        navigate("/login");
-      })
-      .then((data) => localStorage.setItem("userId", data.user._id))
-      .catch((error) => toast.error(error.response.data));
+  const handleSubmitForm = (validated_data) => {
+    try {
+      const inputs = {
+        Name: validated_data.Name,
+        Email: validated_data.Email,
+        Password: validated_data.Password,
+        occupation: validated_data.occupation,
+        picturePath: validated_data.picturePath,
+      };
+
+      const res = dispatch(signupRequest(inputs));
+
+      toast.success("Registration Success");
+      navigate("/login");
+    } catch (err) {
+      console.log(err);
+    }
   };
 
-  return (
-    <div
-      className="row justify-content-center align-items-center"
-      // style={{ marginTop: "80px", marginLeft: "100px" }}
-    >
-      <div className="col-5 ">
-        <LoginImage />
-      </div>
-      <div className="col signup-form">
-        <div>
-          <img
-            src="//ssl.gstatic.com/accounts/ui/avatar_2x.png"
-            alt="profile-img"
-            className="profile-img-card"
-          />
-          <Formik
-            initialValues={initialValues}
-            validationSchema={validationSchema}
-            onSubmit={onSubmit}
-          >
-            <Form>
-              <div className="form-group">
-                <Field placeholder="username" name="Name" type="text" className="form-control py-3 my-3" />
-                <ErrorMessage
-                  name="Name"
-                  component="div"
-                  className="text-danger"
-                />
-       
-                <Field
-                  name="Email"
-                  type="email"
-                  className="form-control py-3 my-3"
-                  placeholder="email"
-                />
-                <ErrorMessage
-                  name="Email"
-                  component="div"
-                  className="text-danger"
-                />
-             
-                <Field
-                  name="Password"
-                  type={passwordType}
-                  className="form-control py-3 my-3"
-                  placeholder="password"
-                />
-                <ErrorMessage
-                  name="Password"
-                  component="div"
-                  className="text-danger"
-                />
-              </div>
+  const handleInputChange = (e) => {
+    setInputs(() => ({
+      ...inputs,
+      // [key]:value
+      [e.target.name]: e.target.value,
+    }));
+  };
 
-              <div className="d-flex mt-4 justify-content-center">
-                <div className="form-group mx-4">
-                  <Button type="submit" className=" px-4">
-                    Register
-                  </Button>
-                </div>
-                <Link to="/login" style={{ textDecoration: "none" }}>
-                  <Button className=" px-4">Back To Login</Button>
-                </Link>
-              </div>
-            </Form>
-          </Formik>
-          <div className="input-group-btn d-flex justify-content-center">
-            <Button onClick={togglePassword}>
-              {passwordType === "password" ? (
-                <i className="bi bi-eye-slash px-3"></i>
-              ) : (
-                <i className="bi bi-eye px-3"></i>
-              )}{" "}
-              View password
-            </Button>
-          </div>
-        </div>
-      </div>
-    </div>
+  const clearError = (fieldName) => {
+    if (errors[fieldName]) {
+      clearErrors(fieldName);
+    }
+  };
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    clearErrors,
+  } = useForm();
+
+  return (
+    <Box
+      className="row justify-content-center align-items-center"
+    >
+      <Box className="col-5 ">
+        <LoginImage />
+      </Box>
+      <Box className="col signup-form">
+        <Box>
+          <h2 className="text-center">SIGN UP</h2>
+          <form onSubmit={handleSubmit(handleSubmitForm)}>
+            <Box className="form-group">
+              <TextField
+                placeholder="username"
+                name="Name"
+                type="text"
+                className="form-control py-2"
+                value={inputs.Name}
+                {...register("Name", {
+                  required: "Name is required",
+                  minLength: {
+                    value: 3,
+                    message:
+                      "Username must be at least three characters long.",
+                }
+                })}
+                onChange={(e) => {
+                  handleInputChange(e);
+                  clearError("Name");
+                }}
+                error={!!errors.Name}
+                helperText={errors.Name && errors.Name.message}
+              />
+
+              <TextField
+                name="Email"
+                type="email"
+                className="form-control py-2"
+                placeholder="email"
+                value={inputs.Email}
+                {...register("Email", {
+                  required: "Email is required",
+                })}
+                onChange={(e) => {
+                  handleInputChange(e);
+                  clearError("Email");
+                }}
+                error={!!errors.Email}
+                helperText={errors.Email && errors.Email.message}
+              />
+              <TextField
+                name="Password"
+                type="password"
+                className="form-control py-2"
+                placeholder="password"
+                value={inputs.Password}
+                {...register("Password", {
+                  required: "Password is required",
+                })}
+                onChange={(e) => {
+                  handleInputChange(e);
+                  clearError("Password");
+                }}
+                error={!!errors.Password}
+                helperText={errors.Password && errors.Password.message}
+              />
+              <TextField
+                name="occupation"
+                className="form-control py-2"
+                placeholder="occupation"
+                value={inputs.occupation}
+                {...register("occupation", {
+                  required: "occupation is required",
+                })}
+                onChange={(e) => {
+                  handleInputChange(e);
+                  clearError("occupation");
+                }}
+                error={!!errors.occupation}
+                helperText={errors.occupation && errors.occupation.message}
+              />
+              <TextField
+                name="picturePath"
+                className="form-control py-2"
+                placeholder="profile picture"
+                type="File"
+                value={inputs.picturePath}
+                {...register("picturePath", {
+                  required: "picturePath is required",
+                })}
+                onChange={(e) => {
+                  setInputs(e.target.Files[0]);
+                  clearError("picturePath");
+                }}
+                error={!!errors.picturePath}
+                helperText={errors.picturePath && errors.picturePath.message}
+              />
+            </Box>
+
+            <Box className="d-flex my-2 justify-content-center">
+              <Box className="form-group mx-4">
+                <Button type="submit" variant="contained" className=" px-4">
+                  {loading ? (
+                    <>
+                      <span className="spinner-border spinner-border-sm"></span>
+                    </>
+                  ) : (
+                    <>
+                      {" "}
+                      <span> register</span>
+                    </>
+                  )}
+                </Button>
+              </Box>
+              <Link to="/login" style={{ textDecoration: "none" }}>
+                <Button className=" px-4" variant="contained">
+                  {" "}
+                  Login
+                </Button>
+              </Link>
+            </Box>
+          </form>
+        </Box>
+      </Box>
+    </Box>
   );
 };
 

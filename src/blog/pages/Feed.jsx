@@ -15,48 +15,61 @@ import FavoriteBorder from "@mui/icons-material/FavoriteBorder";
 import Favorite from "@mui/icons-material/Favorite";
 import Checkbox from "@mui/material/Checkbox";
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { toast } from "react-toastify";
 import CommentIcon from "@mui/icons-material/Comment";
 import Comments from "../components/comments/Comments";
 import styled from "@mui/system";
-import { useNavigate } from "react-router-dom";
-// import { makeStyles } from "@mui/styles";
 import Context from "../Context/context";
 import ReadMore from "./Readmore";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllBlogsRequest, getOneUserRequest, refreshTokenRequest } from "../services/api/blogApi";
+import {
+  addLikeRequest,
+  getAllBlogsRequest,
+  getOneUserRequest,
+  refreshTokenRequest,
+} from "../services/api/blogApi";
 
-
-const Feed = ({ userName }) => {
+const Feed = () => {
   // useContext is holding all functions and variables which is shared from provider
   // const ctx = useContext(Context); //global store
   // const { blogs } = useContext(Context);
 
   const { blogs } = useSelector((state) => state.blog);
+  const { userData } = useSelector((state) => state.blog);
 
   const dispatch = useDispatch();
 
   const id = localStorage.getItem("userId");
 
+  
   useEffect(() => {
-    if (id) {
-      dispatch(getOneUserRequest(id));
+    const fetchBlogs = async ()=>{
+      await dispatch(getAllBlogsRequest());
     }
+    fetchBlogs();
   }, [dispatch, id]);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      dispatch(refreshTokenRequest());
-    }, 10000 * 300);
+    const fetchData = async () => {
+      if (id) {
+        await dispatch(getOneUserRequest(id));
+      } else {
+        console.log("User ID is not available");
+      }
+    };
+
+    fetchData();
+  }, [dispatch, id]);
+
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      await dispatch(refreshTokenRequest());
+    }, 1000 * 60 * 5); // 5 mins
 
     return () => clearInterval(interval);
   }, [dispatch]);
 
-  useEffect(() => {
-    dispatch(getAllBlogsRequest());
-  }, [dispatch]);
 
   return (
     <Box flex={4}>
@@ -66,26 +79,32 @@ const Feed = ({ userName }) => {
           title={blog.title}
           description={blog.description}
           imageURL={blog.image}
-          CreatedDate={blog.CreatedDate}
+          CreatedDate={blog.createdAt}
+          userData={userData}
         />
       ))}
     </Box>
   );
 };
 
-const Allblogs = ({ title, description, imageURL, CreatedDate }) => {
+const Allblogs = ({ title, description, imageURL, CreatedDate, userData }) => {
   const [liked, setLiked] = useState(false);
   const [comments, setComments] = useState(false);
   const [openMenu, setOpenMenu] = useState(false);
 
-  const date = new Date(CreatedDate);
+  const date = new Date(CreatedDate); // create Date obj
   const timestamp = date.toLocaleString("en-CA", { timeZone: "Asia/Kolkata" });
 
-  const ctx = useContext(Context);
+  // const ctx = useContext(Context);
+  
+  const { likeList } = useSelector((state) => state.like);
+  const dispatch = useDispatch();
 
-  const increase = () => {
+  const handleLike = () => {
     setLiked(!liked);
+    dispatch(addLikeRequest())
   };
+
 
   const handleComments = () => {
     setComments(!comments);
@@ -97,7 +116,7 @@ const Allblogs = ({ title, description, imageURL, CreatedDate }) => {
 
   return (
     <>
-      <Box flex={4} p={2}>
+      <Box flex={3} p={2}>
         <Card
           sx={{
             marginBottom: 2,
@@ -108,16 +127,14 @@ const Allblogs = ({ title, description, imageURL, CreatedDate }) => {
         >
           <CardHeader
             avatar={
-              <Avatar sx={{ bgcolor: red[400] }} aria-label="recipe">
-                {ctx.userData.Name ? ctx.userData.Name.charAt(0) : ""}
-              </Avatar>
+              <Avatar alt="User Avatar" src={userData.picturePath}/>
             }
             action={
-              <IconButton aria-label="settings" onClick={handleOpenMenu} >
+              <IconButton aria-label="settings" onClick={handleOpenMenu}>
                 <MoreHorizIcon />
               </IconButton>
             }
-            title={ctx.userData.Name}
+            title={userData.Name}
             subheader={timestamp}
           />
 
@@ -140,13 +157,9 @@ const Allblogs = ({ title, description, imageURL, CreatedDate }) => {
               </div>
             </>
           )}
-
           <CardContent>
-            <Typography variant="body2" color="text.primary">
-              <span>{title}</span>
-              {/* read more */}
-              <ReadMore>{description}</ReadMore>
-            </Typography>
+              <h6>{title}</h6>
+              <p><ReadMore>{description}</ReadMore></p>   
           </CardContent>
 
           <CardMedia
@@ -156,7 +169,7 @@ const Allblogs = ({ title, description, imageURL, CreatedDate }) => {
             alt="Paella dish"
           />
 
-          <div className="d-flex justify-content-between pt-2 px-4">
+          <div className="d-flex justify-content-between pt-4 px-4">
             <small style={{ color: "gray" }} className="px-4">
               20 likes
             </small>
@@ -164,14 +177,14 @@ const Allblogs = ({ title, description, imageURL, CreatedDate }) => {
           </div>
           <hr className="mx-4"></hr>
           <CardActions disableSpacing className="d-flex justify-content-end">
-            {/* <IconButton aria-label="add to favorites"> */}
-            <Checkbox
-              onClick={increase}
-              icon={<FavoriteBorder />}
-              checkedIcon={<Favorite sx={{ color: "red" }} />}
-            />
+            <IconButton aria-label="add to favorites" onClick={handleLike}>
+              <Checkbox
+                icon={<FavoriteBorder />}
+                checkedIcon={<Favorite sx={{ color: "red" }} />}
+              />
+            </IconButton>
             <small style={{ color: "gray" }}>Like</small>
-            {/* </IconButton> */}
+
             {liked}
 
             <IconButton

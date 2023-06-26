@@ -73,7 +73,6 @@ const AddBlog = () => {
     e.preventDefault();
 
     dispatch(postBlogRequest({ post }))
-      // .then((data) => console.log(data))
       .then((data) => {
         toast.success("Blog added!");
         handleClose();
@@ -105,10 +104,11 @@ const AddBlog = () => {
           position: "fixed",
           bottom: 20,
           left: { xs: "calc(50%-25px)", md: 30 },
+          
         }}
       >
-        <IconButton onClick={handleOpen}>
-          <AddIcon />
+        <IconButton onClick={handleOpen} >
+          <AddIcon sx={{ margin:"10px"}}/>
         </IconButton>
       </Tooltip>
       <div>

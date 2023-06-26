@@ -22,8 +22,6 @@ export default Context;
 
 
 export const ContextProvider = ({ children }) => {
-  // create function for model
-  //get one user blogs
 
   const [userData, setUserData] = useState([]);
   const id = localStorage.getItem("userId");
@@ -87,21 +85,21 @@ export const ContextProvider = ({ children }) => {
     }
   };
 
-  useEffect(() => {
-    const id = localStorage.getItem("userId");
-    if (id) {
-      getAllBlogsRequest();
+  // useEffect(() => {
+  //   const id = localStorage.getItem("userId");
+  //   if (id) {
+  //     getAllBlogsRequest();
   
-      // set interval to update token
-      let interval = setInterval(() => {
-        refreshToken();
-      }, 10000 * 300);
+  //     // set interval to update token
+  //     let interval = setInterval(() => {
+  //       refreshToken();
+  //     }, 1000 * 60* 5);
   
-      return () => clearInterval(interval);
-    } else {
-      console.log("User ID is not available");
-    }
-  }, []);
+  //     return () => clearInterval(interval);
+  //   } else {
+  //     console.log("User ID is not available");
+  //   }
+  // }, []);
 
   return (
     <Context.Provider

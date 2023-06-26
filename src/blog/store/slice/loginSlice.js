@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { loginRequest } from "../../services/api/loginApi";
+import { loginRequest } from "../../services/api/userApi";
 
 const loginSlice = createSlice({
   name: "login",
@@ -11,6 +11,12 @@ const loginSlice = createSlice({
   },
 
   reducers: {
+    setLogin(state) {
+      return {
+        ...state,
+        isLoggedIn: true,
+      };
+    },
     setLogout(state) {
       state.isLoggedIn = false;
     },
@@ -29,11 +35,12 @@ const loginSlice = createSlice({
       })
       .addCase(loginRequest.rejected, (state, action) => {
         // Handle the error state
+        state.loading = false;
         state.err = action.payload;
-        console.log(action.payload); // Error response data
       });
   },
 });
 
-export const { setLogout } = loginSlice.actions;
+export const { setLogout, setLogin } = loginSlice.actions;
 export default loginSlice.reducer;
+

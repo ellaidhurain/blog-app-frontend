@@ -1,55 +1,68 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { Formik, Field, Form, ErrorMessage } from "formik";
-import * as Yup from "yup";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
 import "./App.css";
 import { Box, Button, TextField, Typography } from "@mui/material";
 import { LoginImage } from "./lottiefiles";
-import { useContext } from "react";
-import Context from "../blog/Context/context";
-import { styled } from "@mui/material/styles";
-import Paper from "@mui/material/Paper";
-import { loginRequest } from "../blog/services/api/loginApi";
+import { loginRequest } from "../blog/services/api/userApi";
+import { useForm } from "react-hook-form";
+import { setLogin } from "../blog/store/slice/loginSlice";
 
 const Login = () => {
-  const dispatch = useDispatch();
-  const { isLoggedIn, loading } = useSelector((state) => state.login);
-  const navigate = useNavigate();
-
+  const { loading } = useSelector((state) => state.login);
   const [inputs, setInputs] = useState({
     Email: "",
     Password: "",
   });
+
+  const [loginError, setLoginError] = useState("");
   const [passwordType, setPasswordType] = useState("password");
+
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    clearErrors,
+  } = useForm();
 
   // get user input
   const handleInputChange = (e) => {
-    setInputs(() => ({
-      ...inputs,
-      // [key]:value
+    setInputs((prevState) => ({
+      ...prevState,
       [e.target.name]: e.target.value,
     }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmitForm = async (validated_data) => {
     try {
       const input = {
-        Email: inputs.Email,
-        Password: inputs.Password,
+        Email: validated_data.Email,
+        Password: validated_data.Password,
       };
 
       const res = await dispatch(loginRequest(input));
-      const userId = res.payload.user._id
-      
+      // dispatch(setLogin())
+      const data = res.payload; // Assuming the response data is available in `payload` property
+      const userId = data.user._id;
+  
       localStorage.setItem("userId", userId);
-
+      
       navigate("/feed");
     } catch (error) {
       console.log(error);
+      toast.error(error);
+      setLoginError(error);
+    }
+  };
+
+  const clearError = (fieldName) => {
+    if (errors[fieldName]) {
+      clearErrors(fieldName);
     }
   };
 
@@ -59,100 +72,110 @@ const Login = () => {
     );
   };
 
-  const Item = styled(Paper)(({ theme }) => ({
-    backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
-    ...theme.typography.body2,
-    padding: theme.spacing(1),
-    textAlign: "center",
-    color: theme.palette.text.secondary,
-  }));
-
-  // form validation
-  const validationSchema = Yup.object().shape({
-    Email: Yup.string()
-      .email("This is not a valid email.")
-      .strict()
-      .trim()
-      .required("This field is required!"),
-    Password: Yup.string().required("This field is required!").strict().trim(),
-  });
-
   return (
     <>
-      <div className="row justify-content-center align-items-center">
-        <div className="col-5">
+      <Box className="row justify-content-center align-items-center">
+        <Box className="col-5">
           <LoginImage />
-        </div>
-
-        <div className="col login-form">
-          <div>
+        </Box>
+        <Box className="col signup-form">
+          <Box>
             <img
               src="//ssl.gstatic.com/accounts/ui/avatar_2x.png"
               alt="profile-img"
               className="profile-img-card"
             />
-
-            <div className="form-group">
-              <TextField
-                name="Email"
-                type="text"
-                className="form-control py-3 my-3 "
-                style={{ borderRadius: "50px" }}
-                placeholder="email"
-                onChange={handleInputChange}
-                value={inputs.Email}
-              />
-
-              <TextField
-                name="Password"
-                type={passwordType}
-                className="form-control py-3"
-                style={{ borderRadius: "50px" }}
-                placeholder="password"
-                onChange={handleInputChange}
-                value={inputs.Password}
-              />
-            </div>
-
-            <div className="form-group d-flex justify-content-center mt-4 mb-3">
-              <Button
-                onClick={handleSubmit}
-                // variant="contained"
-                className=" px-4 mx-3"
-              >
-                {loading && (
-                  <span className="spinner-border spinner-border-sm m-2">
-                    {" "}
-                  </span>
-                )}
-                <span> Login</span>
-              </Button>{" "}
-              <Link to="/signup" style={{ textDecoration: "none" }}>
-                <Button
-                  type="submit"
-                  // variant="contained"
-                  className="btn px-4 "
-                >
-                  Signup
-                </Button>
-              </Link>
-            </div>
-
-            {/* <div className="input-group-btn d-flex justify-content-end mt-2">
-              <Link style={{ textDecoration: "none" }}>
-                <p className="mt-2 ">forgot password?</p>
-              </Link>
-              <Button style={{ color: "blue" }} onClick={togglePassword}>
-                {passwordType === "password" ? (
-                  <i className="bi bi-eye-slash"></i>
-                ) : (
-                  <i className="bi bi-eye"></i>
-                )}
-              </Button>
-            </div> */}
-          </div>
-        </div>
-      </div>
+            <form onSubmit={handleSubmit(handleSubmitForm)}>
+              <Box className="form-group">
+                <TextField
+                  name="Email"
+                  type="email"
+                  autoComplete="email" 
+                  aria-invalid="false" 
+                  className="form-control py-2"
+                  placeholder="email"
+                  {...register("Email", {
+                    required: "Email is required",
+                    pattern: {
+                      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
+                      message: "Invalid email address",
+                    },
+                  })}
+                  value={inputs.Email}
+                  onChange={(e) => {
+                    handleInputChange(e);
+                    clearError("Email");
+                  }}
+                  error={!!errors.Email}
+                  helperText={errors.Email && errors.Email.message}
+                />
+                <TextField
+                  
+                  autoComplete="current-password" 
+                  aria-invalid="false"
+                  name="Password"
+                  type={passwordType}
+                  className="form-control py-2"
+                  placeholder="password"
+                  {...register("Password", {
+                    required: "Password is required",
+                    minLength: {
+                      value: 6,
+                      message: "Password must be at least 6 characters",
+                    },
+                  })}
+                  value={inputs.Password}
+                  onChange={(e) => {
+                    handleInputChange(e);
+                    clearError("Password");
+                  }}
+                  error={!!errors.Password}
+                  helperText={errors.Password && errors.Password.message}
+                />
+                {/* {!errors.Email && !errors.Password && loginError && (
+                  <Typography variant="caption" color="error">
+                    {loginError}
+                  </Typography>
+                )} */}
+              </Box>
+              <Box className="input-group-btn ">
+                <label htmlFor="pass" className="d-flex justify-content-center">
+                  <input
+                    id="pass"
+                    type="checkbox"
+                    style={{ color: "blue" }}
+                    onClick={togglePassword}
+                  />
+                  <p className="m-2 ">check password</p>
+                </label>
+              </Box>
+              <Box className="form-group d-flex justify-content-center my-2">
+                <Button type="submit" variant="contained" className=" px-4 m-2">
+                  {loading ? (
+                    <>
+                      <span className="spinner-border spinner-border-sm"></span>
+                    </>
+                  ) : (
+                    <>
+                      {" "}
+                      <span> Login</span>
+                    </>
+                  )}
+                </Button>{" "}
+                <Link to="/signup" style={{ textDecoration: "none" }}>
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    className="px-4 m-2"
+                  >
+                    <span> Signup</span>
+                  </Button>
+                </Link>
+              </Box>
+            </form>
+          </Box>
+        </Box>
+      </Box>
     </>
   );
 };

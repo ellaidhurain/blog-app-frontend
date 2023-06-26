@@ -8,38 +8,23 @@ import Switch from "@mui/material/Switch";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import { useNavigate } from "react-router-dom";
 import { NavItems } from "../Navbar/NavList";
-// import { makeStyles } from "@mui/styles";
-
-// export const useStyles = makeStyles({
-//   leftbar: {
-//     display: { xs: "none", sm: "block" },
-//     background: "#fff",
-//     marginTop: "16px",
-//     marginLeft: "10px",
-//     borderRadius: "10px",
-//     border:"1px solid rgba(0,0,0,0.15)",
-//     height:"300px",
-//     width:"200px",
-//     // position:"fixed"
-//   },
-// });
+import { useDispatch, useSelector } from "react-redux";
+import { setMode } from "../../store/slice/blogSlice";
 
 export const Leftbar = (props) => {
   const navigate = useNavigate();
-  // const classes = useStyles();
-  const { mode, setMode } = props;
-
+  const { mode } = useSelector((state) => state.blog);
+  const dispatch = useDispatch();
   const [active, setActive] = useState(null);
 
   return (
     <>
-      <Box flex={1} p={2}>
+      <Box flex={1} p={2} ml={10}>
         {" "}
-        <List sx={{ position: "fixed" }}>
-          {NavItems.map((data, index) => (
+        <List sx={{ position: "fixed",  bgcolor: 'background.paper', border:"1px solid rgba(0,0,0,0.15)", borderRadius:"10px", padding:"10px" }}>
+          {NavItems.map((data) => (
             <ListItem
               key={data.id}
-              disablepadding="true"
               sx={{
                 display: { md: "none", lg: "block", xs: "none", sm: "none" },
               }}
@@ -53,12 +38,14 @@ export const Leftbar = (props) => {
                   minHeight: 48,
                   px: 2.5,
                   backgroundColor:
-                    active === data.id ? "#afafb06c" : "transparent",
+                    active === data.id ? "#b8e5ff6c" : "transparent",
                   borderRadius: active === data.id ? "10px" : "none",
-                  color: mode == "dark" ? "rgba(0, 0, 0, 0.54)" : "black",
                   "&:hover": {
-                    backgroundColor: "#e4e4e59f",
+                    backgroundColor: "#b8e5ff6c",
                     borderRadius: "10px",
+                  },
+                  '& .MuiTouchRipple-root': {
+                    display: 'none',
                   },
                 }}
               >
@@ -67,10 +54,6 @@ export const Leftbar = (props) => {
                     minWidth: 0,
                     justifyContent: "center",
                     paddingRight: "10px",
-                    color:
-                      mode == "light"
-                        ? "rgba(0, 0, 0, 0.54)"
-                        : "rgba(0, 0, 0, 0.54)",
                   }}
                 >
                   {data.icon}
@@ -81,8 +64,8 @@ export const Leftbar = (props) => {
           ))}
 
           <ListItemButton
-            disablepadding="true"
             sx={{
+              display: { md: "none", lg: "block", xs: "none", sm: "none" },
               "&:hover": {
                 backgroundColor: "transparent",
                 borderRadius: "10px",
@@ -94,17 +77,13 @@ export const Leftbar = (props) => {
             <ListItemIcon
               sx={{
                 paddingLeft: "18px",
-                color:
-                  mode == "light"
-                    ? "rgba(0, 0, 0, 0.54)"
-                    : "rgba(0, 0, 0, 0.54)",
               }}
             >
               <DarkModeIcon />
             </ListItemIcon>
             <Switch
               sx={{ minWidth: "0px" }}
-              onChange={() => setMode(mode === "light" ? "dark" : "light")}
+              onChange={() => dispatch(setMode(mode === "light" ? "dark" : "light"))}
             />
           </ListItemButton>
         </List>

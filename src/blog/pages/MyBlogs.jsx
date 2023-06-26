@@ -45,7 +45,9 @@ import { styled } from "@mui/system";
 import { useDispatch, useSelector } from "react-redux";
 import {
   deleteBlogRequest,
+  getAllBlogsRequest,
   getOneUserRequest,
+  refreshTokenRequest,
   updateBlogRequest,
 } from "../services/api/blogApi";
 import { deleteBlog, updateBlog } from "../store/slice/blogSlice";
@@ -69,7 +71,9 @@ export const UserBlogs = (props) => {
   const ctx = useContext(Context); //global provider
 
   const { userData } = useSelector((state) => state.blog);
-  // console.log(userData);
+  const { blogs } = useSelector((state) => state.blog);
+
+  console.log(blogs);
 
   return (
     <Box flex={4}>
@@ -98,7 +102,7 @@ export default function MyBlogs({
   userName,
 }) {
   const navigate = useNavigate();
-  const ctx = useContext(Context); //global store
+  const ctx = useContext(Context); //global context store
   const id = useParams().blogId;
   const dispatch = useDispatch();
 
@@ -123,6 +127,24 @@ export default function MyBlogs({
       image: imageURL,
     });
   }, [id]); // render when id changes
+
+  
+  useEffect(() => {
+    const id = localStorage.getItem("userId");
+    if (id) {
+      dispatch(getAllBlogsRequest());
+  
+      // set interval to update token
+      let interval = setInterval(() => {
+        dispatch(refreshTokenRequest());
+      }, 10000 * 300);
+  
+      return () => clearInterval(interval);
+    } else {
+      console.log("User ID is not available");
+    }
+  }, []);
+
 
   const handleUpdate = async (e) => {
     e.preventDefault();
@@ -170,7 +192,7 @@ export default function MyBlogs({
   const date = new Date();
   const timestamp = date.toDateString();
 
-  const increase = () => {
+  const handleLike = () => {
     setLiked(!liked);
   };
 

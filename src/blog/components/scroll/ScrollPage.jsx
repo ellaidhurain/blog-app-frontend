@@ -19,7 +19,7 @@ const ScrollPage = () => {
         sx={{
           position: "fixed",
           //   marginTop: "150vh" ,
-          left: "94.5%",
+          left: "94%",
           top: "85%",
           boxShadow: " rgba(149, 157, 165, 0.172) 0px 8px 24px",
           background: "white",
@@ -28,6 +28,12 @@ const ScrollPage = () => {
           color: "black",
           marginBottom: "20px",
           borderRadius: "10px",
+          "&:hover":{
+            backgroundColor:"#95d6fb6c",
+            '& .MuiTouchRipple-root': {
+              display: 'none',
+            },
+          }
         }}
         // variant="contained"
         onClick={gotoServices}
