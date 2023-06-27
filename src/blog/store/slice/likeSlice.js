@@ -1,52 +1,59 @@
-import { createSlice } from "@reduxjs/toolkit";
-import { addLikeRequest, removeLikeRequest } from "../../services/api/blogApi";
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { addRemoveLikeRequest, getallLikesForBlogRequest } from '../../services/api/blogApi';
 
 const likeSlice = createSlice({
-  name: "likes",
+  name: 'likes',
   initialState: {
     isLoading: false,
-    likeList: [] || null,
+    blogLikes: {},
     err: null,
   },
-  reducers: {
-    addLike(state, action) {
-      state.push(action.payload); // => [{}]
-      // return [...state, ...action.payload];
-      // here we push new data in array, action.payload means input from user
-    },
-
-    removeLike(state, action) {
-      //here we remove that particular data from array using filter method.
-      //it does not remove user. it filter input id and based on function it shows other users and omits selected id
-      state = state.filter((user) => user.id !== action.payload.id);
-    },
-  },
+  reducers: {},
   extraReducers: (builder) => {
-    // The builder object is being used to call the addCase method.
-    // The addCase method allows you to specify how the state should be updated when a specific action is dispatched.
     builder
-      .addCase(addLikeRequest.pending, (state) => {
+      .addCase(addRemoveLikeRequest.pending, (state) => {
         state.isLoading = true;
+        state.err = null;
       })
-      .addCase(addLikeRequest.fulfilled, (state, action) => {
+      .addCase(addRemoveLikeRequest.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.likeList = action.payload.likes;
+        state.err = null;
+
+        const { _id, like, message } = action.payload;
+        if (message === 'liked') {
+          if (!state.blogLikes[_id]) {
+            state.blogLikes[_id] = []; // { 792hf84993 : [] }
+          }
+          state.blogLikes[_id].push(like); //{ 792hf84993: [jncsidf98434]}
+        } else if (message === 'unliked') {
+          state.blogLikes[_id] = state.blogLikes[_id].filter((item) => item._id !== like._id);
+        }
       })
-      .addCase(addLikeRequest.rejected, (state, action) => {
+      .addCase(addRemoveLikeRequest.rejected, (state, action) => {
+        state.isLoading = false;
         state.err = action.error.message;
       })
-      .addCase(removeLikeRequest.pending, (state) => {
+      .addCase(getallLikesForBlogRequest.pending, (state) => {
         state.isLoading = true;
+        state.err = null;
       })
-      .addCase(removeLikeRequest.fulfilled, (state, action) => {
+      .addCase(getallLikesForBlogRequest.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.likeList = action.payload.likes;
+        state.err = null;
+
+        const likes = action.payload.map((like) => like._id);
+        // console.log(likes); => [[],[{like1,blog1},{like2,blog1}]] =>
+        // action.payload => [[{like1,blog1},{like2,blog1}]],[{like1,blog2},{like2,blog2}]]]
+        action.payload.forEach((like) => {
+          // [key]:value 
+          state.blogLikes[like.blog] = likes; //=> { 792hf84993: [jncsidf98434]}
+        });
       })
-      .addCase(addLikeRequest.rejected, (state, action) => {
+      .addCase(getallLikesForBlogRequest.rejected, (state, action) => {
+        state.isLoading = false;
         state.err = action.error.message;
       });
   },
 });
 
-export const { addLike, removeLike } = likeSlice.actions; 
-export default likeSlice.reducer; //
+export default likeSlice.reducer;

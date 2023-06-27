@@ -37,7 +37,7 @@ export const getAllBlogsRequest = createAsyncThunk(
           withCredentials: true,
         }
       );
-      //   console.log(res.data);
+        // console.log(res.data);
       return res.data;
     } catch (err) {
       console.log(err);
@@ -195,16 +195,11 @@ export const deleteCommentRequest = createAsyncThunk(
   }
 );
 
-export const addLikeRequest = createAsyncThunk(
-  "blog/addLikeRequest",
-  async ({userId,blogId}) => {
+export const addRemoveLikeRequest = createAsyncThunk(
+  "blog/addRemoveLikeRequest",
+  async (blogId) => {
     try {
-      const res = await api.post(
-        `/addLike`,
-      {
-        user:userId,
-        blog:blogId
-      })
+      const res = await api.post(`/addRemoveLike/${blogId}`)  
       return res.data
     } catch (err) {
       throw err;
@@ -212,13 +207,49 @@ export const addLikeRequest = createAsyncThunk(
   }
 );
 
-export const removeLikeRequest = createAsyncThunk(
-  "blog/removeLikeRequest",
-  async ({likeId}) => {
+// {
+//   "like": {
+//       "_id": "649a938c837811381af49f72",
+//       "user": "6499240451621d0bc46b8771",
+//       "blog": "64981a6a6d5fe3e37b64ffaa",
+//       "createdAt": "2023-06-27T07:45:16.590Z",
+//       "updatedAt": "2023-06-27T07:45:16.590Z",
+//       "__v": 0
+//   },
+//   "message": "liked"
+// }
+
+export const getallLikesForBlogRequest = createAsyncThunk(
+  "blog/getallLikesForBlogRequest",
+  async (blogId) => {
     try {
-      const res = await api.delete(
-        `/removeLike/${likeId}`,
-      )
+      const res = await api.get(`/getallLikesForBlog/${blogId}`)
+      // console.log(res.data);
+      return res.data
+    } catch (err) {
+      throw err;
+    }
+  }
+);
+
+// [
+//   {
+//       "_id": "648803efd885801dee86772b",
+//       "user": "6486e91f6be2850abc6ca91c",
+//       "blog": "638ea69d64b5c0be233458fa",
+//       "createdAt": "2023-06-13T05:51:43.283Z",
+//       "updatedAt": "2023-06-13T05:51:43.283Z",
+//       "__v": 0
+//   }
+// ]
+
+
+export const getAllLikesRequest = createAsyncThunk(
+  "blog/getAllLikesRequest",
+  async () => {
+    try {
+      const res = await api.get(
+        `/getAllLikes`,)
       return res.data
     } catch (err) {
       throw err;

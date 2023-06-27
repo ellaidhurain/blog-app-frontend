@@ -59,7 +59,7 @@ const blogSlice = createSlice({
         state.isLoadingBlogs = true;
       })
       .addCase(getAllBlogsRequest.fulfilled, (state, action) => {
-        state.blogs = action.payload.blogs;
+        state.blogs = action.payload;
         state.isLoadingBlogs = false;
       })
       .addCase(getAllBlogsRequest.rejected, (state, action) => {
@@ -70,7 +70,7 @@ const blogSlice = createSlice({
         state.isLoadingUser = true;
       })
       .addCase(refreshTokenRequest.fulfilled, (state, action) => {
-        state.blogs = action.payload.blogs;
+        state.blogs = action.payload;
       })
       .addCase(refreshTokenRequest.rejected, (state, action) => {
         state.error = action.error.message;
