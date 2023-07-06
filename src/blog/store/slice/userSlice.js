@@ -12,7 +12,7 @@ const userList = [
 ];
 
 const userSlice = createSlice({
-  name: "users",
+  name: "user",
   initialState: {
     value: userList, //array data
   },

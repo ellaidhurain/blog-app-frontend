@@ -7,7 +7,7 @@ import ScrollPage from "../scroll/ScrollPage";
 
 export default function Rightbar() {
   return (
-    <Box flex={2} pt={2} pr={8} sx={{ display: { xs: "none", sm: "block" }}}>
+    <Box flex={2} pt={2} sx={{ display: { xs: "none", sm: "block" }}}>
       <Box position="fixed" width={300}>
         <Box>
           <Typography variant="h6" sx={{ fontWeight: "100" }}  mb={2}>

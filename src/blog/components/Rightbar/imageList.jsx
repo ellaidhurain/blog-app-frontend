@@ -1,10 +1,15 @@
 import * as React from 'react';
 import ImageList from '@mui/material/ImageList';
 import ImageListItem from '@mui/material/ImageListItem';
+import { useSelector } from 'react-redux';
+
 
 export default function StandardImageList() {
+  const { mode } = useSelector((state) => state.blog);
+
   return (
-    <ImageList sx={{ width: 350, height: 200, bgcolor: 'background.paper', padding:"8px", borderRadius:"10px", border:"1px solid rgba(0,0,0,0.15)"  }} gap={8} cols={3} rowHeight={180 }>
+    <ImageList sx={{ width: 350, height: 200, bgcolor: 'background.paper', padding:"8px", borderRadius:"10px",            border: mode === "light" ? "1px solid rgba(0,0,0,0.15)": "1px solid rgba(214, 213, 213, 0.15)",
+  }} gap={8} cols={3} rowHeight={180 }>
       {itemData.map((item) => (
         <ImageListItem key={item.img} >
           <img

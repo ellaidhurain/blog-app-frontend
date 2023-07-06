@@ -5,30 +5,50 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import Switch from "@mui/material/Switch";
-import DarkModeIcon from "@mui/icons-material/DarkMode";
 import { useNavigate } from "react-router-dom";
 import { NavItems } from "../Navbar/NavList";
 import { useDispatch, useSelector } from "react-redux";
-import { setMode } from "../../store/slice/blogSlice";
+import axios from "axios";
+import { setLogout } from "../../store/slice/loginSlice";
+import { Logout as LogoutIcon } from "@mui/icons-material";
 
 export const Leftbar = (props) => {
   const navigate = useNavigate();
-  const { mode } = useSelector((state) => state.blog);
   const dispatch = useDispatch();
   const [active, setActive] = useState(null);
+  const { mode } = useSelector((state) => state.blog);
+
+
+  const handleLogout = async () => {
+    try {
+      await axios.post("http://localhost:5000/api/user/logout");
+      localStorage.removeItem("userId");
+      navigate("/");
+      dispatch(setLogout());
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   return (
     <>
-      <Box flex={1} p={2} ml={10}>
+      <Box
+        flex={1}
+        p={2}
+        sx={{ display: { md: "none", lg: "block", xs: "none", sm: "none" } }}
+      >
         {" "}
-        <List sx={{ position: "fixed",  bgcolor: 'background.paper', border:"1px solid rgba(0,0,0,0.15)", borderRadius:"10px", padding:"10px" }}>
+        <List
+          sx={{
+            position: "fixed",
+            bgcolor: "background.paper",
+            border: mode === "light" ? "1px solid rgba(0,0,0,0.15)": "1px solid rgba(214, 213, 213, 0.15)",
+            borderRadius: "10px",
+            padding: "10px",
+          }}
+        >
           {NavItems.map((data) => (
-            <ListItem
-              key={data.id}
-              sx={{
-                display: { md: "none", lg: "block", xs: "none", sm: "none" },
-              }}
-            >
+            <ListItem key={data.id}>
               <ListItemButton
                 onClick={() => {
                   navigate(data.path);
@@ -38,14 +58,14 @@ export const Leftbar = (props) => {
                   minHeight: 48,
                   px: 2.5,
                   backgroundColor:
-                    active === data.id ? "#b8e5ff6c" : "transparent",
-                  borderRadius: active === data.id ? "10px" : "none",
+                    active === data.id ? "#383d4069" : "transparent",
+                  borderRadius: active === data.id ? "5px" : "none",
                   "&:hover": {
-                    backgroundColor: "#b8e5ff6c",
-                    borderRadius: "10px",
+                    backgroundColor: "#383d4069",
+                    borderRadius: "5px",
                   },
-                  '& .MuiTouchRipple-root': {
-                    display: 'none',
+                  "& .MuiTouchRipple-root": {
+                    display: "none",
                   },
                 }}
               >
@@ -63,29 +83,23 @@ export const Leftbar = (props) => {
             </ListItem>
           ))}
 
-          <ListItemButton
-            sx={{
-              display: { md: "none", lg: "block", xs: "none", sm: "none" },
-              "&:hover": {
-                backgroundColor: "transparent",
-                borderRadius: "10px",
-              },
-            }}
-            component="a"
-            href="#home"
-          >
-            <ListItemIcon
+          <ListItem key="logout" onClick={handleLogout}>
+            <ListItemButton
               sx={{
-                paddingLeft: "18px",
+                minHeight: 48,
+                px: 2.5,
+                "&:hover": {
+                  backgroundColor: "#27465469",
+                  borderRadius: "10px",
+                },
               }}
             >
-              <DarkModeIcon />
-            </ListItemIcon>
-            <Switch
-              sx={{ minWidth: "0px" }}
-              onChange={() => dispatch(setMode(mode === "light" ? "dark" : "light"))}
-            />
-          </ListItemButton>
+              <ListItemIcon className="px-1">
+                <LogoutIcon />
+                <span className="px-2">Logout</span>
+              </ListItemIcon>
+            </ListItemButton>
+          </ListItem>
         </List>
       </Box>
     </>

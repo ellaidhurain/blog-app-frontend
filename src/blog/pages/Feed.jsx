@@ -1,4 +1,4 @@
-import React, { Fragment, useContext } from "react";
+import React, { Fragment, useContext, useRef } from "react";
 import { Box, Button } from "@mui/material";
 import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
@@ -24,16 +24,24 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   addRemoveLikeRequest,
   getAllBlogsRequest,
+  getCommentRequest,
   getOneUserRequest,
   getallLikesForBlogRequest,
   refreshTokenRequest,
 } from "../services/api/blogApi";
+import axios from "axios";
+import TimeAgo from "react-timeago";
+import { formatter } from "../helper/helper";
+import AllComments from "../components/comments/Comments";
+import AddBlog from "../components/leftbar/AddBlog";
+
+
+const api = axios.create({
+  baseURL: "http://localhost:5000/api/blog",
+  withCredentials: true, // Enable sending cookies with requests
+});
 
 const Feed = () => {
-  // useContext is holding all functions and variables which is shared from provider
-  // const ctx = useContext(Context); //global store
-  // const { blogs } = useContext(Context);
-
   const { blogs } = useSelector((state) => state.blog);
   const { userData } = useSelector((state) => state.blog);
 
@@ -42,12 +50,9 @@ const Feed = () => {
   const id = localStorage.getItem("userId");
 
   useEffect(() => {
-    dispatch(getAllBlogsRequest());
-  }, [dispatch]);
-
-  useEffect(() => {
     if (id) {
       dispatch(getOneUserRequest(id));
+      dispatch(getAllBlogsRequest());
     } else {
       console.log("User ID is not available");
     }
@@ -62,45 +67,108 @@ const Feed = () => {
   }, [dispatch]);
 
   return (
-    <Box flex={4}>
+    <>
+    <Box flex={4} p={2}>
+    <AddBlog profilePicture={userData.picturePath}/>
+      <Box>
       {blogs?.map((blog, index) => (
-        <Allblogs
-          key={index}
-          blog={blog}
-          userData={userData}
-        />
+        <Allblogs key={index} blog={blog} userData={userData} />
       ))}
+      </Box>
     </Box>
+    </>
   );
 };
 
 const Allblogs = ({ blog, userData }) => {
-  // const [liked, setLiked] = useState(false);
-  const [comments, setComments] = useState(false);
-  const [openMenu, setOpenMenu] = useState(false);
   const { _id: blogId, title, description, image, createdAt } = blog;
 
+  const [comments, setComments] = useState(false);
+  const [openMenu, setOpenMenu] = useState(false);
+  const [likes, setLikes] = useState([]);
+  const [err, setErr] = useState(null);
+  const { mode } = useSelector((state) => state.blog);
+
   const date = new Date(createdAt); // create Date obj
-  const timestamp = date.toLocaleString("en-CA", { timeZone: "Asia/Kolkata" });
+  const timestamp = date.toLocaleString("en-CA", { timeZone: "Asia/Kolkata" }); // convert to local time
   const dispatch = useDispatch();
-  // const ctx = useContext(Context);
 
-  const { blogLikes } = useSelector((state) => state.likes);
-  
-  const likeList = blogLikes[blogId] || [];
-  const liked = likeList.some((like) => like.user === userData.id);
+  // const { blogLikes } = useSelector((state) => state.likeSlice);
 
-  useEffect(()=>{
-    console.log(likeList);
-  },[blogId])
+  // useEffect(() => {
+  //   dispatch(getallLikesForBlogRequest(blogId))
+  // }, [dispatch, blogId]);
 
-  useEffect(() => { 
-    dispatch(getallLikesForBlogRequest(blogId));
-  }, [dispatch, blogId]);
+  // useEffect(() => {
+  //   console.log(matchedLikeList);
+  // }, [blogLikes]);
+
+  // const renderCount = useRef(0);
+
+  // useEffect(() => {
+  //   renderCount.current += 1;
+  //   console.log(`Render count: ${renderCount.current}`);
+  // });
+
+  // const handleLike = async () => {
+  //   if (blogId) {
+  //     try {
+  //       const res = await dispatch(addRemoveLikeRequest(blogId));
+  //       const like = await dispatch(getallLikesForBlogRequest(blogId));
+  //       console.log(res,like);
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   }
+  // };
+
+  const getallLikesForBlog = async (blogId) => {
+    try {
+      const res = await api.get(`/getallLikesForBlog/${blogId}`);
+      setLikes(res.data);
+      return res.data;
+    } catch (err) {
+      throw err;
+    }
+  };
+
+  useEffect(() => {
+    getallLikesForBlog(blogId); // => this is only return promise obj not response.
+  }, [blogId]);
+
+  const matchedLikeList = likes.filter((like) => like.blog === blogId) || null;
+  const liked = matchedLikeList.some((like) => like.blog === blogId) || false;
+
+  // const matchedLikeList = blogLikes.filter((like) => like.blog === blogId);
+
+  const addRemoveLike = async (blogId) => {
+    try {
+      const res = await api.post(`/addRemoveLike/${blogId}`);
+      return res.data;
+    } catch (err) {
+      throw err;
+    }
+  };
 
   const handleLike = () => {
-  dispatch(addRemoveLikeRequest(blogId));
+    if (blogId) {
+      addRemoveLike(blogId)
+        .then(() => {
+          // once addRemoveLike request Promise is fulfilled then do next request
+          // then method is js inbuilt method to create promise chain
+          getallLikesForBlog(blogId);
+        })
+        .catch((error) => {
+          // catch is an inbuilt method to catch error
+          console.log(error);
+        });
+    }
   };
+
+  const { commentsList } = useSelector((state) => state.commentSlice);
+  const matchedCommentList = commentsList.filter(
+    (comment) => comment.blog === blogId
+  );
 
   const handleComments = () => {
     setComments(!comments);
@@ -110,15 +178,20 @@ const Allblogs = ({ blog, userData }) => {
     setOpenMenu(!openMenu);
   };
 
+  if (!blogId) {
+    return null; // Render nothing if the blog is not available
+  }
+
   return (
     <>
-      <Box flex={3} p={2}>
+      <Box>
         <Card
           sx={{
             marginBottom: 2,
             borderRadius: "15px",
-            border: "1px solid rgba(0,0,0,0.15)",
+            border: mode === "light" ? "1px solid rgba(0,0,0,0.15)": "1px solid rgba(214, 213, 213, 0.15)",
             boxShadow: "none",
+            bgcolor: "background.paper",
           }}
         >
           <CardHeader
@@ -151,8 +224,14 @@ const Allblogs = ({ blog, userData }) => {
               </div>
             </>
           )}
+
           <CardContent>
-            <h6>{title}</h6>
+            <Box sx={{display:"flex" , justifyContent:"space-between"}}>
+              <h6>{title}</h6>
+              <small px={2} style={{ color: "gray" }}>
+                <TimeAgo date={createdAt} formatter={formatter} />
+              </small>
+            </Box>
             <p>
               <ReadMore>{description}</ReadMore>
             </p>
@@ -166,12 +245,23 @@ const Allblogs = ({ blog, userData }) => {
           />
 
           <div className="d-flex justify-content-between pt-4 px-4">
-            {likeList?.length > 0 && (
+            <div>
+            {matchedLikeList?.length > 0 && (
               <div className="text-gray-500 px-4">
-                {likeList.length} {likeList.length === 1 ? "like" : "likes"}
+                {matchedLikeList?.length}{" "}
+                {matchedLikeList?.length === 1 ? "like" : "likes"}
               </div>
             )}
-            <div style={{ color: "gray" }}>10 comments</div>
+            </div>
+            
+            <div className="d-flex justify-content-end" style={{ color: "gray" }}>
+            {matchedCommentList?.length > 0 && (
+              <div className="text-gray-500 px-4">
+                {matchedCommentList?.length}{" "}
+                {matchedCommentList?.length === 1 ? "comment" : "comments"}
+              </div>
+            )}
+            </div>
           </div>
           <hr className="mx-4"></hr>
 
@@ -201,7 +291,7 @@ const Allblogs = ({ blog, userData }) => {
 
             <small style={{ color: "gray", paddingRight: "10px" }}>Share</small>
           </CardActions>
-          {comments && <Comments Feed={Feed} />}
+          {comments && <AllComments Feed={Feed} blogId={blogId} />}
         </Card>
       </Box>
     </>

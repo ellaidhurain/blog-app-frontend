@@ -11,7 +11,7 @@ const Notifications = () => {
     borderRadius:"10px"
   };
   return (
-    <div className="bg-white position-absolute shadow p-5 " style={style}>
+    <div className="bg-white position-absolute shadow p-5" style={style}>
       <div className="d-flex justify-content-between align-items-center">
         <h5 className="text-black font-weight-bold">Notifications</h5>
       </div>

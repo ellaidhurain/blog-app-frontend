@@ -6,10 +6,14 @@ import ListItemText from '@mui/material/ListItemText';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
+import { useSelector } from 'react-redux';
 
 export default function UserList() {
+  const { mode } = useSelector((state) => state.blog);
+
   return (
-    <List sx={{ width: 350, maxWidth: 360,border:"1px solid rgba(0,0,0,0.15)", bgcolor: 'background.paper' , borderRadius: "10px"}}>
+    <List sx={{ width: 350, maxWidth: 360,            border: mode === "light" ? "1px solid rgba(0,0,0,0.15)": "1px solid rgba(214, 213, 213, 0.15)",
+     bgcolor: 'background.paper' , borderRadius: "10px"}}>
       <ListItem alignItems="flex-start">
         <ListItemAvatar>
           <Avatar alt="Remy Sharp" src="/static/use7.png" />

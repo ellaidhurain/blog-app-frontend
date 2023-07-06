@@ -15,8 +15,17 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import { Navigate } from "react-router-dom";
 import Context from "../../Context/context";
-import { getOneUserRequest, postBlogRequest } from "../../services/api/blogApi";
-import { useDispatch } from "react-redux";
+import {
+  getAllBlogsRequest,
+  getOneUserRequest,
+  postBlogRequest,
+} from "../../services/api/blogApi";
+import { useDispatch, useSelector } from "react-redux";
+import CameraAltOutlinedIcon from "@mui/icons-material/CameraAltOutlined";
+import AddPhotoAlternateOutlinedIcon from "@mui/icons-material/AddPhotoAlternateOutlined";
+import AttachFileOutlinedIcon from "@mui/icons-material/AttachFileOutlined";
+import PlaceOutlinedIcon from "@mui/icons-material/PlaceOutlined";
+import SentimentSatisfiedAltOutlinedIcon from "@mui/icons-material/SentimentSatisfiedAltOutlined";
 
 axios.defaults.withCredentials = true;
 
@@ -34,51 +43,97 @@ const UserBox = styled(Box)(({ theme }) => ({
   marginLeft: "10px",
 }));
 
-const AddBlog = () => {
+const AddBlog = ({ profilePicture }) => {
   const ctx = useContext(Context); //global data provider
+  const { mode } = useSelector((state) => state.blog);
+  const { blogs } = useSelector((state) => state.blog);
 
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  const [selectedImage, setSelectedImage] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
-
-  const dispatch = useDispatch();
-
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    setSelectedImage(file);
-    setPreviewImage(URL.createObjectURL(file));
-  };
-
+  
+  // blog post obj
   const [post, setPost] = useState({
     title: "",
     description: "",
-    image: "",
+    image: null,
   });
 
-  function handleChange(e, image) {
-    // console.log(e.target.files);
-    setPost(...post, { image: URL.createObjectURL(e.target.files[0]) });
+  const dispatch = useDispatch();
+
+  function handleImageUpload(e) {
+    const file = e.target.files[0];
+    console.log(file);
+    setPost((prevPost) => ({
+      ...prevPost,
+      image: file,
+    }));
   }
 
-  const onchangehandle = (e) => {
-    setPost({
-      ...post,
-      [e.target.name]: e.target.value,
-    });
+  const handleOnChange = (e) => {
+    const value = e.target.value;
+   
+    // Check if a colon is present in the input value
+    const colonIndex = value.indexOf(":"); // find the index value of colon
+
+    // if colon is present or not equal to negative. -1 means no value
+    if (colonIndex !== -1) {
+      //The substring method returns the portion of the string starting from the startIndex and ending at endIndex - 1, so it extracts the substring
+      const newTitle = value.substring(0, colonIndex).trim(); // trim removes leading or trailing whitespace from the substrings.
+
+      //This line extracts the substring from the index immediately following the colon (:) until the end of the value string.
+      const newDescription = value.substring(colonIndex + 1).trim();
+
+      //If the newDescription is not an empty string, it means that a colon is present in the input value, and the input value has been split into newTitle and newDescription.
+      if (newDescription !== "") {
+        setPost({
+          ...post,
+          title: newTitle,
+          description: newDescription,
+        });
+
+        //If the newDescription is an empty string, it means that there is no colon or value after colon is empty in the input value, and the input value is treated as the description.
+      } else {
+        setPost({
+          ...post,
+          title: "",
+          description: value.trim(),
+        });
+      }
+      // if colon not present
+    } else {
+      setPost({
+        ...post,
+        title: "",
+        description: value.trim(),
+      });
+    }
   };
 
-  const handleSubmit = (e) => {
+  const getInputValue = () => {
+    const { title, description } = post;
+    if (title && description) {
+      return `${title}: ${description}`;
+    } else if (description) {
+      return description;
+    } else {
+      return "";
+    }
+  };
+
+  const handleSubmitPost = (e) => {
     e.preventDefault();
+    const formData = new FormData();
+    formData.append("title", post.title);
+    formData.append("description", post.description);
+    formData.append("image", post.image);
 
-    dispatch(postBlogRequest({ post }))
-      .then((data) => {
-        toast.success("Blog added!");
-        handleClose();
+    dispatch(postBlogRequest({ formData }))
+      .then(() => {
+        // toast.success("Blog added!");
         dispatch(getOneUserRequest());
-
-        ctx.setUserData(data.user);
+        dispatch(getAllBlogsRequest());
         setPost({
           title: "",
           description: "",
@@ -98,20 +153,107 @@ const AddBlog = () => {
 
   return (
     <>
-      <Tooltip
+      <Box
+        className="container"
+        sx={{
+          bgcolor: "background.paper",
+          marginBottom: 2,
+          borderRadius: "15px",
+          height: "120px",
+          border:
+            mode === "light"
+              ? "1px solid rgba(0,0,0,0.15)"
+              : "1px solid rgba(214, 213, 213, 0.15)",
+          boxShadow: "none",
+        }}
+        p={2}
+      >
+        <UserBox className="d-flex">
+          <Avatar alt="Remy Sharp" src={profilePicture} />
+          <input
+            onChange={handleOnChange}
+            value={getInputValue()}
+            style={{
+              borderRadius: "25px",
+              outline: "none",
+              border: "none",
+              backgroundColor: "rgba(214, 213, 213, 0.15)",
+              width: "100%",
+              padding: "10px",
+              paddingLeft: "15px",
+              color: "white",
+            }}
+            placeholder="What's on your mind?"
+          />
+        </UserBox>
+
+        <Box
+          sx={{ paddingBottom: "10px" }}
+          className="d-flex justify-content-between"
+        >
+          <Box className="d-flex">
+            <IconButton>
+              <CameraAltOutlinedIcon />
+            </IconButton>
+            <IconButton>
+              <PlaceOutlinedIcon />
+            </IconButton>
+            <IconButton>
+              <SentimentSatisfiedAltOutlinedIcon />
+            </IconButton>
+            <IconButton>
+              <AttachFileOutlinedIcon />
+            </IconButton>
+
+            {/* The value of the htmlFor attribute matches the id attribute of the input field, indicating that the label is associated with that particular input field. */}
+            {/* Clicking on the label will also focus or activate the associated input field, providing a convenient way for users to interact with the form */}
+            <label htmlFor="file-input" className="m-0">
+              <IconButton component="span">
+                <AddPhotoAlternateOutlinedIcon />
+              </IconButton>
+            </label>
+            <input
+              name="image"
+              accept="image/*"
+              id="file-input"
+              type="file"
+              style={{ display: "none" }}
+              onChange={handleImageUpload}
+            />
+            {post.image && <span className="pt-2">{post.image.name}</span>}
+          </Box>
+
+          <Button
+            className="px-4 py-0"
+            sx={{
+              borderRadius: "5px",
+              border:
+                mode === "light"
+                  ? "1px solid rgba(0,0,0,0.15)"
+                  : "1px solid rgba(214, 213, 213, 0.15)",
+              color: "white",
+              bgcolor: "background.paper",
+            }}
+            onClick={handleSubmitPost}
+          >
+            Post
+          </Button>
+        </Box>
+      </Box>
+
+      {/* <Tooltip
         title="Add Post"
         sx={{
           position: "fixed",
           bottom: 20,
           left: { xs: "calc(50%-25px)", md: 30 },
-          
         }}
       >
-        <IconButton onClick={handleOpen} >
-          <AddIcon sx={{ margin:"10px"}}/>
+        <IconButton onClick={handleOpen}>
+          <AddIcon sx={{ margin: "10px" }} />
         </IconButton>
-      </Tooltip>
-      <div>
+      </Tooltip> */}
+      {/* <Box>
         <StyledModel
           open={open}
           onClose={handleClose}
@@ -143,7 +285,7 @@ const AddBlog = () => {
                 id="standard-multiline-static"
                 label="title"
                 variant="standard"
-                onChange={onchangehandle}
+                onChange={handleOnChange}
                 value={post.title}
                 placeholder="type your headline here"
               />
@@ -152,7 +294,7 @@ const AddBlog = () => {
                 name="description"
                 sx={{ width: "100%", pt: 2 }}
                 id="standard-multiline-static"
-                onChange={onchangehandle}
+                onChange={handleOnChange}
                 rows={4}
                 label="description"
                 variant="standard"
@@ -169,7 +311,7 @@ const AddBlog = () => {
                 label="imageURL"
                 variant="standard"
                 placeholder="paste image url here"
-                onChange={onchangehandle}
+                onChange={handleOnChange}
                 value={post.image}
               />
 
@@ -187,11 +329,11 @@ const AddBlog = () => {
 
                 <img width="80px" src={previewImage} />
 
-                <input
+                <TextField
                   id="image-input"
                   type="file"
                   accept="image/*"
-                  onChange={handleImageChange}
+                  onChange={handleImageUpload}
                   style={{ display: "none" }}
                 />
               </Stack>
@@ -206,7 +348,7 @@ const AddBlog = () => {
             </Box>
           </Box>
         </StyledModel>
-      </div>
+      </Box> */}
     </>
   );
 };

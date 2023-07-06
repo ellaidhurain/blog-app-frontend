@@ -14,16 +14,21 @@ import { useMemo } from "react";
 import { themeSettings } from "../theme";
 
 const Home = () => {
+
+  // dark/light mode
   const { mode } = useSelector((state) => state.blog);
 
+  // useMemo is used to memoize the computational value. it prevents unnecessary rendering and optimize perfomance
   const theme = useMemo(() => createTheme(themeSettings(mode)), [mode]);
 
   return (
     <>
+    {/* wrapping up of Theme provider will provide theme across all child elements */}
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <Box color={"text.primary"}>
           <Navbar />
+          {/* stack is used to create responsive and flexible layout */}
           <Stack direction="row" spacing={4} justifyContent="space-between">
             <Leftbar />
             <Routes>
@@ -41,3 +46,16 @@ const Home = () => {
 };
 
 export default Home;
+
+
+/*
+
+When you include <CssBaseline /> at the top level of your application, it ensures consistent styling and behavior of common HTML elements, such as headings, paragraphs, lists, and form elements, regardless of the user's browser or operating system.
+By default, <CssBaseline /> sets the following styles:
+
+Removes default margins from the body element.
+Applies a consistent box-sizing value of border-box to all elements, ensuring that padding and borders are included in the element's total width and height.
+Sets the font-size to 16px on the html element.
+Applies a minimal global style reset, such as removing bullet points from lists and removing the default outline on focused elements.
+
+*/

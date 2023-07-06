@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { getCommentRequest } from "../../services/api/blogApi";
+import { addCommentRequest, getallCommentsForBlogRequest } from "../../services/api/blogApi";
 
 const comments = [
   {
@@ -23,10 +23,10 @@ const comments = [
 ];
 
 const commentSlice = createSlice({
-  name: "comment",
+  name: "commentSlice",
   initialState: {
     isLoading: false,
-    commentList: [] || null,
+    commentsList: [],
     err: null,
   },
   reducers: {
@@ -60,19 +60,31 @@ const commentSlice = createSlice({
     // The builder object is being used to call the addCase method.
     // The addCase method allows you to specify how the state should be updated when a specific action is dispatched.
     builder
-      .addCase(getCommentRequest.pending, (state) => {
+      .addCase(getallCommentsForBlogRequest.pending, (state) => {
         state.isLoading = true;
       })
-      .addCase(getCommentRequest.fulfilled, (state, action) => {
+      .addCase(getallCommentsForBlogRequest.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.commentList = action.payload.comments;
+        state.commentsList = action.payload
+        // console.log(action.payload);
       })
-      .addCase(getCommentRequest.rejected, (state, action) => {
+      .addCase(getallCommentsForBlogRequest.rejected, (state, action) => {
         state.err = action.error.message;
-      });
+      })
+      .addCase(addCommentRequest.pending,(state,action)=>{
+        state.isLoading = true;
+        state.err = false;
+      })
+      .addCase(addCommentRequest.fulfilled,(state,action)=>{
+        state.isLoading = false;
+        state.err = false;
+      })
+      .addCase(addCommentRequest.rejected,(state,action)=>{
+        state.isLoading = false;
+        state.err = action.error?.message;
+      })
   },
 });
 
-export const { addComment, deleteComment, updateComment } =
-  commentSlice.actions; //grab all actions then export as addUser
-export default commentSlice.reducer; //grap all reducer and export
+export const { addComment, deleteComment, updateComment } = commentSlice.actions; //grab all actions then export as addUser
+export default commentSlice.reducer; //grab all reducer and export

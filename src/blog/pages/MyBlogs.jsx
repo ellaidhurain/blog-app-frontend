@@ -137,7 +137,7 @@ export default function MyBlogs({
       // set interval to update token
       let interval = setInterval(() => {
         dispatch(refreshTokenRequest());
-      }, 10000 * 300);
+      }, 10000 * 60 * 5);
   
       return () => clearInterval(interval);
     } else {
@@ -217,11 +217,11 @@ export default function MyBlogs({
                 {ctx.userData.Name ? ctx.userData.Name.charAt(0) : ""}
               </Avatar>
             }
-            // action={
-            //   <IconButton aria-label="settings">
-            //     <MoreHorizIcon />
-            //   </IconButton>
-            // }
+            action={
+              <IconButton aria-label="settings">
+                <MoreHorizIcon />
+              </IconButton>
+            }
             title={ctx.userData.Name}
             subheader={timestamp}
           />
@@ -248,35 +248,35 @@ export default function MyBlogs({
           <hr className="mx-4"></hr>
 
           <CardActions disableSpacing className="d-flex justify-content-end">
-            {/* <IconButton aria-label="add to favorites"  onClick={increase}>
+            <IconButton aria-label="add to favorites" >
               <Checkbox
                 icon={<FavoriteBorder />}
                 checkedIcon={<Favorite sx={{ color: "red" }} />}
               />
-            </IconButton> */}
+            </IconButton>
             {liked && "Liked"}
 
-            {/* <IconButton
+            <IconButton
               aria-label="delete"
               sx={{ marginLeft: "10px" }}
               onClick={handleComments}
             >
               <CommentIcon />
-            </IconButton> */}
+            </IconButton>
             <Box style={{ fontSize: "15px" }} pr={3}>
               10 comments
             </Box>
 
             <Box>
-              {/* <IconButton aria-label="share" sx={{ marginLeft: "10px" }}>
+              <IconButton aria-label="share" sx={{ marginLeft: "10px" }}>
                 <ShareIcon />
               </IconButton>
-              <IconButton aria-label="delete" onClick={handleOpen} sx={{ marginLeft: "10px" }}>
+              <IconButton aria-label="edit" onClick={handleOpen} sx={{ marginLeft: "10px" }}>
                 <EditIcon  />
               </IconButton>
               <IconButton aria-label="delete" onClick={handleDelete} sx={{ marginLeft: "10px" }}>
                 <DeleteIcon  />
-              </IconButton> */}
+              </IconButton>
             </Box>
           </CardActions>
           {comments && <Comments />}

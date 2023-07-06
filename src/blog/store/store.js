@@ -13,19 +13,22 @@ import  storage  from "redux-persist/lib/storage";
 // boiler plate
 const persistConfig = { key: "root", storage, version:1}
 const persistedLoginReducer = persistReducer(persistConfig,loginReducer);
+const persistedUserReducer = persistReducer(persistConfig,userReducer);
 const persistedBlogReducer = persistReducer(persistConfig,blogReducer);
+const persistedLikeReducer = persistReducer(persistConfig,likeReducer);
+const persistedCommentReducer = persistReducer(persistConfig,commentReducer);
 
 
 // store is a single js obj. which holds all the reducers
 const store = configureStore({
   reducer: {
-    counter: counterReducer,
-    users: userReducer,
-    comments: commentReducer,
-    likes: likeReducer,
+    // counter: counterReducer,
+    users: persistedUserReducer,
+    commentSlice: persistedCommentReducer,
+    likeSlice: persistedLikeReducer,
     login: persistedLoginReducer,
     signup: signupReducer,
-    blog:persistedBlogReducer
+    blog:persistedBlogReducer,
   },
   middleware:(getDefaultMiddleware)=>
   getDefaultMiddleware({

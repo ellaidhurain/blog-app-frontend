@@ -24,22 +24,22 @@ const blogSlice = createSlice({
       state.mode = action.payload
     },
 
-    addBlog: (state, action) => {
-      state.blogs.push(action.payload);
-    },
+    // addBlog: (state, action) => {
+    //   state.blogs.push(action.payload);
+    // },
 
-    updateBlog: (state, action) => {
-      const updatedBlog = action.payload;
-      // match arr element id with req id
-      const index = state.blogs.findIndex(blog => blog.id === updatedBlog.id);
-      if (index !== -1) { // this means if id exist
-        state.blogs[index] = updatedBlog;
-      }
-    },
-    deleteBlog: (state, action) => {
-      const deletedBlogId = action.payload;
-      state.blogs = state.blogs.filter(blog => blog.id !== deletedBlogId);
-    },
+    // updateBlog: (state, action) => {
+    //   const updatedBlog = action.payload;
+    //   // match arr element id with req id
+    //   const index = state.blogs.findIndex(blog => blog.id === updatedBlog.id);
+    //   if (index !== -1) { // this means if id exist
+    //     state.blogs[index] = updatedBlog;
+    //   }
+    // },
+    // deleteBlog: (state, action) => {
+    //   const deletedBlogId = action.payload;
+    //   state.blogs = state.blogs.filter(blog => blog.id !== deletedBlogId);
+    // },
   },
   
   extraReducers: (builder) => {
@@ -109,4 +109,4 @@ const blogSlice = createSlice({
 });
 
 export default blogSlice.reducer;
-export const { addBlog,updateBlog,deleteBlog,setMode } = blogSlice.actions
+export const { setMode } = blogSlice.actions
