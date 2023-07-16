@@ -27,7 +27,8 @@ import AllComments from "../components/comments/Comments";
 import AddBlog from "../components/leftbar/AddBlog";
 
 const api = axios.create({
-  baseURL: "http://localhost:5000/api/blog",
+  // baseURL: "http://localhost:5000/api/blog",
+  baseURL : "https://snaplinkbackend.onrender.com/api/blog",
   withCredentials: true, // Enable sending cookies with requests
 });
 

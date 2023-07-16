@@ -4,8 +4,8 @@ import axios from "axios";
 
 export const api = axios.create({
   // const baserURL = "https://blog-app-api-production-7b00.up.railway.app/api/user"
-
-  baseURL: "http://localhost:5000/api/user", 
+  baseURL : "https://snaplinkbackend.onrender.com/api/user",
+  // baseURL: "http://localhost:5000/api/user", 
   withCredentials: true, // Enable sending cookies with requests
 });
 
