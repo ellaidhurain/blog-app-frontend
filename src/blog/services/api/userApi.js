@@ -1,7 +1,8 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const api = axios.create({
+
+export const api = axios.create({
   // const baserURL = "https://blog-app-api-production-7b00.up.railway.app/api/user"
 
   baseURL: "http://localhost:5000/api/user", 
@@ -19,6 +20,7 @@ export const loginRequest = createAsyncThunk(
       });
       
       const data = res.data;
+
       return data;
     } catch (error) {
       console.log(error);

@@ -1,15 +1,15 @@
-import React, { useEffect } from "react";
-import { Navigate, Outlet, Route, Routes } from "react-router";
-import {  useDispatch, useSelector } from "react-redux";
+import React from "react";
+import { Navigate, Route, Routes } from "react-router";
 import { ToastContainer } from "react-toastify";
 import Login from "./login/Login";
 import Signup from "./login/Signup";
 import Home from "./login/Home";
-import { setLogin, setLogout } from "./blog/store/slice/loginSlice";
+import Feed from "./blog/pages/Feed";
+
 
 const App = () => {
 
-  let isLogged = localStorage.getItem("userId");
+  let userId = localStorage.getItem("userId");
   
   return (
     <>
@@ -19,12 +19,10 @@ const App = () => {
         <Route path="/signup" element={<Signup />} />
         <Route
           path="/*" // catch-all route any path that hasn't been matched by previous defined routes.
-          element={isLogged ? <Home /> : <Navigate to="/" />}
+          element={userId ? <Home /> : <Navigate to="/" />}
         />
 
-      </Routes>
-      <ToastContainer />
-     
+      </Routes>     
     </>
   );
 };

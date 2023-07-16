@@ -44,15 +44,9 @@ const UserBox = styled(Box)(({ theme }) => ({
 }));
 
 const AddBlog = ({ profilePicture }) => {
-  const ctx = useContext(Context); //global data provider
+  // const ctx = useContext(Context); //global data provider
   const { mode } = useSelector((state) => state.blog);
-  const { blogs } = useSelector((state) => state.blog);
 
-  const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-  const [previewImage, setPreviewImage] = useState(null);
-  
   // blog post obj
   const [post, setPost] = useState({
     title: "",
@@ -221,6 +215,7 @@ const AddBlog = ({ profilePicture }) => {
               onChange={handleImageUpload}
             />
             {post.image && <span className="pt-2">{post.image.name}</span>}
+
           </Box>
 
           <Button
@@ -231,7 +226,7 @@ const AddBlog = ({ profilePicture }) => {
                 mode === "light"
                   ? "1px solid rgba(0,0,0,0.15)"
                   : "1px solid rgba(214, 213, 213, 0.15)",
-              color: "white",
+              // color: "white",
               bgcolor: "background.paper",
             }}
             onClick={handleSubmitPost}

@@ -1,20 +1,15 @@
-import React, { useState, useEffect, useContext } from "react";
-import axios from "axios";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   ButtonGroup,
-  Fab,
   IconButton,
-  Input,
   Modal,
   Stack,
   TextField,
-  Tooltip,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { toast } from "react-toastify";
-import { Allblogs, Feed } from "./Feed";
 import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
 import CardMedia from "@mui/material/CardMedia";
@@ -24,25 +19,18 @@ import Avatar from "@mui/material/Avatar";
 import Typography from "@mui/material/Typography";
 import { red } from "@mui/material/colors";
 import ShareIcon from "@mui/icons-material/Share";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import FavoriteBorder from "@mui/icons-material/FavoriteBorder";
 import Favorite from "@mui/icons-material/Favorite";
 import Checkbox from "@mui/material/Checkbox";
 import CommentIcon from "@mui/icons-material/Comment";
 import Comments from "../components/comments/Comments";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { Button } from "@mui/material";
-import InsertEmoticonIcon from "@mui/icons-material/InsertEmoticon";
-import VideoChatIcon from "@mui/icons-material/VideoChat";
-import AudioFileIcon from "@mui/icons-material/AudioFile";
-import ImageIcon from "@mui/icons-material/Image";
-import InsertInvitationIcon from "@mui/icons-material/InsertInvitation";
-import AddBlog from "../components/leftbar/AddBlog";
-import Context from "../Context/context";
-import ReadMore from "./Readmore";
-import { styled } from "@mui/system";
-import { useDispatch, useSelector } from "react-redux";
+import styled from "@emotion/styled";
+import TimeAgo from "react-timeago";
+import { formatter } from "../helper/helper";
+
 import {
   deleteBlogRequest,
   getAllBlogsRequest,
@@ -50,7 +38,16 @@ import {
   refreshTokenRequest,
   updateBlogRequest,
 } from "../services/api/blogApi";
-import { deleteBlog, updateBlog } from "../store/slice/blogSlice";
+import { useDispatch, useSelector } from "react-redux";
+import AddBlog from "../components/leftbar/AddBlog";
+import axios from "axios";
+import ReadMore from "./Readmore";
+import AllComments from "../components/comments/Comments";
+
+const api = axios.create({
+  baseURL: "http://localhost:5000/api/blog",
+  withCredentials: true, // Enable sending cookies with requests
+});
 
 const StyledModel = styled(Modal)({
   display: "flex",
@@ -66,31 +63,28 @@ const UserBox = styled(Box)(({ theme }) => ({
   marginLeft: "10px",
 }));
 
-
 export const UserBlogs = (props) => {
-  const ctx = useContext(Context); //global provider
-
   const { userData } = useSelector((state) => state.blog);
-  const { blogs } = useSelector((state) => state.blog);
-
-  console.log(blogs);
 
   return (
-    <Box flex={4}>
-      {userData &&
-        userData.blogs &&
-        userData.blogs.map((blog, index) => (
-          <MyBlogs
-            blogId={blog._id}
-            key={index}
-            title={blog.title}
-            description={blog.description}
-            imageURL={blog.image}
-            userName={userData.Name}
-          />
-        ))}
-      <AddBlog setUserData={ctx.setUserData} />
-    </Box>
+    <>
+      <Box flex={4} p={2}>
+        <AddBlog />
+
+        {userData.blogs &&
+          userData.blogs.map((blog, index) => (
+            <MyBlogs
+              blogId={blog._id}
+              key={index}
+              title={blog.title}
+              description={blog.description}
+              imageURL={blog.image}
+              userName={userData.Name}
+              createdAt={blog.createdAt}
+            />
+          ))}
+      </Box>
+    </>
   );
 };
 
@@ -99,59 +93,70 @@ export default function MyBlogs({
   title,
   description,
   imageURL,
-  userName,
+  createdAt
 }) {
-  const navigate = useNavigate();
-  const ctx = useContext(Context); //global context store
   const id = useParams().blogId;
   const dispatch = useDispatch();
+  const { userData } = useSelector((state) => state.blog);
+  const [post, setPost] = useState({
+    title: "",
+    description: "",
+    image: null,
+  });
 
-  const [inputs, setInputs] = useState({});
-  const [liked, setLiked] = useState(false);
+  const [likes, setLikes] = useState([]);
   const [comments, setComments] = useState(false);
   const [open, setOpen] = useState(false);
-  const [selectedImage, setSelectedImage] = useState(null);
-  const [previewImage, setPreviewImage] = useState(null);
-
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  const { mode } = useSelector((state) => state.blog);
 
-  useEffect(()=>{
-    dispatch(getOneUserRequest(id))
-  },[id])
+  const [selectedImage, setSelectedImage] = useState(null);
 
   useEffect(() => {
-   setInputs({
+    // console.log(imageURL);
+    dispatch(getOneUserRequest(id));
+  }, [id]);
+
+  useEffect(() => {
+    setPost({
       title: title,
       description: description,
       image: imageURL,
     });
   }, [id]); // render when id changes
 
-  
+  // useEffect(()=>{
+  //   console.log(post.image);
+  // },[post.image])
+
   useEffect(() => {
     const id = localStorage.getItem("userId");
     if (id) {
       dispatch(getAllBlogsRequest());
-  
+
       // set interval to update token
       let interval = setInterval(() => {
         dispatch(refreshTokenRequest());
       }, 10000 * 60 * 5);
-  
+
       return () => clearInterval(interval);
     } else {
       console.log("User ID is not available");
     }
   }, []);
 
-
   const handleUpdate = async (e) => {
     e.preventDefault();
 
     try {
-      await dispatch(updateBlogRequest({ blogId, inputs }));
-      toast.success("Successfully updated");
+      const formData = new FormData();
+      formData.append("title", post.title);
+      formData.append("description", post.description);
+      formData.append("image", post.image);
+
+      dispatch(updateBlogRequest({ blogId, formData }));
+      // toast.success("Successfully updated");
       handleClose();
       dispatch(getOneUserRequest(id)); // Fetch the updated view
     } catch (error) {
@@ -165,7 +170,7 @@ export default function MyBlogs({
 
     dispatch(deleteBlogRequest({ blogId }))
       .then(() => {
-        toast.success("successfully deleted");
+        // toast.success("successfully deleted");
         dispatch(getOneUserRequest(id)); // we need to call this to get updated view
       })
       .catch((error) => {
@@ -177,60 +182,89 @@ export default function MyBlogs({
 
   const handleInputChange = (e) => {
     e.preventDefault();
-    setInputs({
-      ...inputs, // make a copy and update
+    setPost((prevPost) => ({
+      ...prevPost, // make a copy of prev post
       [e.target.name]: e.target.value,
-    });
+    }));
   };
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-    setSelectedImage(file);
-    setPreviewImage(URL.createObjectURL(file));
+    setPost((prevPost) => ({
+      ...prevPost,
+      image: file,
+    }));
+    setSelectedImage(URL.createObjectURL(file));
   };
+
+  const getallLikesForBlog = async (blogId) => {
+    try {
+      const res = await api.get(`/getallLikesForBlog/${blogId}`);
+      setLikes(res.data);
+      return res.data;
+    } catch (err) {
+      throw err;
+    }
+  };
+
+  useEffect(() => {
+    getallLikesForBlog(blogId); // => this is only return promise obj not response.
+  }, [blogId]);
+
+  const matchedLikeList = likes.filter((like) => like.blog === blogId) || null;
 
   const date = new Date();
   const timestamp = date.toDateString();
 
-  const handleLike = () => {
-    setLiked(!liked);
-  };
+  const { commentsList } = useSelector((state) => state.commentSlice);
+  const matchedCommentList = commentsList.filter(
+    (comment) => comment.blog === blogId
+  );
 
   const handleComments = () => {
     setComments(!comments);
   };
 
+  const handleOpenMenu = () => {
+    setOpenMenu(!openMenu);
+  };
+
   return (
     <>
-      <Box flex={4} p={2}>
+      <Box>
         <Card
           sx={{
             marginBottom: 2,
             borderRadius: "15px",
-            border: "1px solid rgba(0,0,0,0.15)",
+            border:
+              mode === "light"
+                ? "1px solid rgba(0,0,0,0.15)"
+                : "1px solid rgba(214, 213, 213, 0.15)",
             boxShadow: "none",
+            bgcolor: "background.paper",
           }}
         >
           <CardHeader
-            avatar={
-              <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
-                {ctx.userData.Name ? ctx.userData.Name.charAt(0) : ""}
-              </Avatar>
-            }
+            avatar={<Avatar alt="User Avatar" src={userData.picturePath} />}
             action={
-              <IconButton aria-label="settings">
+              <IconButton aria-label="settings" onClick={handleOpenMenu}>
                 <MoreHorizIcon />
               </IconButton>
             }
-            title={ctx.userData.Name}
+            title={userData.Name}
             subheader={timestamp}
           />
 
-          <CardContent onClick={handleComments}>
-            <Typography variant="body2" color="text.primary">
-              <span>{title}</span>
+          <CardContent>
+            <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+              <h6>{title}</h6>
+              <small px={2} style={{ color: "gray" }}>
+                <TimeAgo date={createdAt} formatter={formatter} />
+              </small>
+            </Box>
+            <p>
               <ReadMore>{description}</ReadMore>
-            </Typography>
+            </p>
           </CardContent>
 
           <CardMedia
@@ -240,22 +274,30 @@ export default function MyBlogs({
             alt="Paella dish"
           />
           <div className="d-flex justify-content-between pt-2 px-4">
-            <small style={{ color: "gray" }} className="px-4">
-              20 likes
-            </small>
-            <small style={{ color: "gray" }}>10 comments</small>
+            <div>
+              {matchedLikeList?.length > 0 && (
+                <div className="text-gray-500 px-4">
+                  {matchedLikeList?.length}{" "}
+                  {matchedLikeList?.length === 1 ? "like" : "likes"}
+                </div>
+              )}
+            </div>
+
+            <div
+              className="d-flex justify-content-end"
+              style={{ color: "gray" }}
+            >
+              {matchedCommentList?.length > 0 && (
+                <div className="text-gray-500 px-4">
+                  {matchedCommentList?.length}{" "}
+                  {matchedCommentList?.length === 1 ? "comment" : "comments"}
+                </div>
+              )}
+            </div>
           </div>
           <hr className="mx-4"></hr>
 
           <CardActions disableSpacing className="d-flex justify-content-end">
-            <IconButton aria-label="add to favorites" >
-              <Checkbox
-                icon={<FavoriteBorder />}
-                checkedIcon={<Favorite sx={{ color: "red" }} />}
-              />
-            </IconButton>
-            {liked && "Liked"}
-
             <IconButton
               aria-label="delete"
               sx={{ marginLeft: "10px" }}
@@ -271,15 +313,23 @@ export default function MyBlogs({
               <IconButton aria-label="share" sx={{ marginLeft: "10px" }}>
                 <ShareIcon />
               </IconButton>
-              <IconButton aria-label="edit" onClick={handleOpen} sx={{ marginLeft: "10px" }}>
-                <EditIcon  />
+              <IconButton
+                aria-label="edit"
+                onClick={handleOpen}
+                sx={{ marginLeft: "10px" }}
+              >
+                <EditIcon />
               </IconButton>
-              <IconButton aria-label="delete" onClick={handleDelete} sx={{ marginLeft: "10px" }}>
-                <DeleteIcon  />
+              <IconButton
+                aria-label="delete"
+                onClick={handleDelete}
+                sx={{ marginLeft: "10px" }}
+              >
+                <DeleteIcon />
               </IconButton>
             </Box>
           </CardActions>
-          {comments && <Comments />}
+          {comments && <AllComments  blogId={blogId} />}
         </Card>
       </Box>
 
@@ -293,7 +343,7 @@ export default function MyBlogs({
           >
             <Box
               width={550}
-              height={550}
+              height={450}
               bgcolor={"background.default"}
               color={"text.primary"}
               p={4}
@@ -316,7 +366,7 @@ export default function MyBlogs({
                 label="title"
                 variant="standard"
                 onChange={handleInputChange}
-                value={inputs.title}
+                value={post.title}
                 placeholder="title"
               />
 
@@ -328,21 +378,9 @@ export default function MyBlogs({
                 rows={4}
                 label="description"
                 variant="standard"
-                value={inputs.description}
+                value={post.description}
                 multiline
                 placeholder="description"
-              />
-
-              <TextField
-                name="image"
-                sx={{ width: "100%", pt: 2 }}
-                id="standard-multiline-static"
-                rows={4}
-                label="imageURL"
-                placeholder="paste image url here"
-                variant="standard"
-                onChange={handleInputChange}
-                value={inputs.image}
               />
 
               <Stack
@@ -351,26 +389,23 @@ export default function MyBlogs({
                 mb={3}
                 className="d-flex justify-content-between align-items-center"
               >
-                <label htmlFor="image-input" m={0}>
-                  <IconButton component="span" m={0}>
-                    <ImageIcon color="error" sx={{ fontSize: "40px" }} />
-                  </IconButton>
-                </label>
-                <img width="80px" src={previewImage} />
-
                 <input
-                  id="image-input"
                   type="file"
-                  accept="image/*"
                   onChange={handleImageChange}
-                  style={{ display: "none" }}
+                  accept="image/*"
                 />
+                {selectedImage && (
+                  <div>
+                    <img width="80px" src={selectedImage} alt="Preview" />
+                  </div>
+                )}
               </Stack>
 
               <ButtonGroup
                 fullWidth
                 variant="contained"
                 aria-label="outlined primary button group"
+                className="mt-2 pt-2"
               >
                 <Button onClick={handleUpdate}>Post</Button>
               </ButtonGroup>

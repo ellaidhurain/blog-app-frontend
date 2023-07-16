@@ -60,7 +60,11 @@ export const postBlogRequest = createAsyncThunk(
   "blog/postBlogRequest",
   async ({ formData }) => {
     try {
-      const res = await api.post(`/addBlog`, formData);
+      const res = await api.post(`/addBlog`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data", // Set the content type to multipart/form-data
+        },
+      });
       const data = await res.data;
       return data;
     } catch (err) {
@@ -72,12 +76,13 @@ export const postBlogRequest = createAsyncThunk(
 export const updateBlogRequest = createAsyncThunk(
   "blog/updateBlogRequest",
   //When using createAsyncThunk, the payload creator function should only take one argument, which is an object containing the parameters you need.
-  async ({ blogId, inputs }) => {
+  async ({ blogId, formData }) => {
+    console.log(formData);
     try {
-      const res = await api.put(`updateOneBlog/${blogId}`, {
-        title: inputs.title,
-        description: inputs.description,
-        image: inputs.image,
+      const res = await api.put(`updateBlog/${blogId}`, {
+        title: formData.title,
+        description: formData.description,
+        image: formData.image,
       });
 
       const data = res.data;
