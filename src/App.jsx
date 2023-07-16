@@ -6,7 +6,6 @@ import Signup from "./login/Signup";
 import Home from "./login/Home";
 import Feed from "./blog/pages/Feed";
 
-
 const App = () => {
 
   let userId = localStorage.getItem("userId");
