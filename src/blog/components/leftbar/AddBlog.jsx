@@ -67,42 +67,11 @@ const AddBlog = ({ profilePicture }) => {
 
   const handleOnChange = (e) => {
     const value = e.target.value;
-   
-    // Check if a colon is present in the input value
-    const colonIndex = value.indexOf(":"); // find the index value of colon
-
-    // if colon is present or not equal to negative. -1 means no value
-    if (colonIndex !== -1) {
-      //The substring method returns the portion of the string starting from the startIndex and ending at endIndex - 1, so it extracts the substring
-      const newTitle = value.substring(0, colonIndex).trim(); // trim removes leading or trailing whitespace from the substrings.
-
-      //This line extracts the substring from the index immediately following the colon (:) until the end of the value string.
-      const newDescription = value.substring(colonIndex + 1).trim();
-
-      //If the newDescription is not an empty string, it means that a colon is present in the input value, and the input value has been split into newTitle and newDescription.
-      if (newDescription !== "") {
-        setPost({
-          ...post,
-          title: newTitle,
-          description: newDescription,
-        });
-
-        //If the newDescription is an empty string, it means that there is no colon or value after colon is empty in the input value, and the input value is treated as the description.
-      } else {
-        setPost({
-          ...post,
-          title: "",
-          description: value.trim(),
-        });
-      }
-      // if colon not present
-    } else {
-      setPost({
-        ...post,
-        title: "",
-        description: value.trim(),
-      });
-    }
+    setPost((prevPost) => ({
+      ...prevPost,
+      title: "",
+      description: value,
+    }));
   };
 
   const getInputValue = () => {
@@ -123,21 +92,26 @@ const AddBlog = ({ profilePicture }) => {
     formData.append("description", post.description);
     formData.append("image", post.image);
 
-    dispatch(postBlogRequest({ formData }))
-      .then(() => {
-        // toast.success("Blog added!");
-        dispatch(getOneUserRequest());
-        dispatch(getAllBlogsRequest());
-        setPost({
-          title: "",
-          description: "",
-          image: "",
-        });
-      })
-      .catch((err) => {
-        console.log(err);
-        toast.error(err);
-      });
+    for (const pair of formData.entries()) {
+      console.log(pair[0], pair[1]);
+    }
+    
+
+    // dispatch(postBlogRequest({ formData }))
+    //   .then(() => {
+    //     // toast.success("Blog added!");
+    //     dispatch(getOneUserRequest());
+    //     dispatch(getAllBlogsRequest());
+    //     setPost({
+    //       title: "",
+    //       description: "",
+    //       image: "",
+    //     });
+    //   })
+    //   .catch((err) => {
+    //     console.log(err);
+    //     toast.error(err);
+    //   });
   };
 
   const [isReadMore, setIsReadMore] = useState(true);

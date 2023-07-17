@@ -16,10 +16,8 @@ const Login = () => {
     Email: "",
     Password: "",
   });
-
   const [loginError, setLoginError] = useState("");
   const [passwordType, setPasswordType] = useState("password");
-
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -28,7 +26,8 @@ const Login = () => {
     handleSubmit,
     formState: { errors },
     clearErrors,
-  } = useForm();
+    
+  } = useForm(inputs);
 
   // get user input
   const handleInputChange = (e) => {
@@ -49,9 +48,9 @@ const Login = () => {
       // dispatch(setLogin())
       const data = res.payload; // Assuming the response data is available in `payload` property
       const userId = data.user._id;
-  
+
       localStorage.setItem("userId", userId);
-      
+
       navigate("/feed");
     } catch (error) {
       console.log(error);
@@ -88,10 +87,9 @@ const Login = () => {
             <form onSubmit={handleSubmit(handleSubmitForm)}>
               <Box className="form-group">
                 <TextField
+                  autoComplete="off"
                   name="Email"
                   type="email"
-                  autoComplete="email" 
-                  aria-invalid="false" 
                   className="form-control py-2"
                   placeholder="email"
                   {...register("Email", {
@@ -101,18 +99,15 @@ const Login = () => {
                       message: "Invalid email address",
                     },
                   })}
-                  value={inputs.Email}
                   onChange={(e) => {
                     handleInputChange(e);
                     clearError("Email");
                   }}
-                  error={!!errors.Email}
+                  // error={!!errors.Email}
                   helperText={errors.Email && errors.Email.message}
                 />
                 <TextField
-                  
-                  autoComplete="current-password" 
-                  aria-invalid="false"
+                  autoComplete="off"
                   name="Password"
                   type={passwordType}
                   className="form-control py-2"
@@ -124,12 +119,11 @@ const Login = () => {
                       message: "Password must be at least 6 characters",
                     },
                   })}
-                  value={inputs.Password}
                   onChange={(e) => {
                     handleInputChange(e);
                     clearError("Password");
                   }}
-                  error={!!errors.Password}
+                  // error={!!errors.Password}
                   helperText={errors.Password && errors.Password.message}
                 />
                 {/* {!errors.Email && !errors.Password && loginError && (
@@ -150,7 +144,7 @@ const Login = () => {
                 </label>
               </Box>
               <Box className="form-group d-flex justify-content-center my-2">
-                <Button type="submit" variant="contained" className=" px-4 m-2">
+                <Button disabled={loading} type="submit" variant="contained" className=" px-4 m-2">
                   {loading ? (
                     <>
                       <span className="spinner-border spinner-border-sm"></span>

@@ -69,7 +69,7 @@ export const Navbar = () => {
 
   const logout = async () => {
     try {
-      await axios.post("http://localhost:5000/api/user/logout");
+      await axios.post("https://snaplinkbackend.onrender.com/api/user/logout");
       localStorage.removeItem("userId");
       navigate("/");
       dispatch(setLogout());

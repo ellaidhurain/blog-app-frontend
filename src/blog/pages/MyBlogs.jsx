@@ -17,7 +17,6 @@ import CardContent from "@mui/material/CardContent";
 import CardActions from "@mui/material/CardActions";
 import Avatar from "@mui/material/Avatar";
 import Typography from "@mui/material/Typography";
-import { red } from "@mui/material/colors";
 import ShareIcon from "@mui/icons-material/Share";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import FavoriteBorder from "@mui/icons-material/FavoriteBorder";
@@ -45,8 +44,8 @@ import ReadMore from "./Readmore";
 import AllComments from "../components/comments/Comments";
 
 const api = axios.create({
-  // baseURL: "http://localhost:5000/api/blog",
-  baseURL : "https://snaplinkbackend.onrender.com/api/blog",
+  baseURL: "http://localhost:5000/api/blog",
+  // baseURL: "https://snaplinkbackend.onrender.com/api/blog",
   withCredentials: true, // Enable sending cookies with requests
 });
 
@@ -94,24 +93,22 @@ export default function MyBlogs({
   title,
   description,
   imageURL,
-  createdAt
+  createdAt,
 }) {
-  const id = useParams().blogId;
+  const id = localStorage.getItem("userId");
   const dispatch = useDispatch();
   const { userData } = useSelector((state) => state.blog);
   const [post, setPost] = useState({
-    title: "",
-    description: "",
-    image: null,
+    title: title,
+    description: description,
+    image: imageURL,
   });
-
   const [likes, setLikes] = useState([]);
   const [comments, setComments] = useState(false);
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const { mode } = useSelector((state) => state.blog);
-
   const [selectedImage, setSelectedImage] = useState(null);
 
   useEffect(() => {
@@ -146,6 +143,7 @@ export default function MyBlogs({
       console.log("User ID is not available");
     }
   }, []);
+  
 
   const handleUpdate = async (e) => {
     e.preventDefault();
@@ -155,7 +153,9 @@ export default function MyBlogs({
       formData.append("title", post.title);
       formData.append("description", post.description);
       formData.append("image", post.image);
-
+      // for (const [key, value] of formData.entries()) {
+      //   console.log(`${key}: ${value}`);
+      // }
       dispatch(updateBlogRequest({ blogId, formData }));
       // toast.success("Successfully updated");
       handleClose();
@@ -330,7 +330,7 @@ export default function MyBlogs({
               </IconButton>
             </Box>
           </CardActions>
-          {comments && <AllComments  blogId={blogId} />}
+          {comments && <AllComments blogId={blogId} />}
         </Card>
       </Box>
 

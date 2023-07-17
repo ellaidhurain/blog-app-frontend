@@ -1,12 +1,13 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+axios.defaults.withCredentials = true;
 
 
 export const api = axios.create({
-  // const baserURL = "https://blog-app-api-production-7b00.up.railway.app/api/user"
-  baseURL : "https://snaplinkbackend.onrender.com/api/user",
-  // baseURL: "http://localhost:5000/api/user", 
+  // baseURL : "https://snaplinkbackend.onrender.com/api/user",
+  baseURL: "http://localhost:5000/api/user", 
   withCredentials: true, // Enable sending cookies with requests
+  credentials: 'include'
 });
 
 
@@ -41,6 +42,26 @@ export const signupRequest = createAsyncThunk(
         occupation:inputs.occupation,
         picturePath:inputs.picturePath
     
+      });
+      
+      const data = res.data;
+      return data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response.data);
+    }
+  }
+);
+
+
+export const updateUserRequest = createAsyncThunk(
+  "update/updateUser",
+  async ({userId, post, thunkAPI}) => {
+    try {
+      const res = await api.put(`/updateUser/${userId}`, {
+        Name:post.Name,
+        Email: post.Email,
+        location:post.location,
+        about:post.about
       });
       
       const data = res.data;

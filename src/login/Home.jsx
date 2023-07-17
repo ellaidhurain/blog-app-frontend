@@ -34,7 +34,7 @@ const Home = () => {
             <Routes>
               <Route path="/feed" element={<Feed />} />
               <Route path="/myBlogs" element={<UserBlogs />} />
-              <Route path="/profile/:userId" element={<ProfilePage />} />
+              <Route path="/profile" element={<ProfilePage />} />
             </Routes>
             <Outlet />
             <Rightbar />

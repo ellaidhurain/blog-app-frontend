@@ -6,6 +6,7 @@ const ReadMore = ({ children }) => {
   const toggleReadMore = () => {
     setIsReadMore(!isReadMore);
   };
+  
   return (
     <>
     <span className="text" >

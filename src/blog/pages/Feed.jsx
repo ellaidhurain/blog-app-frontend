@@ -35,13 +35,13 @@ const api = axios.create({
 const Feed = () => {
   const { blogs } = useSelector((state) => state.blog);
   const { userData } = useSelector((state) => state.blog);
+
+  console.log(userData);
   // sort by decending order
   const sortByLatestUpdatedBlog = [...blogs].sort(
     (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
   );
-
   const dispatch = useDispatch();
-
   const id = localStorage.getItem("userId");
 
   useEffect(() => {

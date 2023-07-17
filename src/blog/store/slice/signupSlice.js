@@ -22,10 +22,8 @@ const signupSlice = createSlice({
       })
       .addCase(signupRequest.rejected, (state, action) => {
         state.err = action.payload;
-        console.log(action.payload); 
       });
   },
 });
 
-export const { setLogout } = signupSlice.actions;
 export default signupSlice.reducer;
