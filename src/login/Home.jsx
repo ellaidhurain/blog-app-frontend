@@ -1,5 +1,5 @@
 import React from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Outlet, Route, Routes } from "react-router-dom";
 import { UserBlogs } from "../blog/pages/MyBlogs";
 import Feed from "../blog/pages/Feed";
@@ -12,12 +12,13 @@ import { Box, ThemeProvider, CssBaseline } from "@mui/material";
 import { createTheme } from "@mui/material/styles";
 import { useMemo } from "react";
 import { themeSettings } from "../theme";
+import SettingsPage from "../blog/pages/SettingsPage";
 
 const Home = () => {
 
   // dark/light mode
   const { mode } = useSelector((state) => state.blog);
-
+ 
   // useMemo is used to memoize the computational value. it prevents unnecessary rendering and optimize perfomance
   const theme = useMemo(() => createTheme(themeSettings(mode)), [mode]);
 
@@ -35,6 +36,7 @@ const Home = () => {
               <Route path="/feed" element={<Feed />} />
               <Route path="/myBlogs" element={<UserBlogs />} />
               <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/settings" element={<SettingsPage />} />
             </Routes>
             <Outlet />
             <Rightbar />

@@ -67,9 +67,9 @@ export const Navbar = () => {
 
   const dispatch = useDispatch();
 
-  const logout = async () => {
+  const handleLogout = async () => {
     try {
-      await axios.post("https://snaplinkbackend.onrender.com/api/user/logout");
+      await axios.post("http://localhost:5000/api/user/logout");
       localStorage.removeItem("userId");
       navigate("/");
       dispatch(setLogout());
@@ -211,7 +211,7 @@ export const Navbar = () => {
         }}
       >
         <MenuItem
-          onClick={logout}
+          onClick={handleLogout}
           sx={{
             "& .MuiTouchRipple-root": {
               display: "none",

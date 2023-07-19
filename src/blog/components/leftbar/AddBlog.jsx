@@ -58,7 +58,6 @@ const AddBlog = ({ profilePicture }) => {
 
   function handleImageUpload(e) {
     const file = e.target.files[0];
-    console.log(file);
     setPost((prevPost) => ({
       ...prevPost,
       image: file,
@@ -97,21 +96,21 @@ const AddBlog = ({ profilePicture }) => {
     }
     
 
-    // dispatch(postBlogRequest({ formData }))
-    //   .then(() => {
-    //     // toast.success("Blog added!");
-    //     dispatch(getOneUserRequest());
-    //     dispatch(getAllBlogsRequest());
-    //     setPost({
-    //       title: "",
-    //       description: "",
-    //       image: "",
-    //     });
-    //   })
-    //   .catch((err) => {
-    //     console.log(err);
-    //     toast.error(err);
-    //   });
+    dispatch(postBlogRequest({ formData }))
+      .then(() => {
+        // toast.success("Blog added!");
+        dispatch(getOneUserRequest());
+        dispatch(getAllBlogsRequest());
+        setPost({
+          title: "",
+          description: "",
+          image: "",
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+        toast.error(err);
+      });
   };
 
   const [isReadMore, setIsReadMore] = useState(true);
@@ -137,7 +136,7 @@ const AddBlog = ({ profilePicture }) => {
         p={2}
       >
         <UserBox className="d-flex">
-          <Avatar alt="Remy Sharp" src={profilePicture} />
+          <Avatar alt="Remy Sharp" />
           <input
             onChange={handleOnChange}
             value={getInputValue()}

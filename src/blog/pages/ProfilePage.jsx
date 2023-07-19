@@ -18,8 +18,9 @@ import {
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { styled } from "@mui/material/styles";
-import { updateUserRequest } from "../services/api/userApi";
+import { updateProfileImageRequest, updateUserRequest } from "../services/api/userApi";
 import { getOneUserRequest } from "../services/api/blogApi";
+import EditIcon from "@mui/icons-material/Edit";
 
 const StyledModel = styled(Modal)({
   display: "flex",
@@ -34,15 +35,13 @@ const ProfileHeader = styled("div")({
 const ProfilePicture = styled(Avatar)({
   width: "150px",
   height: "150px",
-  marginBottom: "20px",
+  marginBottom: "5px",
 });
 
 const ProfileCard = styled(Card)({
-  maxWidth: 600,
+  maxWidth: 700,
   margin: "10px",
 });
-
-
 
 const ProfilePage = () => {
   const { userData } = useSelector((state) => state.blog);
@@ -51,17 +50,19 @@ const ProfilePage = () => {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  const [selectedImage, setSelectedImage] = useState(null);
+
   const userId = localStorage.getItem("userId");
-    // get userData and set as initial state for update
-    const [post, setPost] = useState({
-      Name: userData.Name,
-      Email: userData.Email,
-      location: userData.location,
-      about:userData.about
-    });
-  
-  
+  // get userData and set as initial state for update
+  const [post, setPost] = useState({
+    Name: userData.Name,
+    Email: userData.Email,
+    location: userData.location,
+    about: userData.about,
+  });
+  const [selectedImage, setSelectedImage] = useState({
+    picturePath:null
+  });
+
   const dispatch = useDispatch();
 
   const handleInputChange = (e) => {
@@ -74,11 +75,10 @@ const ProfilePage = () => {
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-    setPost((prevPost) => ({
+    setSelectedImage((prevPost) => ({
       ...prevPost,
-      image: file,
+      picturePath: file,
     }));
-    setSelectedImage(URL.createObjectURL(file));
   };
 
   const handleUpdate = async (e) => {
@@ -95,57 +95,92 @@ const ProfilePage = () => {
     }
   };
 
+  const handleImageUpdate = async (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append("picturePath", selectedImage?.picturePath)
+    console.log(formData.get("picturePath"));
+
+    try {
+      dispatch(updateProfileImageRequest({ userId, formData }));
+      setPost((prevPost) => ({
+        ...prevPost,
+        picturePath: selectedImage?.picturePath, // Update the 'picturePath' property
+      }));
+      // toast.success("Successfully updated");
+      dispatch(getOneUserRequest(userId)); // Fetch the updated view
+    } catch (error) {
+      console.log("Update failed:", error);
+      // toast.error("Update failed", error);
+    }
+  };
+
   return (
     <>
       <Box flex={4} p={2}>
         <ProfileCard>
-          <CardContent>
-            <Grid container spacing={2}>
+          <CardContent >
+            <Grid container spacing={2} p={2}>
               <Grid item xs={12} md={4} align={isMobile ? "center" : "left"}>
-                <ProfilePicture alt="Profile" src={userData.picturePath} />
-                <Typography variant="h6" py={2} textAlign="center">
-                  <span variant="subtitle1">{userData.Name}</span>
+                <ProfilePicture alt="Profile" src={userData?.picturePath} sx={{position:"relative"}}/>
+                <Box display={"flex"} justifyContent={"flex-end"} width={"150px"} sx={{position:"absolute", top:"240px", left:"305px"}}>
+                <label htmlFor="file-input" className="m-0">
+                  <IconButton component="span" >
+                    <EditIcon />
+                  </IconButton>
+                </label>
+                <input
+                  name="image"
+                  accept="image/*"
+                  id="file-input"
+                  type="file"
+                  style={{ display: "none" }}
+                  onChange={handleImageChange}
+                />
+                <Box>{selectedImage?.picturePath && <Button onClick={handleImageUpdate}>Save</Button>}
+                </Box>
+                </Box>
+                <Typography variant="h2" pt={2} >
+                  <span variant="subtitle1">{userData?.Name}</span>
                 </Typography>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  size="small"
-                  fullWidth
-                >
-                  Connect
-                </Button>
+                <Typography style={{ color: "gray" }}>
+                  {/* Actor */}
+                </Typography>
               </Grid>
 
               <Grid item xs={12} md={8}>
                 <Box display={"flex"} justifyContent={"space-between"} py={3}>
                   <ProfileHeader>
-                    <Typography variant="h6">
+                    <Typography >
                       Location:{" "}
-                      <span>{userData.location}</span>
+                      <span style={{ color: "gray" }}>{userData?.location}</span>
                     </Typography>
 
-                    <Typography variant="h6">
+                    <Typography >
                       Impressions:{" "}
-                      <span>{userData.impressions}</span>
+                      <span style={{ color: "gray" }}>
+                        {userData?.impressions}
+                      </span>
                     </Typography>
-                    <Typography variant="h6">
+                    <Typography >
                       Followers:{" "}
-                      <span>{userData.viewedProfile}</span>
+                      <span style={{ color: "gray" }}>
+                        {userData?.viewedProfile}
+                      </span>
                     </Typography>
-                    <Typography variant="h6">
-                      Friends: 780
-                      <span>{userData.friends}</span>
+                    <Typography >
+                      Friends:<span style={{ color: "gray" }}>{userData?.friends?.length}</span>
                     </Typography>
                   </ProfileHeader>
-                  <Box mt={2} textAlign="center">
+                  <Box  mr={3} textAlign="center">
                     <Button variant="outlined" onClick={handleOpen}>
                       Edit
                     </Button>
                   </Box>
                 </Box>
                 <span variant="subtitle1">ABOUT ME:</span>
-                <Typography variant="h6">
-                 {post.about}
+                <Typography  style={{ color: "gray", textAlign: "justify" }}>
+                  {post?.about}
                 </Typography>
               </Grid>
             </Grid>
@@ -166,7 +201,7 @@ const ProfilePage = () => {
             borderRadius={5}
           >
             <Typography variant="h6" color="grey" textAlign="center">
-              Create Post
+              Update Post
             </Typography>
             <TextField
               name="Name"
@@ -176,30 +211,30 @@ const ProfilePage = () => {
               label="Name"
               variant="standard"
               onChange={handleInputChange}
-              value={post.Name}
+              value={post?.Name}
               placeholder="title"
             />
 
-             <TextField
+            <TextField
               name="location"
-              sx={{ width: "100%", pt: 2 }}
+              sx={{ width: "100%", pt: 3 }}
               id="standard-multiline-static"
               onChange={handleInputChange}
               rows={4}
               label="Location"
               variant="standard"
-              value={post.location}
+              value={post?.location}
               placeholder="Location"
             />
-             <TextField
+            <TextField
               name="about"
-              sx={{ width: "100%", pt: 2 }}
+              sx={{ width: "100%", pt: 3 }}
               id="standard-multiline-static"
               onChange={handleInputChange}
               rows={4}
               label="about me"
               variant="standard"
-              value={post.about}
+              value={post?.about}
               placeholder="about me"
               multiline
             />
@@ -226,7 +261,7 @@ const ProfilePage = () => {
               fullWidth
               variant="contained"
               aria-label="outlined primary button group"
-              className="mt-2 pt-2"
+              className="mt-4 pt-5"
             >
               <Button onClick={handleUpdate}>Post</Button>
             </ButtonGroup>

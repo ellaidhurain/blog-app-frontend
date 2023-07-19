@@ -15,8 +15,6 @@ const Signup = () => {
     Name: "",
     Email: "",
     Password: "",
-    occupation: "",
-    picturePath: "",
   });
 
   const navigate = useNavigate();
@@ -28,13 +26,11 @@ const Signup = () => {
         Name: validated_data.Name,
         Email: validated_data.Email,
         Password: validated_data.Password,
-        occupation: validated_data.occupation,
-        picturePath: validated_data.picturePath,
       };
 
-      const res = dispatch(signupRequest(inputs));
+      dispatch(signupRequest(inputs));
 
-      toast.success("Registration Success");
+      // toast.success("Registration Success");
       navigate("/login");
     } catch (err) {
       console.log(err);
@@ -60,7 +56,7 @@ const Signup = () => {
     handleSubmit,
     formState: { errors },
     clearErrors,
-  } = useForm();
+  } = useForm(inputs);
 
   return (
     <Box
@@ -127,37 +123,6 @@ const Signup = () => {
                 }}
                 error={!!errors.Password}
                 helperText={errors.Password && errors.Password.message}
-              />
-              <TextField
-                name="occupation"
-                className="form-control py-2"
-                placeholder="occupation"
-                value={inputs.occupation}
-                {...register("occupation", {
-                  required: "occupation is required",
-                })}
-                onChange={(e) => {
-                  handleInputChange(e);
-                  clearError("occupation");
-                }}
-                error={!!errors.occupation}
-                helperText={errors.occupation && errors.occupation.message}
-              />
-              <TextField
-                name="picturePath"
-                className="form-control py-2"
-                placeholder="profile picture"
-                type="File"
-                value={inputs.picturePath}
-                {...register("picturePath", {
-                  required: "picturePath is required",
-                })}
-                onChange={(e) => {
-                  setInputs(e.target.Files[0]);
-                  clearError("picturePath");
-                }}
-                error={!!errors.picturePath}
-                helperText={errors.picturePath && errors.picturePath.message}
               />
             </Box>
 

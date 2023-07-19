@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { Box, Button } from "@mui/material";
 import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
@@ -25,18 +25,25 @@ import TimeAgo from "react-timeago";
 import { formatter } from "../helper/helper";
 import AllComments from "../components/comments/Comments";
 import AddBlog from "../components/leftbar/AddBlog";
+import { Link } from "react-router-dom"; // Import the Link component from React Router
+import PersonAddAltIcon from "@mui/icons-material/PersonAddAlt";
+import {
+  sendFriendRequest,
+  getUserFriendsRequest,
+  removeFriendRequest,
+} from "../services/api/userApi";
+import HowToRegIcon from "@mui/icons-material/HowToReg";
+import PersonRemoveIcon from "@mui/icons-material/PersonRemove";
 
 const api = axios.create({
   // baseURL: "http://localhost:5000/api/blog",
-  baseURL : "https://snaplinkbackend.onrender.com/api/blog",
+  baseURL: "https://snaplinkbackend.onrender.com/api/blog",
   withCredentials: true, // Enable sending cookies with requests
 });
 
 const Feed = () => {
   const { blogs } = useSelector((state) => state.blog);
-  const { userData } = useSelector((state) => state.blog);
 
-  console.log(userData);
   // sort by decending order
   const sortByLatestUpdatedBlog = [...blogs].sort(
     (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
@@ -64,10 +71,10 @@ const Feed = () => {
   return (
     <>
       <Box flex={4} p={2}>
-        <AddBlog profilePicture={userData.picturePath} />
+        <AddBlog />
         <Box>
-          {sortByLatestUpdatedBlog.map((blog, index) => (
-            <Allblogs key={index} blog={blog} userData={userData} />
+          {sortByLatestUpdatedBlog?.map((blog, index) => (
+            <Allblogs key={index} blog={blog} />
           ))}
         </Box>
       </Box>
@@ -75,14 +82,14 @@ const Feed = () => {
   );
 };
 
-const Allblogs = ({ blog, userData }) => {
-  const { _id: blogId, title, description, image, createdAt } = blog;
+const Allblogs = ({ blog }) => {
+  const { _id: blogId, title, description, image, createdAt, user } = blog;
 
   const [comments, setComments] = useState(false);
-  const [openMenu, setOpenMenu] = useState(false);
   const [likes, setLikes] = useState([]);
-  const [err, setErr] = useState(null);
   const { mode } = useSelector((state) => state.blog);
+  const dispatch = useDispatch();
+  const { userFriends } = useSelector((state) => state.user);
 
   const date = new Date(createdAt); // create Date obj
   const timestamp = date.toLocaleString("en-CA", { timeZone: "Asia/Kolkata" }); // convert to local time
@@ -101,8 +108,11 @@ const Allblogs = ({ blog, userData }) => {
     getallLikesForBlog(blogId); // => this is only return promise obj not response.
   }, [blogId]);
 
-  const matchedLikeList = likes.filter((like) => like.blog === blogId) || null;
-  const liked = matchedLikeList.some((like) => like.blog === blogId) || false;
+  const matchedLikeList = likes?.filter((like) => like.blog === blogId) || null;
+  const liked = matchedLikeList?.some((like) => like.blog === blogId) || false;
+  
+  const friend = userFriends?.some((data) => data._id === user._id) || false;
+
 
   const addRemoveLike = async (blogId) => {
     try {
@@ -129,7 +139,7 @@ const Allblogs = ({ blog, userData }) => {
   };
 
   const { commentsList } = useSelector((state) => state.commentSlice);
-  const matchedCommentList = commentsList.filter(
+  const matchedCommentList = commentsList?.filter(
     (comment) => comment.blog === blogId
   );
 
@@ -137,13 +147,32 @@ const Allblogs = ({ blog, userData }) => {
     setComments(!comments);
   };
 
-  const handleOpenMenu = () => {
-    setOpenMenu(!openMenu);
-  };
-
   if (!blogId) {
     return null; // Render nothing if the blog is not available
   }
+
+  useEffect(() => {
+    // Fetch user friends on component mount
+    dispatch(getUserFriendsRequest());
+  }, [user]);
+
+  const handleSendFriend = (friendId) => {
+    try {
+      dispatch(sendFriendRequest(friendId));
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  const handleRemoveFriend = (friendId) => {
+    try {
+      dispatch(removeFriendRequest(friendId));
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const id = localStorage.getItem("userId");
+  const loggedin_user = id === user?._id;
 
   return (
     <>
@@ -161,13 +190,35 @@ const Allblogs = ({ blog, userData }) => {
           }}
         >
           <CardHeader
-            avatar={<Avatar alt="User Avatar" src={userData.picturePath} />}
-            action={
-              <IconButton aria-label="settings" onClick={handleOpenMenu}>
-                <MoreHorizIcon />
-              </IconButton>
+            avatar={
+              <Link to="/profile">
+                <Avatar alt="User Avatar" src={user?.picturePath} />
+              </Link>
             }
-            title={userData.Name}
+            action={
+              !loggedin_user && !friend ? (
+                <IconButton
+                  aria-label="settings"
+                  onClick={() => handleSendFriend(user?._id)}
+                >
+                  <PersonAddAltIcon />
+                </IconButton>
+              ) : (
+                !loggedin_user && friend && (
+                  <>
+                  <IconButton aria-label="settings">
+                    <HowToRegIcon />
+                  </IconButton>
+                  <IconButton aria-label="settings" onClick={() => handleRemoveFriend(user._id)}>
+                    <PersonRemoveIcon />
+                  </IconButton>
+
+                  </>
+                )
+                
+              )
+            }
+            title={user?.Name}
             subheader={timestamp}
           />
 

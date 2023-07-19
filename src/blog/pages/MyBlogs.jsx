@@ -24,7 +24,7 @@ import Favorite from "@mui/icons-material/Favorite";
 import Checkbox from "@mui/material/Checkbox";
 import CommentIcon from "@mui/icons-material/Comment";
 import Comments from "../components/comments/Comments";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { Button } from "@mui/material";
 import styled from "@emotion/styled";
 import TimeAgo from "react-timeago";
@@ -71,8 +71,8 @@ export const UserBlogs = (props) => {
       <Box flex={4} p={2}>
         <AddBlog />
 
-        {userData.blogs &&
-          userData.blogs.map((blog, index) => (
+        {userData?.blogs &&
+          userData?.blogs.map((blog, index) => (
             <MyBlogs
               blogId={blog._id}
               key={index}
@@ -124,10 +124,6 @@ export default function MyBlogs({
     });
   }, [id]); // render when id changes
 
-  // useEffect(()=>{
-  //   console.log(post.image);
-  // },[post.image])
-
   useEffect(() => {
     const id = localStorage.getItem("userId");
     if (id) {
@@ -143,16 +139,15 @@ export default function MyBlogs({
       console.log("User ID is not available");
     }
   }, []);
-  
 
   const handleUpdate = async (e) => {
     e.preventDefault();
 
     try {
       const formData = new FormData();
-      formData.append("title", post.title);
-      formData.append("description", post.description);
-      formData.append("image", post.image);
+      formData.append("title", post?.title);
+      formData.append("description", post?.description);
+      formData.append("image", post?.image);
       // for (const [key, value] of formData.entries()) {
       //   console.log(`${key}: ${value}`);
       // }
@@ -218,7 +213,7 @@ export default function MyBlogs({
   const timestamp = date.toDateString();
 
   const { commentsList } = useSelector((state) => state.commentSlice);
-  const matchedCommentList = commentsList.filter(
+  const matchedCommentList = commentsList?.filter(
     (comment) => comment.blog === blogId
   );
 
@@ -246,13 +241,17 @@ export default function MyBlogs({
           }}
         >
           <CardHeader
-            avatar={<Avatar alt="User Avatar" src={userData.picturePath} />}
+            avatar={
+              <Link to="/profile">
+                <Avatar alt="User Avatar" src={userData?.picturePath} />
+              </Link>
+            }
             action={
               <IconButton aria-label="settings" onClick={handleOpenMenu}>
                 <MoreHorizIcon />
               </IconButton>
             }
-            title={userData.Name}
+            title={userData?.Name}
             subheader={timestamp}
           />
 
@@ -367,7 +366,7 @@ export default function MyBlogs({
                 label="title"
                 variant="standard"
                 onChange={handleInputChange}
-                value={post.title}
+                value={post?.title}
                 placeholder="title"
               />
 
@@ -379,7 +378,7 @@ export default function MyBlogs({
                 rows={4}
                 label="description"
                 variant="standard"
-                value={post.description}
+                value={post?.description}
                 multiline
                 placeholder="description"
               />

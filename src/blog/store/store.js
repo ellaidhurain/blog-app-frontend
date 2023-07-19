@@ -23,7 +23,7 @@ const persistedCommentReducer = persistReducer(persistConfig,commentReducer);
 const store = configureStore({
   reducer: {
     // counter: counterReducer,
-    users: persistedUserReducer,
+    user: persistedUserReducer,
     commentSlice: persistedCommentReducer,
     likeSlice: persistedLikeReducer,
     login: persistedLoginReducer,

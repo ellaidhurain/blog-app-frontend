@@ -58,10 +58,10 @@ export const Leftbar = (props) => {
                   minHeight: 48,
                   px: 2.5,
                   backgroundColor:
-                    active === data.id ? "#383d4069" : "transparent",
+                    active === data.id ? "#383d402f" : "transparent",
                   borderRadius: active === data.id ? "5px" : "none",
                   "&:hover": {
-                    backgroundColor: "#383d4069",
+                    backgroundColor: mode === "light" ? "#383d402f" :"#383d403a",
                     borderRadius: "5px",
                   },
                   "& .MuiTouchRipple-root": {
@@ -89,7 +89,7 @@ export const Leftbar = (props) => {
                 minHeight: 48,
                 px: 2.5,
                 "&:hover": {
-                  backgroundColor: "#27465469",
+                  backgroundColor: "#b7111169",
                   borderRadius: "10px",
                 },
               }}

@@ -18,7 +18,7 @@ const App = () => {
         <Route path="/signup" element={<Signup />} />
         <Route
           path="/*" // catch-all route any path that hasn't been matched by previous defined routes.
-          element={userId ? <Home /> : <Navigate to="/" />}
+          element={userId !== null ? <Home /> : <Navigate to="/" />}
         />
 
       </Routes>     
