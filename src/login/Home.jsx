@@ -13,18 +13,19 @@ import { createTheme } from "@mui/material/styles";
 import { useMemo } from "react";
 import { themeSettings } from "../theme";
 import SettingsPage from "../blog/pages/SettingsPage";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Home = () => {
-
   // dark/light mode
   const { mode } = useSelector((state) => state.blog);
- 
+
   // useMemo is used to memoize the computational value. it prevents unnecessary rendering and optimize perfomance
   const theme = useMemo(() => createTheme(themeSettings(mode)), [mode]);
 
   return (
     <>
-    {/* wrapping up of Theme provider will provide theme across all child elements */}
+      {/* wrapping up of Theme provider will provide theme across all child elements */}
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <Box color={"text.primary"}>
@@ -43,12 +44,23 @@ const Home = () => {
           </Stack>
         </Box>
       </ThemeProvider>
+      <ToastContainer
+        position="top-right"
+        autoClose={1000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
     </>
   );
 };
 
 export default Home;
-
 
 /*
 

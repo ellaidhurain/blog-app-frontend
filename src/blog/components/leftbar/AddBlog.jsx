@@ -91,10 +91,9 @@ const AddBlog = ({ profilePicture }) => {
     formData.append("description", post.description);
     formData.append("image", post.image);
 
-    for (const pair of formData.entries()) {
-      console.log(pair[0], pair[1]);
-    }
-    
+    // for (const pair of formData.entries()) {
+    //   console.log(pair[0], pair[1]);
+    // }
 
     dispatch(postBlogRequest({ formData }))
       .then(() => {
@@ -104,12 +103,14 @@ const AddBlog = ({ profilePicture }) => {
         setPost({
           title: "",
           description: "",
-          image: "",
+          image: null,
         });
+        toast.success("🦄 Wow so easy!");
       })
       .catch((err) => {
         console.log(err);
-        toast.error(err);
+        // toast.error(err);
+        toast.error("🚨 Not so easy!");
       });
   };
 
@@ -135,78 +136,80 @@ const AddBlog = ({ profilePicture }) => {
         }}
         p={2}
       >
-        <UserBox className="d-flex">
-          <Avatar alt="Remy Sharp" />
-          <input
-            onChange={handleOnChange}
-            value={getInputValue()}
-            style={{
-              borderRadius: "25px",
-              outline: "none",
-              border: "none",
-              backgroundColor: "rgba(214, 213, 213, 0.15)",
-              width: "100%",
-              padding: "10px",
-              paddingLeft: "15px",
-              color: "white",
-            }}
-            placeholder="What's on your mind?"
-          />
-        </UserBox>
-
-        <Box
-          sx={{ paddingBottom: "10px" }}
-          className="d-flex justify-content-between"
-        >
-          <Box className="d-flex">
-            <IconButton>
-              <CameraAltOutlinedIcon />
-            </IconButton>
-            <IconButton>
-              <PlaceOutlinedIcon />
-            </IconButton>
-            <IconButton>
-              <SentimentSatisfiedAltOutlinedIcon />
-            </IconButton>
-            <IconButton>
-              <AttachFileOutlinedIcon />
-            </IconButton>
-
-            {/* The value of the htmlFor attribute matches the id attribute of the input field, indicating that the label is associated with that particular input field. */}
-            {/* Clicking on the label will also focus or activate the associated input field, providing a convenient way for users to interact with the form */}
-            <label htmlFor="file-input" className="m-0">
-              <IconButton component="span">
-                <AddPhotoAlternateOutlinedIcon />
-              </IconButton>
-            </label>
+        <form onSubmit={handleSubmitPost}>
+          <UserBox className="d-flex">
+            <Avatar alt="Remy Sharp" />
             <input
-              name="image"
-              accept="image/*"
-              id="file-input"
-              type="file"
-              style={{ display: "none" }}
-              onChange={handleImageUpload}
+              onChange={handleOnChange}
+              value={getInputValue()}
+              style={{
+                borderRadius: "25px",
+                outline: "none",
+                border: "none",
+                backgroundColor: "rgba(214, 213, 213, 0.15)",
+                width: "100%",
+                padding: "10px",
+                paddingLeft: "15px",
+                color: "white",
+              }}
+              placeholder="What's on your mind?"
+              required
             />
-            {post.image && <span className="pt-2">{post.image.name}</span>}
+          </UserBox>
 
-          </Box>
-
-          <Button
-            className="px-4 py-0"
-            sx={{
-              borderRadius: "5px",
-              border:
-                mode === "light"
-                  ? "1px solid rgba(0,0,0,0.15)"
-                  : "1px solid rgba(214, 213, 213, 0.15)",
-              // color: "white",
-              bgcolor: "background.paper",
-            }}
-            onClick={handleSubmitPost}
+          <Box
+            sx={{ paddingBottom: "10px" }}
+            className="d-flex justify-content-between"
           >
-            Post
-          </Button>
-        </Box>
+            <Box className="d-flex">
+              <IconButton>
+                <CameraAltOutlinedIcon />
+              </IconButton>
+              <IconButton>
+                <PlaceOutlinedIcon />
+              </IconButton>
+              <IconButton>
+                <SentimentSatisfiedAltOutlinedIcon />
+              </IconButton>
+              <IconButton>
+                <AttachFileOutlinedIcon />
+              </IconButton>
+
+              {/* The value of the htmlFor attribute matches the id attribute of the input field, indicating that the label is associated with that particular input field. */}
+              {/* Clicking on the label will also focus or activate the associated input field, providing a convenient way for users to interact with the form */}
+              <label htmlFor="file-input" className="m-0">
+                <IconButton component="span">
+                  <AddPhotoAlternateOutlinedIcon />
+                </IconButton>
+              </label>
+              <input
+                name="image"
+                accept="image/*"
+                id="file-input"
+                type="file"
+                style={{ display: "none" }}
+                onChange={handleImageUpload}
+              />
+              {post.image && <span className="pt-2">{post.image.name}</span>}
+            </Box>
+
+            <Button
+              className="px-4 py-0"
+              sx={{
+                borderRadius: "5px",
+                border:
+                  mode === "light"
+                    ? "1px solid rgba(0,0,0,0.15)"
+                    : "1px solid rgba(214, 213, 213, 0.15)",
+                // color: "white",
+                bgcolor: "background.paper",
+              }}
+              type="submit"
+            >
+              Post
+            </Button>
+          </Box>
+        </form>
       </Box>
 
       {/* <Tooltip

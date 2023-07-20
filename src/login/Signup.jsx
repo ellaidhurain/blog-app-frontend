@@ -30,10 +30,16 @@ const Signup = () => {
 
       dispatch(signupRequest(inputs));
 
-      // toast.success("Registration Success");
+      toast.success("🦄 Wow so easy!");
       navigate("/login");
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+        // If the response contains an 'error' message, show it in a toast
+        if (error.response && error.response.data && error.response.data.error) {
+          toast.error(error.response.data.error);
+        } else {
+          // If there's no specific error message in the response, show a generic error message
+          toast.error("🚨 Not so easy!");
+        }
     }
   };
 

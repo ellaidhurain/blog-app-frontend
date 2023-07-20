@@ -3,6 +3,7 @@ import axios from 'axios';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import { Box } from '@mui/system';
+import { toast } from 'react-toastify';
 
 const SettingsPage = () => {
   const [oldPassword, setOldPassword] = useState('');
@@ -17,14 +18,21 @@ const SettingsPage = () => {
 
     try {
       // Send the password change request using Axios
-      const response = await axios.post('/api/updatePassword', { Password: password });
-
+      const response = await axios.put('http://localhost:5000/api/user/updatePassword', { Password: password });
+      
       // Update the message state with the response data
       setMessage(response.data.message);
+      toast.success("🦄 Wow so easy!");
     } catch (error) {
-      // Handle errors, if any
-      setMessage('An error occurred while changing the password.');
+      
+    // If the response contains an 'error' message, show it in a toast
+    if (error.response && error.response.data && error.response.data.error) {
+      toast.error(error.response.data.error);
+    } else {
+      // If there's no specific error message in the response, show a generic error message
+      toast.error('An error occurred while changing the password.');
     }
+  }
   };
 
   return (
@@ -50,7 +58,6 @@ const SettingsPage = () => {
       <Button type="submit" variant="contained" color="primary">
         Change Password
       </Button>
-      <p>{message}</p>
     </form>
     </Box>
   );

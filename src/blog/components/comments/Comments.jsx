@@ -11,11 +11,6 @@ import { IconButton } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import { styled } from "@mui/system";
 import TimeAgo from "react-timeago";
-import {
-  addComment,
-  deleteComment,
-  updateComment,
-} from "../../store/slice/commentSlice";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import {
   addCommentRequest,
@@ -81,7 +76,7 @@ const AllComments = ({ Feed, blogId }) => {
       <Typography sx={{ marginLeft: "35px" }} pb={2}>
         Comments
       </Typography>
-      {matchedCommentList.map(
+      {matchedCommentList?.map(
         (
           commentData
           // if you use curly braces {}, instead() you need to include an explicit return statement to return a value from the arrow function. Without the return statement, the arrow function will not return any value.
@@ -98,7 +93,7 @@ const AllComments = ({ Feed, blogId }) => {
   );
 };
 
-function Comments({ Feed, blogId, commentData }) {
+function Comments({ blogId, commentData }) {
   const { _id: commentId, comment, user, createdAt } = commentData;
   const { name, picturePath } = user;
   const [editMode, setEditMode] = useState(false);
@@ -119,19 +114,26 @@ function Comments({ Feed, blogId, commentData }) {
     setUpdatedCommentText(updatedText);
   };
 
-
   // when handle Update we need pass id from where the comment is clicked
   const handleUpdateComment = () => {
     if (blogId && commentId && updatedCommentText.trim() !== "") {
-      dispatch(
-        updateCommentRequest({ updatedCommentText, blogId ,commentId})
-      )
+      dispatch(updateCommentRequest({ updatedCommentText, blogId, commentId }))
         .then(() => {
           dispatch(getallCommentsForBlogRequest(blogId));
           setEditMode(!editMode);
         })
-        .catch((err) => {
-          console.log(err);
+        .catch((error) => {
+          // If the response contains an 'error' message, show it in a toast
+          if (
+            error.response &&
+            error.response.data &&
+            error.response.data.error
+          ) {
+            toast.error(error.response.data.error);
+          } else {
+            // If there's no specific error message in the response, show a generic error message
+            toast.error("🚨 Not so easy!");
+          }
         });
     }
   };
@@ -142,8 +144,17 @@ function Comments({ Feed, blogId, commentData }) {
         .then(() => {
           dispatch(getallCommentsForBlogRequest(blogId));
         })
-        .catch((err) => {
-          console.log(err);
+        .catch((error) => {
+          if (
+            error.response &&
+            error.response.data &&
+            error.response.data.error
+          ) {
+            toast.error(error.response.data.error);
+          } else {
+            // If there's no specific error message in the response, show a generic error message
+            toast.error("🚨 Not so easy!");
+          }
         });
     }
   };
@@ -213,9 +224,7 @@ function Comments({ Feed, blogId, commentData }) {
               )}
               {editMode && (
                 <>
-                  <Button onClick={handleUpdateComment}>
-                    save
-                  </Button>
+                  <Button onClick={handleUpdateComment}>save</Button>
                   <Button onClick={handleEdit}>cancel</Button>
                 </>
               )}
@@ -255,23 +264,7 @@ function Comments({ Feed, blogId, commentData }) {
                       </Box>
                     </>
                   ) : (
-                    <>
-                      {/* {!Feed && (
-                        <div className="d-flex d-none">
-                          <IconButton
-                            className=" ml-3 pl-3"
-                            onClick={handleEdit}
-                          >
-                            <EditIcon />
-                          </IconButton>
-                          <IconButton
-                            onClick={() => handleDeleteComment(commentId)}
-                          >
-                            <DeleteIcon aria-label="delete" />
-                          </IconButton>
-                        </div>
-                      )} */}
-                    </>
+                    <></>
                   )}
                 </Box>
               </Box>

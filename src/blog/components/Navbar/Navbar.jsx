@@ -74,7 +74,13 @@ export const Navbar = () => {
       navigate("/");
       dispatch(setLogout());
     } catch (err) {
-      console.log(err);
+        // If the response contains an 'error' message, show it in a toast
+        if (error.response && error.response.data && error.response.data.error) {
+          toast.error(error.response.data.error);
+        } else {
+          // If there's no specific error message in the response, show a generic error message
+          toast.error("🚨 Not so easy!");
+        }
     }
   };
 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Avatar,
   Box,
@@ -18,9 +18,13 @@ import {
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { styled } from "@mui/material/styles";
-import { updateProfileImageRequest, updateUserRequest } from "../services/api/userApi";
+import {
+  updateProfileImageRequest,
+  updateUserRequest,
+} from "../services/api/userApi";
 import { getOneUserRequest } from "../services/api/blogApi";
 import EditIcon from "@mui/icons-material/Edit";
+import { toast } from "react-toastify";
 
 const StyledModel = styled(Modal)({
   display: "flex",
@@ -60,8 +64,9 @@ const ProfilePage = () => {
     about: userData.about,
   });
   const [selectedImage, setSelectedImage] = useState({
-    picturePath:null
+    picturePath: null,
   });
+  const [isImageUpdated, setIsImageUpdated] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -85,21 +90,27 @@ const ProfilePage = () => {
     e.preventDefault();
 
     try {
-      dispatch(updateUserRequest({ userId, post }));
-      // toast.success("Successfully updated");
-      handleClose();
-      dispatch(getOneUserRequest(userId)); // Fetch the updated view
+      const res = dispatch(updateUserRequest({ userId, post }));
+      console.log(res.data);
+      dispatch(getOneUserRequest(userId)).then(() => {
+        handleClose();
+        toast.success("🦄 Wow so easy!");
+      });
     } catch (error) {
-      console.log("Update failed:", error);
-      // toast.error("Update failed", error);
+      // If the response contains an 'error' message, show it in a toast
+      if (error.response && error.response.data && error.response.data.error) {
+        toast.error(error.response.data.error);
+      } else {
+        // If there's no specific error message in the response, show a generic error message
+        toast.error("🚨 Not so easy!");
+      }
     }
   };
 
   const handleImageUpdate = async (e) => {
     e.preventDefault();
     const formData = new FormData();
-    formData.append("picturePath", selectedImage?.picturePath)
-    console.log(formData.get("picturePath"));
+    formData.append("picturePath", selectedImage?.picturePath);
 
     try {
       dispatch(updateProfileImageRequest({ userId, formData }));
@@ -108,78 +119,101 @@ const ProfilePage = () => {
         picturePath: selectedImage?.picturePath, // Update the 'picturePath' property
       }));
       // toast.success("Successfully updated");
-      dispatch(getOneUserRequest(userId)); // Fetch the updated view
+      dispatch(getOneUserRequest(userId)).then(() => {
+        handleClose();
+        toast.success("🦄 Wow so easy!");
+      });
+      setIsImageUpdated(true);
     } catch (error) {
-      console.log("Update failed:", error);
-      // toast.error("Update failed", error);
+        // If the response contains an 'error' message, show it in a toast
+        if (error.response && error.response.data && error.response.data.error) {
+          toast.error(error.response.data.error);
+        } else {
+          // If there's no specific error message in the response, show a generic error message
+          toast.error("🚨 Not so easy!");
+        }
     }
   };
+
+  useEffect(() => {
+    dispatch(getOneUserRequest(userId));
+  }, [post]);
 
   return (
     <>
       <Box flex={4} p={2}>
         <ProfileCard>
-          <CardContent >
+          <CardContent>
             <Grid container spacing={2} p={2}>
               <Grid item xs={12} md={4} align={isMobile ? "center" : "left"}>
-                <ProfilePicture alt="Profile" src={userData?.picturePath} sx={{position:"relative"}}/>
-                <Box display={"flex"} justifyContent={"flex-end"} width={"150px"} sx={{position:"absolute", top:"240px", left:"305px"}}>
-                <label htmlFor="file-input" className="m-0">
-                  <IconButton component="span" >
-                    <EditIcon />
-                  </IconButton>
-                </label>
-                <input
-                  name="image"
-                  accept="image/*"
-                  id="file-input"
-                  type="file"
-                  style={{ display: "none" }}
-                  onChange={handleImageChange}
-                />
-                <Box>{selectedImage?.picturePath && <Button onClick={handleImageUpdate}>Save</Button>}
+                <ProfilePicture alt="Profile" src={userData?.picturePath} />
+                <Box
+                  display={"flex"}
+                  justifyContent={"flex-end"}
+                  width={"150px"}
+                >
+                  <label htmlFor="file-input" className="m-0">
+                    <IconButton component="span">
+                      <EditIcon />
+                    </IconButton>
+                  </label>
+                  <input
+                    name="image"
+                    accept="image/*"
+                    id="file-input"
+                    type="file"
+                    style={{ display: "none" }}
+                    onChange={handleImageChange}
+                  />
+                  <Box>
+                    {selectedImage?.picturePath && !isImageUpdated &&  (
+                      <Button onClick={handleImageUpdate}>Save</Button>
+                    )}
+                  </Box>
                 </Box>
-                </Box>
-                <Typography variant="h2" pt={2} >
+                <Typography variant="h2" pt={2}>
                   <span variant="subtitle1">{userData?.Name}</span>
                 </Typography>
-                <Typography style={{ color: "gray" }}>
-                  {/* Actor */}
-                </Typography>
+                <Typography style={{ color: "gray" }}>{/* Actor */}</Typography>
               </Grid>
 
               <Grid item xs={12} md={8}>
                 <Box display={"flex"} justifyContent={"space-between"} py={3}>
                   <ProfileHeader>
-                    <Typography >
+                    <Typography>
                       Location:{" "}
-                      <span style={{ color: "gray" }}>{userData?.location}</span>
+                      <span style={{ color: "gray" }}>
+                        {userData?.location}
+                      </span>
                     </Typography>
 
-                    <Typography >
+                    <Typography>
                       Impressions:{" "}
                       <span style={{ color: "gray" }}>
                         {userData?.impressions}
                       </span>
                     </Typography>
-                    <Typography >
+                    <Typography>
                       Followers:{" "}
                       <span style={{ color: "gray" }}>
                         {userData?.viewedProfile}
                       </span>
                     </Typography>
-                    <Typography >
-                      Friends:<span style={{ color: "gray" }}>{userData?.friends?.length}</span>
+                    <Typography>
+                      Friends:
+                      <span style={{ color: "gray" }}>
+                        {userData?.friends?.length}
+                      </span>
                     </Typography>
                   </ProfileHeader>
-                  <Box  mr={3} textAlign="center">
+                  <Box mr={3} textAlign="center">
                     <Button variant="outlined" onClick={handleOpen}>
                       Edit
                     </Button>
                   </Box>
                 </Box>
                 <span variant="subtitle1">ABOUT ME:</span>
-                <Typography  style={{ color: "gray", textAlign: "justify" }}>
+                <Typography style={{ color: "gray", textAlign: "justify" }}>
                   {post?.about}
                 </Typography>
               </Grid>

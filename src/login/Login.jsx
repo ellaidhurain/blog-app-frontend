@@ -1,14 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
 import "./App.css";
-import { Box, Button, TextField, Typography } from "@mui/material";
+import { Box, Button, TextField } from "@mui/material";
 import { LoginImage } from "./lottiefiles";
 import { loginRequest } from "../blog/services/api/userApi";
 import { useForm } from "react-hook-form";
-import { setLogin } from "../blog/store/slice/loginSlice";
 
 const Login = () => {
   const { loading } = useSelector((state) => state.login);
@@ -16,7 +15,6 @@ const Login = () => {
     Email: "",
     Password: "",
   });
-  const [loginError, setLoginError] = useState("");
   const [passwordType, setPasswordType] = useState("password");
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -53,9 +51,13 @@ const Login = () => {
 
       navigate("/feed");
     } catch (error) {
-      console.log(error);
-      toast.error(error);
-      setLoginError(error);
+        // If the response contains an 'error' message, show it in a toast
+        if (error.response && error.response.data && error.response.data.error) {
+          toast.error(error.response.data.error);
+        } else {
+          // If there's no specific error message in the response, show a generic error message
+          toast.error("🚨 Not so easy!");
+        }
     }
   };
 

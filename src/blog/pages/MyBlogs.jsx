@@ -152,12 +152,17 @@ export default function MyBlogs({
       //   console.log(`${key}: ${value}`);
       // }
       dispatch(updateBlogRequest({ blogId, formData }));
-      // toast.success("Successfully updated");
-      handleClose();
       dispatch(getOneUserRequest(id)); // Fetch the updated view
+      handleClose();
+      toast.success("🦄 Wow so easy!");
     } catch (error) {
-      console.log("Update failed:", error);
-      toast.error("Update failed", error);
+      // If the response contains an 'error' message, show it in a toast
+      if (error.response && error.response.data && error.response.data.error) {
+        toast.error(error.response.data.error);
+      } else {
+        // If there's no specific error message in the response, show a generic error message
+        toast.error("🚨 Not so easy!");
+      }
     }
   };
 
@@ -166,11 +171,21 @@ export default function MyBlogs({
 
     dispatch(deleteBlogRequest({ blogId }))
       .then(() => {
-        // toast.success("successfully deleted");
+        toast.success("🦄 Wow so easy!");
         dispatch(getOneUserRequest(id)); // we need to call this to get updated view
       })
       .catch((error) => {
-        toast.error(error);
+        // If the response contains an 'error' message, show it in a toast
+        if (
+          error.response &&
+          error.response.data &&
+          error.response.data.error
+        ) {
+          toast.error(error.response.data.error);
+        } else {
+          // If there's no specific error message in the response, show a generic error message
+          toast.error("🚨 Not so easy!");
+        }
       });
 
     // dispatch(deleteBlog({blogId}));
@@ -198,8 +213,14 @@ export default function MyBlogs({
       const res = await api.get(`/getallLikesForBlog/${blogId}`);
       setLikes(res.data);
       return res.data;
-    } catch (err) {
-      throw err;
+    } catch (error) {
+       // If the response contains an 'error' message, show it in a toast
+       if (error.response && error.response.data && error.response.data.error) {
+        toast.error(error.response.data.error);
+      } else {
+        // If there's no specific error message in the response, show a generic error message
+        toast.error("🚨 Not so easy!");
+      }
     }
   };
 
@@ -221,9 +242,6 @@ export default function MyBlogs({
     setComments(!comments);
   };
 
-  const handleOpenMenu = () => {
-    setOpenMenu(!openMenu);
-  };
 
   return (
     <>
@@ -247,7 +265,7 @@ export default function MyBlogs({
               </Link>
             }
             action={
-              <IconButton aria-label="settings" onClick={handleOpenMenu}>
+              <IconButton aria-label="settings" >
                 <MoreHorizIcon />
               </IconButton>
             }

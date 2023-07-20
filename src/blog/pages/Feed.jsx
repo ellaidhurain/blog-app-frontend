@@ -110,16 +110,22 @@ const Allblogs = ({ blog }) => {
 
   const matchedLikeList = likes?.filter((like) => like.blog === blogId) || null;
   const liked = matchedLikeList?.some((like) => like.blog === blogId) || false;
-  
-  const friend = userFriends?.some((data) => data._id === user._id) || false;
 
+  const friend = userFriends?.some((data) => data._id === user._id) || false;
 
   const addRemoveLike = async (blogId) => {
     try {
       const res = await api.post(`/addRemoveLike/${blogId}`);
+      toast.success()
       return res.data;
-    } catch (err) {
-      throw err;
+    } catch (error) {
+      // If the response contains an 'error' message, show it in a toast
+      if (error.response && error.response.data && error.response.data.error) {
+        toast.error(error.response.data.error);
+      } else {
+        // If there's no specific error message in the response, show a generic error message
+        toast.error("🚨 Not so easy!");
+      }
     }
   };
 
@@ -132,8 +138,17 @@ const Allblogs = ({ blog }) => {
           getallLikesForBlog(blogId);
         })
         .catch((error) => {
-          // catch is an inbuilt method to catch error
-          console.log(error);
+          // If the response contains an 'error' message, show it in a toast
+          if (
+            error.response &&
+            error.response.data &&
+            error.response.data.error
+          ) {
+            toast.error(error.response.data.error);
+          } else {
+            // If there's no specific error message in the response, show a generic error message
+            toast.error("🚨 Not so easy!");
+          }
         });
     }
   };
@@ -159,15 +174,28 @@ const Allblogs = ({ blog }) => {
   const handleSendFriend = (friendId) => {
     try {
       dispatch(sendFriendRequest(friendId));
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      // If the response contains an 'error' message, show it in a toast
+      if (error.response && error.response.data && error.response.data.error) {
+        toast.error(error.response.data.error);
+      } else {
+        // If there's no specific error message in the response, show a generic error message
+        toast.error("🚨 Not so easy!");
+      }
     }
   };
+  
   const handleRemoveFriend = (friendId) => {
     try {
       dispatch(removeFriendRequest(friendId));
     } catch (err) {
-      console.log(err);
+     // If the response contains an 'error' message, show it in a toast
+     if (error.response && error.response.data && error.response.data.error) {
+      toast.error(error.response.data.error);
+    } else {
+      // If there's no specific error message in the response, show a generic error message
+      toast.error("🚨 Not so easy!");
+    }
     }
   };
 
@@ -204,18 +232,20 @@ const Allblogs = ({ blog }) => {
                   <PersonAddAltIcon />
                 </IconButton>
               ) : (
-                !loggedin_user && friend && (
+                !loggedin_user &&
+                friend && (
                   <>
-                  <IconButton aria-label="settings">
-                    <HowToRegIcon />
-                  </IconButton>
-                  <IconButton aria-label="settings" onClick={() => handleRemoveFriend(user._id)}>
-                    <PersonRemoveIcon />
-                  </IconButton>
-
+                    <IconButton aria-label="settings">
+                      <HowToRegIcon />
+                    </IconButton>
+                    <IconButton
+                      aria-label="settings"
+                      onClick={() => handleRemoveFriend(user._id)}
+                    >
+                      <PersonRemoveIcon />
+                    </IconButton>
                   </>
                 )
-                
               )
             }
             title={user?.Name}
