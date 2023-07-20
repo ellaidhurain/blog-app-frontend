@@ -62,6 +62,12 @@ const UserBox = styled("div")(({ theme }) => ({
   },
 }));
 
+const api = axios.create({
+  // baseURL: "http://localhost:5000/api/blog",
+  baseURL: "https://snaplinkbackend.onrender.com/api/user",
+  withCredentials: true, // Enable sending cookies with requests
+});
+
 export const Navbar = () => {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
@@ -81,7 +87,7 @@ export const Navbar = () => {
 
   const handleLogout = async () => {
     try {
-      await axios.post("http://localhost:5000/api/user/logout");
+      await api.post("/logout");
       localStorage.removeItem("userId");
       navigate("/");
       dispatch(setLogout());
@@ -107,11 +113,7 @@ export const Navbar = () => {
   return (
     <AppBar position="fixed" style={{ top: 0, left: 0, width: "100%" }}>
       <MyToolbar>
-        <Box
-          sx={{
-            display: { md: "block", lg: "none", xs: "block", sm: "block" },
-          }}
-        >
+        <Box>
           <IconButton
             color="inherit"
             aria-label="open drawer"
@@ -176,7 +178,6 @@ export const Navbar = () => {
                 ))}
                 <ListItem key="logout" onClick={handleLogout} sx={{padding:0}}>
                   <ListItemButton
-                  
                     sx={{
                       minHeight: 48,
                       // px: 2.5,

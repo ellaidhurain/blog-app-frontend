@@ -18,10 +18,15 @@ export const Leftbar = (props) => {
   const [active, setActive] = useState(null);
   const { mode } = useSelector((state) => state.blog);
 
+  const api = axios.create({
+    // baseURL: "http://localhost:5000/api/blog",
+    baseURL: "https://snaplinkbackend.onrender.com/api/user",
+    withCredentials: true, // Enable sending cookies with requests
+  });
 
   const handleLogout = async () => {
     try {
-      await axios.post("http://localhost:5000/api/user/logout");
+      await api.post("/logout");
       localStorage.removeItem("userId");
       navigate("/");
       dispatch(setLogout());

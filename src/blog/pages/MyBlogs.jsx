@@ -44,8 +44,8 @@ import ReadMore from "./Readmore";
 import AllComments from "../components/comments/Comments";
 
 const api = axios.create({
-  baseURL: "http://localhost:5000/api/blog",
-  // baseURL: "https://snaplinkbackend.onrender.com/api/blog",
+  // baseURL: "http://localhost:5000/api/blog",
+  baseURL: "https://snaplinkbackend.onrender.com/api/blog",
   withCredentials: true, // Enable sending cookies with requests
 });
 

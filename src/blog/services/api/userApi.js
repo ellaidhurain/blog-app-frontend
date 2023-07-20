@@ -3,8 +3,8 @@ import axios from "axios";
 axios.defaults.withCredentials = true;
 
 export const api = axios.create({
-  // baseURL : "https://snaplinkbackend.onrender.com/api/user",
-  baseURL: "http://localhost:5000/api/user",
+  baseURL : "https://snaplinkbackend.onrender.com/api/user",
+  // baseURL: "http://localhost:5000/api/user",
   withCredentials: true, // Enable sending cookies with requests
   credentials: "include",
 });

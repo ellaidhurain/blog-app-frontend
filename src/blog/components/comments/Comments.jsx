@@ -159,12 +159,15 @@ function Comments({ blogId, commentData }) {
     }
   };
 
+  const id = localStorage.getItem("userId");
+  const loggedin_user = id === user?._id;
+
   if (!blogId) {
     return null; // Render nothing if the blog is not available
   }
 
   const style = {
-    top: "10px",
+    top: "-100px",
     right: "40px",
     width: "160px",
     zIndex: "99999",
@@ -237,7 +240,11 @@ function Comments({ blogId, commentData }) {
                   className=" mx-3 position-relative"
                   onClick={handleOpen}
                 >
-                  <MoreHorizIcon />
+                  {loggedin_user && (
+                    <Box style={{cursor:"pointer"}}>
+                      <MoreHorizIcon />
+                    </Box>
+                  )}
 
                   {open ? (
                     <>

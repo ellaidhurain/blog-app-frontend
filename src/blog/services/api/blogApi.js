@@ -2,15 +2,15 @@ import { createAsyncThunk, isRejectedWithValue } from "@reduxjs/toolkit";
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost:5000/api/blog",
-  // baseURL : "https://snaplinkbackend.onrender.com/api/blog",
+  // baseURL: "http://localhost:5000/api/blog",
+  baseURL : "https://snaplinkbackend.onrender.com/api/blog",
   withCredentials: true, // Enable sending cookies with requests
   credentials: "include",
 });
 
 // Redux AsyncThunk is a Middleware for handling asynchronous actions in Redux and do operations on promise obj handled by redux
-const url = "http://localhost:5000/api/user";
-// const url = "https://snaplinkbackend.onrender.com/api/user";
+// const url = "http://localhost:5000/api/user";
+const url = "https://snaplinkbackend.onrender.com/api/user";
 
 export const getOneUserRequest = createAsyncThunk(
   "blog/getOneUserRequest",
