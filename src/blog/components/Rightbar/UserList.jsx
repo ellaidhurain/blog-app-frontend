@@ -7,7 +7,6 @@ import Typography from "@mui/material/Typography";
 import { useSelector } from "react-redux";
 import { Box } from "@mui/system";
 
-
 export default function UserList() {
   const { mode } = useSelector((state) => state.blog);
   const { userFriends } = useSelector((state) => state.user);
@@ -17,6 +16,7 @@ export default function UserList() {
       <Typography className="py-3">Friends</Typography>
       {userFriends?.map((friend) => (
         <Box
+          key={friend?._id}
           sx={{
             width: 350,
             maxWidth: 360,
@@ -26,14 +26,13 @@ export default function UserList() {
                 : "1px solid rgba(214, 213, 213, 0.15)",
             bgcolor: "background.paper",
             borderRadius: "10px",
-            margin:"10px"
+            margin: "10px",
           }}
-          
         >
-          <Box key={friend?._id} >
+          <Box>
             <ListItem alignItems="flex-start">
               <ListItemAvatar>
-                <Avatar alt={friend?.Name} />
+                <Avatar alt={friend?.Name} src={friend?.picturePath} />
               </ListItemAvatar>
               <ListItemText
                 primary={friend?.Name}
@@ -50,7 +49,6 @@ export default function UserList() {
                   </Box>
                 }
               />
-           
             </ListItem>
           </Box>
         </Box>

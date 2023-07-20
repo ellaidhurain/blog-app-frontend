@@ -131,9 +131,15 @@ const Notifications = () => {
         ))}
       </Box>
       <Box className="mt-3">
-        <Button className="btn btn-primary w-100" variant="contained">
-          see all
-        </Button>
+        {FriendRequests?.length > 0 ? (
+          <Button className="btn btn-primary w-100" variant="contained">
+            see all
+          </Button>
+        ) : (
+          <>
+            <span style={{color:"gray"}}>no new notification</span>
+          </>
+        )}
       </Box>
     </Box>
   );

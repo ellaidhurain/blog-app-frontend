@@ -31,7 +31,7 @@ const Home = () => {
         <Box color={"text.primary"}>
           <Navbar />
           {/* stack is used to create responsive and flexible layout */}
-          <Stack direction="row" spacing={4} justifyContent="space-between">
+          <Stack direction="row" mt={4} pt={4} spacing={4} justifyContent="space-between">
             <Leftbar />
             <Routes>
               <Route path="/feed" element={<Feed />} />

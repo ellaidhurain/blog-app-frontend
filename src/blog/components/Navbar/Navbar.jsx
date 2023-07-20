@@ -12,9 +12,9 @@ import {
   MenuItem,
   Badge,
   Avatar,
+  ListItem,
 } from "@mui/material";
 import {
-  Cabin as CabinIcon,
   Search as SearchIcon,
   Mail as MailIcon,
   Notifications as NotificationsIcon,
@@ -32,8 +32,12 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import { setMode } from "../../store/slice/blogSlice";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
-import { Box } from "@mui/system";
-import LinkedCameraIcon from '@mui/icons-material/LinkedCamera';
+import LinkedCameraIcon from "@mui/icons-material/LinkedCamera";
+import MenuIcon from "@mui/icons-material/Menu";
+import { Box, Drawer } from "@mui/material";
+import List from "@mui/material/List";
+import { NavItems } from "../Navbar/NavList";
+import ListItemText from "@mui/material/ListItemText";
 
 const MyToolbar = styled(Toolbar)({
   display: "flex",
@@ -66,7 +70,12 @@ export const Navbar = () => {
   const { mode } = useSelector((state) => state.blog);
   const { userData } = useSelector((state) => state.blog);
   const { FriendRequests } = useSelector((state) => state.user);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false); // State to manage the drawer visibility
+  const [active, setActive] = useState(null);
 
+  const handleDrawerToggle = () => {
+    setIsDrawerOpen(!isDrawerOpen); // Toggle the drawer visibility on burger menu click
+  };
 
   const dispatch = useDispatch();
 
@@ -77,13 +86,13 @@ export const Navbar = () => {
       navigate("/");
       dispatch(setLogout());
     } catch (err) {
-        // If the response contains an 'error' message, show it in a toast
-        if (error.response && error.response.data && error.response.data.error) {
-          toast.error(error.response.data.error);
-        } else {
-          // If there's no specific error message in the response, show a generic error message
-          toast.error("🚨 Not so easy!");
-        }
+      // If the response contains an 'error' message, show it in a toast
+      if (error.response && error.response.data && error.response.data.error) {
+        toast.error(error.response.data.error);
+      } else {
+        // If there's no specific error message in the response, show a generic error message
+        toast.error("🚨 Not so easy!");
+      }
     }
   };
 
@@ -96,8 +105,98 @@ export const Navbar = () => {
   };
 
   return (
-    <AppBar position="sticky" >
+    <AppBar position="fixed" style={{ top: 0, left: 0, width: "100%" }}>
       <MyToolbar>
+        <Box
+          sx={{
+            display: { md: "block", lg: "none", xs: "block", sm: "block" },
+          }}
+        >
+          <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            edge="start"
+            onClick={handleDrawerToggle}
+            sx={{ display: { lg: "none" } }}
+          >
+            <MenuIcon />
+          </IconButton>
+          <Drawer
+            open={isDrawerOpen}
+            onClose={handleDrawerToggle}
+            ModalProps={{
+              keepMounted: true, // Better open performance on mobile.
+            }}
+          >
+            <Box
+              sx={{
+                width: 250,
+                padding: "16px",
+                bgcolor: "background.paper",
+                height: "100%",
+              }}
+            >
+              <List>
+                {NavItems.map((data) => (
+                  <Box my={1}>
+                    <ListItemButton
+                      key={data.id}
+                      onClick={() => {
+                        navigate(data.path);
+                        setActive(data.id);
+                        setIsDrawerOpen(false); // Close the drawer on item click
+                      }}
+                      sx={{
+                        minHeight: 48,
+                        "& .MuiTouchRipple-root": {
+                          display: "none",
+                        },
+                        backgroundColor:
+                          active === data.id ? "#383d402f" : "transparent",
+                        borderRadius: active === data.id ? "5px" : "none",
+                        "&:hover": {
+                          backgroundColor:
+                            mode === "light" ? "#383d402f" : "#383d403a",
+                          borderRadius: "5px",
+                        },
+                      }}
+                    >
+                      <ListItemIcon
+                        sx={{
+                          minWidth: 0,
+                          justifyContent: "center",
+                          paddingRight: "10px",
+                        }}
+                      >
+                        {data.icon}
+                      </ListItemIcon>
+                      <ListItemText primary={data.label} />
+                    </ListItemButton>
+                  </Box>
+                ))}
+                <ListItem key="logout" onClick={handleLogout} sx={{padding:0}}>
+                  <ListItemButton
+                  
+                    sx={{
+                      minHeight: 48,
+                      // px: 2.5,
+                      "&:hover": {
+                        backgroundColor: "#b7111169",
+                        borderRadius: "10px",
+                      },
+                    }}
+                  >
+                    <ListItemIcon >
+                      <LogoutIcon />
+                      <span className="px-2">Logout</span>
+                    </ListItemIcon>
+                  </ListItemButton>
+                </ListItem>
+              </List>
+              
+            </Box>
+          </Drawer>
+        </Box>
         <LinkedCameraIcon
           sx={{ display: { xs: "block", sm: "none" }, marginRight: "8px" }}
         />
@@ -111,7 +210,7 @@ export const Navbar = () => {
             },
           }}
         >
-          <LinkedCameraIcon sx={{marginRight: "8px" }}/>
+          <LinkedCameraIcon sx={{ marginRight: "8px" }} />
           SnapLink
         </Typography>
         <Paper
@@ -135,7 +234,7 @@ export const Navbar = () => {
         </Paper>
 
         <Icons size="large" aria-label="show 4 new mails" color="inherit">
-          <Badge badgeContent={4} color="error" className="position-relative">
+          <Badge color="error" className="position-relative">
             <ListItemIcon
               onClick={() =>
                 dispatch(setMode(mode === "light" ? "dark" : "light"))
@@ -149,14 +248,14 @@ export const Navbar = () => {
               {mode == "light" ? <DarkModeIcon /> : <LightModeIcon />}
             </ListItemIcon>
 
-            <MailIcon
+            {/* <MailIcon
               onClick={() => setIsChat(!isChat)}
               sx={{
                 "&:hover": {
                   cursor: "pointer",
                 },
               }}
-            />
+            /> */}
           </Badge>
           <Badge
             onClick={() => setIsClicked(!isClicked)}
@@ -172,7 +271,7 @@ export const Navbar = () => {
               }}
             />
           </Badge>
-          {isChat && <Messages />}
+          {/* {isChat && <Messages />} */}
           {isClicked && <Notifications />}
           <Avatar
             alt="Remy Sharp"
@@ -202,37 +301,8 @@ export const Navbar = () => {
               },
             }}
           />
-          <Typography>ellai</Typography>
         </UserBox>
       </MyToolbar>
-      <Menu
-        id="demo-positioned-menu"
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        onClose={handleMenuClose}
-        anchorOrigin={{
-          vertical: "top",
-          horizontal: "right",
-        }}
-        transformOrigin={{
-          vertical: "top",
-          horizontal: "right",
-        }}
-      >
-        <MenuItem
-          onClick={handleLogout}
-          sx={{
-            "& .MuiTouchRipple-root": {
-              display: "none",
-            },
-          }}
-        >
-          <IconButton>
-            <LogoutIcon />
-          </IconButton>
-          Logout
-        </MenuItem>
-      </Menu>
     </AppBar>
   );
 };
