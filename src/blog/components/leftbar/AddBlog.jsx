@@ -43,7 +43,7 @@ const UserBox = styled(Box)(({ theme }) => ({
   marginLeft: "10px",
 }));
 
-const AddBlog = ({ profilePicture }) => {
+const AddBlog = ({ picture }) => {
   // const ctx = useContext(Context); //global data provider
   const { mode } = useSelector((state) => state.blog);
 
@@ -138,7 +138,7 @@ const AddBlog = ({ profilePicture }) => {
       >
         <form onSubmit={handleSubmitPost}>
           <UserBox className="d-flex">
-            <Avatar alt="Remy Sharp" />
+            <Avatar alt="Remy Sharp" src={picture} />
             <input
               onChange={handleOnChange}
               value={getInputValue()}

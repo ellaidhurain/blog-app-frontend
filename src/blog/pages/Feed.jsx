@@ -43,6 +43,7 @@ const api = axios.create({
 
 const Feed = () => {
   const { blogs } = useSelector((state) => state.blog);
+  const { userData } = useSelector((state) => state.blog);
 
   // sort by decending order
   const sortByLatestUpdatedBlog = [...blogs].sort(
@@ -71,7 +72,7 @@ const Feed = () => {
   return (
     <>
       <Box flex={4} p={2}>
-        <AddBlog />
+        <AddBlog picture={userData?.picturePath}/>
         <Box>
           {sortByLatestUpdatedBlog?.map((blog, index) => (
             <Allblogs key={index} blog={blog} />
@@ -108,10 +109,10 @@ const Allblogs = ({ blog }) => {
     getallLikesForBlog(blogId); // => this is only return promise obj not response.
   }, [blogId]);
 
-  const matchedLikeList = likes?.filter((like) => like.blog === blogId) || null;
-  const liked = matchedLikeList?.some((like) => like.blog === blogId) || false;
+  const matchedLikeList = likes?.filter((like) => like?.blog === blogId) || null;
+  const liked = matchedLikeList?.some((like) => like?.blog === blogId) || false;
 
-  const friend = userFriends?.some((data) => data._id === user._id) || false;
+  const friend = userFriends?.some((data) => data?._id === user?._id) || false;
 
   const addRemoveLike = async (blogId) => {
     try {

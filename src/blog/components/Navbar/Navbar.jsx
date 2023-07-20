@@ -64,6 +64,9 @@ export const Navbar = () => {
   const [isClicked, setIsClicked] = useState(false);
   const [isChat, setIsChat] = useState(false);
   const { mode } = useSelector((state) => state.blog);
+  const { userData } = useSelector((state) => state.blog);
+  const { FriendRequests } = useSelector((state) => state.user);
+
 
   const dispatch = useDispatch();
 
@@ -93,7 +96,7 @@ export const Navbar = () => {
   };
 
   return (
-    <AppBar position="sticky">
+    <AppBar position="sticky" >
       <MyToolbar>
         <LinkedCameraIcon
           sx={{ display: { xs: "block", sm: "none" }, marginRight: "8px" }}
@@ -157,7 +160,7 @@ export const Navbar = () => {
           </Badge>
           <Badge
             onClick={() => setIsClicked(!isClicked)}
-            badgeContent={17}
+            badgeContent={FriendRequests?.length}
             color="error"
             className="position-relative"
           >
@@ -173,7 +176,7 @@ export const Navbar = () => {
           {isClicked && <Notifications />}
           <Avatar
             alt="Remy Sharp"
-            src="/static/use2.png"
+            src={userData.picturePath}
             onClick={handleMenuOpen}
             sx={{
               backgroundColor: "#fff",
@@ -188,7 +191,7 @@ export const Navbar = () => {
         <UserBox>
           <Avatar
             alt="Remy Sharp"
-            src="/static/use2.png"
+            src={userData.picturePath}
             onClick={handleMenuOpen}
             sx={{
               backgroundColor: "#fff",

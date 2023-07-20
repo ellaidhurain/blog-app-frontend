@@ -228,7 +228,7 @@ export default function MyBlogs({
     getallLikesForBlog(blogId); // => this is only return promise obj not response.
   }, [blogId]);
 
-  const matchedLikeList = likes.filter((like) => like.blog === blogId) || null;
+  const matchedLikeList = likes?.filter((like) => like.blog === blogId) || null;
 
   const date = new Date();
   const timestamp = date.toDateString();
