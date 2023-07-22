@@ -91,7 +91,7 @@ export const Navbar = () => {
       localStorage.removeItem("userId");
       navigate("/");
       dispatch(setLogout());
-    } catch (err) {
+    } catch (error) {
       // If the response contains an 'error' message, show it in a toast
       if (error.response && error.response.data && error.response.data.error) {
         toast.error(error.response.data.error);
@@ -113,7 +113,7 @@ export const Navbar = () => {
   return (
     <AppBar position="fixed" style={{ top: 0, left: 0, width: "100%" }}>
       <MyToolbar>
-        <Box>
+        <Box  sx={{ display: { lg: "none" } }}>
           <IconButton
             color="inherit"
             aria-label="open drawer"
@@ -140,9 +140,9 @@ export const Navbar = () => {
             >
               <List>
                 {NavItems.map((data) => (
-                  <Box my={1}>
+                  <Box my={1} key={data.id}>
                     <ListItemButton
-                      key={data.id}
+                      
                       onClick={() => {
                         navigate(data.path);
                         setActive(data.id);
@@ -235,7 +235,7 @@ export const Navbar = () => {
         </Paper>
 
         <Icons size="large" aria-label="show 4 new mails" color="inherit">
-          <Badge color="error" className="position-relative">
+          <Badge color="error" sx={{position:"relative"}}>
             <ListItemIcon
               onClick={() =>
                 dispatch(setMode(mode === "light" ? "dark" : "light"))
@@ -262,7 +262,7 @@ export const Navbar = () => {
             onClick={() => setIsClicked(!isClicked)}
             badgeContent={FriendRequests?.length}
             color="error"
-            className="position-relative"
+            sx={{position:"relative"}}
           >
             <NotificationsIcon
               sx={{
@@ -276,7 +276,7 @@ export const Navbar = () => {
           {isClicked && <Notifications />}
           <Avatar
             alt="Remy Sharp"
-            src={userData.picturePath}
+            src={userData?.picturePath}
             onClick={handleMenuOpen}
             sx={{
               backgroundColor: "#fff",
@@ -291,7 +291,7 @@ export const Navbar = () => {
         <UserBox>
           <Avatar
             alt="Remy Sharp"
-            src={userData.picturePath}
+            src={userData?.picturePath}
             onClick={handleMenuOpen}
             sx={{
               backgroundColor: "#fff",

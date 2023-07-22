@@ -11,7 +11,6 @@ import { IconButton } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import { styled } from "@mui/system";
 import TimeAgo from "react-timeago";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
 import {
   addCommentRequest,
   deleteCommentRequest,
@@ -56,7 +55,7 @@ const AllComments = ({ Feed, blogId }) => {
 
   return (
     <>
-      <Box className="m-3 d-flex">
+      <Box sx={{display:"flex", m:3}}>
         <Avatar
           alt="Remy Sharp"
           // src={commentsList.map((data) => data.user.picturePath)}
@@ -179,16 +178,15 @@ function Comments({ blogId, commentData }) {
       <Box className="comments">
         <React.Fragment key={commentId}>
           <Box
-            className="d-flex justify-content-between align-items-center"
-            sx={{ marginLeft: "35px" }}
+            sx={{ marginLeft: "35px", display:"flex", justifyContent:"between", alignItems:"center" }}
             gap={1}
           >
-            <Box className="d-flex align-items-center">
+            <Box sx={{display:"flex", justifyContent:"between", alignItems:"center" }}>
               <Avatar alt="Remy Sharp" src={picturePath} />
-              <Typography sx={{ fontWeight: "bold" }} className="px-2">
+              <Typography sx={{ fontWeight: "bold", px:2 }} >
                 {name}
               </Typography>
-              <Typography className="date px-2">
+              <Typography className="date" px={2}>
                 |{" "}
                 <small style={{ color: "gray", paddingLeft: "10px" }}>
                   <TimeAgo date={createdAt} formatter={formatter} />
@@ -201,8 +199,8 @@ function Comments({ blogId, commentData }) {
             </Typography>
           </Box>
           <Box
-            className="info d-flex py-3"
-            sx={{ paddingLeft: "65px", paddingRight: "10px" }}
+            className="info"
+            sx={{ paddingLeft: "65px", paddingRight: "10px", display:"flex", py:3, }}
           >
             <Box sx={{ flex: 2 }}>
               {editMode ? (
@@ -237,7 +235,7 @@ function Comments({ blogId, commentData }) {
               <Box>
                 <Box
                   aria-label="settings"
-                  className=" mx-3 position-relative"
+                  sx={{position:"relative",mx:3 }}
                   onClick={handleOpen}
                 >
                   {loggedin_user && (
@@ -249,12 +247,11 @@ function Comments({ blogId, commentData }) {
                   {open ? (
                     <>
                       <Box
-                        sx={{ bgcolor: "background.paper" }}
-                        className="shadow position-absolute d-flex flex-column"
+                        sx={{  boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)', bgcolor: "background.paper", position:"absolute", display:"flex", flexDirection:"column" }}
                         style={style}
                       >
                         <Button
-                          className="my-1 mx-1 d-flex align-items-center text-left justify-content-start"
+                          sx={{my:1,mx:1, display:"flex", alignItems:"center", justifyContent:"flex-start", textAlign:"left"}}
                           onClick={handleEdit}
                         >
                           <EditIcon />
@@ -262,7 +259,7 @@ function Comments({ blogId, commentData }) {
                         </Button>
 
                         <Button
-                          className="my-1 mx-1 d-flex align-items-center text-left justify-content-start"
+                          sx={{my:1,mx:1, display:"flex", alignItems:"center", justifyContent:"flex-start", textAlign:"left"}}
                           onClick={handleDeleteComment}
                         >
                           <DeleteIcon />

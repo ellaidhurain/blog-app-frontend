@@ -34,12 +34,20 @@ import {
 } from "../services/api/userApi";
 import HowToRegIcon from "@mui/icons-material/HowToReg";
 import PersonRemoveIcon from "@mui/icons-material/PersonRemove";
+import Typography from '@mui/material/Typography';
+import styled from "@emotion/styled";
+import Divider from '@mui/material/Divider';
+
 
 const api = axios.create({
   // baseURL: "http://localhost:5000/api/blog",
   baseURL: "https://snaplinkbackend.onrender.com/api/blog",
   withCredentials: true, // Enable sending cookies with requests
 });
+
+const CustomHr = styled(Divider)(({ theme }) => ({
+  margin: theme.spacing(2), // Change the value according to your desired margin
+}));
 
 const Feed = () => {
   const { blogs } = useSelector((state) => state.blog);
@@ -255,10 +263,10 @@ const Allblogs = ({ blog }) => {
 
           <CardContent>
             <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-              <h6>{title}</h6>
-              <small px={2} style={{ color: "gray" }}>
+              <Typography variant="h6">{title}</Typography>
+              <Typography variant="subtitle1" px={2} style={{ color: "gray" }}>
                 <TimeAgo date={createdAt} formatter={formatter} />
-              </small>
+              </Typography>
             </Box>
             <Box>
               <ReadMore>{description}</ReadMore>
@@ -272,31 +280,31 @@ const Allblogs = ({ blog }) => {
             alt="Paella dish"
           />
 
-          <div className="d-flex justify-content-between pt-4 px-4">
-            <div>
+          <Box sx={{ display:"flex", justifyContent:"space-between", pt:4, px:4 }}>
+            <Box>
               {matchedLikeList?.length > 0 && (
-                <div className="text-gray-500 px-4">
+                <Box sx={{color:"gray", px:4 }}>
                   {matchedLikeList?.length}{" "}
                   {matchedLikeList?.length === 1 ? "like" : "likes"}
-                </div>
+                </Box>
               )}
-            </div>
+            </Box>
 
-            <div
-              className="d-flex justify-content-end"
+            <Box
+              sx={{display:"flex", justifyContent:"flex-end"}}
               style={{ color: "gray" }}
             >
               {matchedCommentList?.length > 0 && (
-                <div className="text-gray-500 px-4">
+                <Box className="text-gray-500 px-4">
                   {matchedCommentList?.length}{" "}
                   {matchedCommentList?.length === 1 ? "comment" : "comments"}
-                </div>
+                </Box>
               )}
-            </div>
-          </div>
+            </Box>
+          </Box>
           <hr className="mx-4"></hr>
 
-          <CardActions disableSpacing className="d-flex justify-content-end">
+          <CardActions disableSpacing  sx={{display:"flex", justifyContent:"flex-end"}}>
             <IconButton aria-label="add to favorites" onClick={handleLike}>
               <Checkbox
                 icon={<FavoriteBorder />}
@@ -304,7 +312,7 @@ const Allblogs = ({ blog }) => {
                 checked={liked}
               />
             </IconButton>
-            <small style={{ color: "gray" }}>{liked ? "Liked" : "Like"}</small>
+            <Typography variant="subtitle1" sx={{ color: "gray" }}>{liked ? "Liked" : "Like"}</Typography>
 
             <IconButton
               aria-label="delete"
@@ -314,13 +322,13 @@ const Allblogs = ({ blog }) => {
               <CommentIcon />
             </IconButton>
 
-            <small style={{ color: "gray" }}>Comment</small>
+            <Typography variant="subtitle1" sx={{ color: "gray" }}>Comment</Typography>
 
             <IconButton aria-label="share">
               <ShareIcon />
             </IconButton>
 
-            <small style={{ color: "gray", paddingRight: "10px" }}>Share</small>
+            <Typography variant="subtitle1" sx={{ color: "gray", paddingRight: "10px" }} >Share</Typography>
           </CardActions>
           {comments && <AllComments Feed={Feed} blogId={blogId} />}
         </Card>

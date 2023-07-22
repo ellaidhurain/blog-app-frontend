@@ -158,10 +158,9 @@ const AddBlog = ({ picture }) => {
           </UserBox>
 
           <Box
-            sx={{ paddingBottom: "10px" }}
-            className="d-flex justify-content-between"
+            sx={{ paddingBottom: "10px", display:"flex", justifyContent:"space-between" }}            
           >
-            <Box className="d-flex">
+            <Stack direction="row" spacing={1} justifyContent="space-between">
               <IconButton>
                 <CameraAltOutlinedIcon />
               </IconButton>
@@ -182,16 +181,16 @@ const AddBlog = ({ picture }) => {
                   <AddPhotoAlternateOutlinedIcon />
                 </IconButton>
               </label>
-              <input
+              <TextField
                 name="image"
                 accept="image/*"
                 id="file-input"
                 type="file"
-                style={{ display: "none" }}
+                sx={{ display: "none" }}
                 onChange={handleImageUpload}
               />
               {post.image && <span className="pt-2">{post.image.name}</span>}
-            </Box>
+            </Stack>
 
             <Button
               className="px-4 py-0"

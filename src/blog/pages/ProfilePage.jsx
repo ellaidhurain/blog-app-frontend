@@ -157,12 +157,12 @@ const ProfilePage = () => {
                       <EditIcon />
                     </IconButton>
                   </label>
-                  <input
+                  <TextField
                     name="image"
                     accept="image/*"
                     id="file-input"
                     type="file"
-                    style={{ display: "none" }}
+                    sx={{ display: "none" }}
                     onChange={handleImageChange}
                   />
                   <Box>
@@ -171,9 +171,7 @@ const ProfilePage = () => {
                     )}
                   </Box>
                 </Box>
-                <Typography variant="h2" pt={2}>
-                  <span variant="subtitle1">{userData?.Name}</span>
-                </Typography>
+                  <Typography variant="h2" pt={2}>{userData?.Name}</Typography>
                 <Typography style={{ color: "gray" }}>{/* Actor */}</Typography>
               </Grid>
 

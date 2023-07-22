@@ -31,13 +31,13 @@ export const Leftbar = (props) => {
       navigate("/");
       dispatch(setLogout());
     } catch (error) {
-        // If the response contains an 'error' message, show it in a toast
-        if (error.response && error.response.data && error.response.data.error) {
-          toast.error(error.response.data.error);
-        } else {
-          // If there's no specific error message in the response, show a generic error message
-          toast.error("🚨 Not so easy!");
-        }
+      // If the response contains an 'error' message, show it in a toast
+      if (error.response && error.response.data && error.response.data.error) {
+        toast.error(error.response.data.error);
+      } else {
+        // If there's no specific error message in the response, show a generic error message
+        toast.error("🚨 Not so easy!");
+      }
     }
   };
 
@@ -53,7 +53,10 @@ export const Leftbar = (props) => {
           sx={{
             position: "fixed",
             bgcolor: "background.paper",
-            border: mode === "light" ? "1px solid rgba(0,0,0,0.15)": "1px solid rgba(214, 213, 213, 0.15)",
+            border:
+              mode === "light"
+                ? "1px solid rgba(0,0,0,0.15)"
+                : "1px solid rgba(214, 213, 213, 0.15)",
             borderRadius: "10px",
             padding: "10px",
           }}
@@ -65,6 +68,7 @@ export const Leftbar = (props) => {
                   navigate(data.path);
                   setActive(data.id);
                 }}
+                disableRipple
                 sx={{
                   minHeight: 48,
                   px: 2.5,
@@ -72,11 +76,9 @@ export const Leftbar = (props) => {
                     active === data.id ? "#383d402f" : "transparent",
                   borderRadius: active === data.id ? "5px" : "none",
                   "&:hover": {
-                    backgroundColor: mode === "light" ? "#383d402f" :"#383d403a",
+                    backgroundColor:
+                      mode === "light" ? "#383d402f" : "#383d403a",
                     borderRadius: "5px",
-                  },
-                  "& .MuiTouchRipple-root": {
-                    display: "none",
                   },
                 }}
               >
@@ -105,7 +107,7 @@ export const Leftbar = (props) => {
                 },
               }}
             >
-              <ListItemIcon className="px-1">
+              <ListItemIcon px={1}>
                 <LogoutIcon />
                 <span className="px-2">Logout</span>
               </ListItemIcon>
@@ -113,7 +115,6 @@ export const Leftbar = (props) => {
           </ListItem>
         </List>
       </Box>
-      
     </>
   );
 };

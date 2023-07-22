@@ -8,9 +8,10 @@ const api = axios.create({
   credentials: "include",
 });
 
+const url = "https://snaplinkbackend.onrender.com/api/user"
+// const url = "http://localhost:5000/api/user"
+
 // Redux AsyncThunk is a Middleware for handling asynchronous actions in Redux and do operations on promise obj handled by redux
-// const url = "http://localhost:5000/api/user";
-const url = "https://snaplinkbackend.onrender.com/api/user";
 
 export const getOneUserRequest = createAsyncThunk(
   "blog/getOneUserRequest",

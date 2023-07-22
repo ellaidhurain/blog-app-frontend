@@ -1,47 +1,87 @@
 import { Button } from "@mui/material";
 import React from "react";
 import { chatData } from "../../data/chatData";
+import { Box } from "@mui/material";
 
 const Messages = () => {
-  const style = {
-    top: "70px",
-    right: "50px",
-    width: "380px",
-    zIndex: "99999",
-    borderRadius:"10px"
-  };
+
   return (
-    <div className="bg-white position-absolute shadow p-5 " style={style}>
-      <div className="d-flex justify-content-between align-items-center">
-        <h5 className="text-black font-weight-bold">Messages</h5>
-      </div>
-      <div className="mt-3">
+    <Box
+      sx={{
+        top: "70px",
+        right: "50px",
+        width: "380px",
+        zIndex: "99999",
+        borderRadius: "10px",
+        backgroundColor: "white",
+        position: "absolute",
+        boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
+        padding: "20px",
+      }}
+    >
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <Typography
+          variant="h5"
+          sx={{ color: "black", fontWeight: "bold", m: 0 }}
+        >
+          Messages
+        </Typography>
+      </Box>
+      <Box mt={3}>
         {chatData?.map((item) => (
-          <div className="d-flex  border-bottom mt-3 gap-3">
+          <Box
+            sx={{
+              display: "flex",
+              borderBottom: "1px solid #E0E0E0",
+              mt: 3,
+              gap: "15px",
+              alignItems: "center",
+            }}
+          >
             <img
               className="rounded-circle"
-              style={{ width: "35px", height: "35px" }}
+              sx={{ width: "35px", height: "35px", borderRadius: "50%" }}
               src={item.image}
               alt={item.message}
             />
-            <div className="mx-2">
-              <p className="text-black m-0" style={{ fontWeight: 500 }}>
+            <Box mx={2}>
+              <Typography
+                sx={{
+                  color: "black",
+                  m: 0,
+                  fontWeight: 500,
+                  fontSize: "14px",
+                }}
+              >
                 {item.message}
-              </p>
-              <p className="m-0 pb-3" style={{ color: "gray" }}>
+              </Typography>
+              <Typography
+                sx={{
+                  color: "gray",
+                  m: 0,
+                  pb: 3,
+                  fontSize: "12px",
+                }}
+              >
                 {" "}
                 {item.desc}{" "}
-              </p>
-            </div>
-          </div>
+              </Typography>
+            </Box>
+          </Box>
         ))}
-      </div>
-      <div className="mt-3">
-        <Button className="btn btn-primary w-100" variant="contained">
+      </Box>
+      <Box mt={3}>
+        <Button sx={{ width: "100%" }} variant="contained" color="primary">
           see all
         </Button>
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 };
 

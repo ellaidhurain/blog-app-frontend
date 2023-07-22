@@ -19,17 +19,13 @@ import Avatar from "@mui/material/Avatar";
 import Typography from "@mui/material/Typography";
 import ShareIcon from "@mui/icons-material/Share";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
-import FavoriteBorder from "@mui/icons-material/FavoriteBorder";
-import Favorite from "@mui/icons-material/Favorite";
-import Checkbox from "@mui/material/Checkbox";
 import CommentIcon from "@mui/icons-material/Comment";
-import Comments from "../components/comments/Comments";
-import { Link, useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Button } from "@mui/material";
 import styled from "@emotion/styled";
 import TimeAgo from "react-timeago";
 import { formatter } from "../helper/helper";
-
+import AddPhotoAlternateOutlinedIcon from "@mui/icons-material/AddPhotoAlternateOutlined";
 import {
   deleteBlogRequest,
   getAllBlogsRequest,
@@ -62,6 +58,8 @@ const UserBox = styled(Box)(({ theme }) => ({
   marginBottom: "15px",
   marginLeft: "10px",
 }));
+
+
 
 export const UserBlogs = (props) => {
   const { userData } = useSelector((state) => state.blog);
@@ -275,14 +273,14 @@ export default function MyBlogs({
 
           <CardContent>
             <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-              <h6>{title}</h6>
-              <small px={2} style={{ color: "gray" }}>
+              <Typography variant="h6">{title}</Typography>
+              <Typography variant="subtitle1" sx={{px:2, color:"gray"}} >
                 <TimeAgo date={createdAt} formatter={formatter} />
-              </small>
+              </Typography>
             </Box>
-            <p>
+            <Typography>
               <ReadMore>{description}</ReadMore>
-            </p>
+            </Typography>
           </CardContent>
 
           <CardMedia
@@ -291,31 +289,31 @@ export default function MyBlogs({
             image={imageURL}
             alt="Paella dish"
           />
-          <div className="d-flex justify-content-between pt-2 px-4">
-            <div>
+          <Box sx={{display:"flex", justifyContent:"space-between", pt:2 ,px:2}} >
+            <Box>
               {matchedLikeList?.length > 0 && (
-                <div className="text-gray-500 px-4">
+                <Box className="text-gray-500 px-4">
                   {matchedLikeList?.length}{" "}
                   {matchedLikeList?.length === 1 ? "like" : "likes"}
-                </div>
+                </Box>
               )}
-            </div>
+            </Box>
 
-            <div
+            <Box
               className="d-flex justify-content-end"
               style={{ color: "gray" }}
             >
               {matchedCommentList?.length > 0 && (
-                <div className="text-gray-500 px-4">
+                <Box className="text-gray-500 px-4">
                   {matchedCommentList?.length}{" "}
                   {matchedCommentList?.length === 1 ? "comment" : "comments"}
-                </div>
+                </Box>
               )}
-            </div>
-          </div>
+            </Box>
+          </Box>
           <hr className="mx-4"></hr>
 
-          <CardActions disableSpacing className="d-flex justify-content-end">
+          <CardActions disableSpacing sx={{display:"flex", justifyContent:"flex-end"}}>
             <IconButton
               aria-label="delete"
               sx={{ marginLeft: "10px" }}
@@ -405,17 +403,23 @@ export default function MyBlogs({
                 direction="row"
                 gap={1}
                 mb={3}
-                className="d-flex justify-content-between align-items-center"
+                sx={{display:"flex", justifyContent:"space-between", alignItems:"center" }}
               >
-                <input
+                <label htmlFor="file-input" className="m-0">
+                <IconButton component="span">
+                  <AddPhotoAlternateOutlinedIcon />
+                </IconButton>
+              </label>
+                <TextField
                   type="file"
                   onChange={handleImageChange}
                   accept="image/*"
+                  sx={{display: "none" }}
                 />
                 {selectedImage && (
-                  <div>
+                  <Box>
                     <img width="80px" src={selectedImage} alt="Preview" />
-                  </div>
+                  </Box>
                 )}
               </Stack>
 
@@ -424,6 +428,7 @@ export default function MyBlogs({
                 variant="contained"
                 aria-label="outlined primary button group"
                 className="mt-2 pt-2"
+                disableRipple
               >
                 <Button onClick={handleUpdate}>Post</Button>
               </ButtonGroup>

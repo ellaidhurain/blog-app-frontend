@@ -11,7 +11,7 @@ import Rightbar from "../blog/components/Rightbar/Rightbar";
 import { Box, ThemeProvider, CssBaseline } from "@mui/material";
 import { createTheme } from "@mui/material/styles";
 import { useMemo } from "react";
-import { themeSettings } from "../theme";
+import { themeSettings } from "../blog/theme/theme";
 import SettingsPage from "../blog/pages/SettingsPage";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -27,7 +27,7 @@ const Home = () => {
     <>
       {/* wrapping up of Theme provider will provide theme across all child elements */}
       <ThemeProvider theme={theme}>
-        <CssBaseline />
+        <CssBaseline /> {/* It fixes some inconsistencies across browsers */}
         <Box color={"text.primary"}>
           <Navbar />
           {/* stack is used to create responsive and flexible layout */}

@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import PersonAddAltIcon from "@mui/icons-material/PersonAddAlt";
 import PersonRemoveIcon from "@mui/icons-material/PersonRemove";
 import { IconButton } from "@mui/material";
-import { Box } from "@mui/system";
+import { Box, Typography } from "@mui/material";
 import { toast } from "react-toastify";
 
 const Notifications = () => {
@@ -92,26 +92,59 @@ const Notifications = () => {
       className=" position-absolute shadow p-5"
       style={style}
     >
-      <Box className="d-flex justify-content-between align-items-center">
-        <h5 className="font-weight-bold">Notifications</h5>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <Typography
+          variant="h5"
+          sx={{ color: "white", fontWeight: "bold", m: 0 }}
+        >
+          Notifications
+        </Typography>
       </Box>
-      <Box className="">
+      <Box>
         {FriendRequests?.map((friend) => (
-          <Box className="d-flex justify-content-between  border-bottom mt-3 gap-3">
+          <Box
+            sx={{
+              display: "flex",
+              borderBottom: "1px solid #E0E0E0",
+              mt: 3,
+              gap: "15px",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
             <img
-              className="rounded-circle"
-              style={{ width: "35px", height: "35px" }}
+              style={{ width: "35px", height: "35px", borderRadius: "50%" }}
               src={friend?.picturePath}
               alt="image"
             />
             <Box>
-              <p className="m-0" style={{ fontWeight: 500 }}>
+              <Typography
+                sx={{
+                  color: "black",
+                  m: 0,
+                  fontWeight: 500,
+                  fontSize: "14px",
+                }}
+              >
                 {friend?.Name}
-              </p>
-              <p className="m-0 pb-3" style={{ color: "gray" }}>
+              </Typography>
+              <Typography
+                sx={{
+                  color: "gray",
+                  m: 0,
+                  pb: 3,
+                  fontSize: "12px",
+                }}
+              >
                 {" "}
                 {friend?.location}{" "}
-              </p>
+              </Typography>
             </Box>
             <Box>
               <IconButton
@@ -130,14 +163,14 @@ const Notifications = () => {
           </Box>
         ))}
       </Box>
-      <Box className="mt-3">
+      <Box mt={3}>
         {FriendRequests?.length > 0 ? (
-          <Button className="btn btn-primary w-100" variant="contained">
+          <Button  sx={{ width: "100%" }} variant="contained" color="primary">
             see all
           </Button>
         ) : (
           <>
-            <span style={{color:"gray"}}>no new notification</span>
+            <span style={{ color: "gray" }}>no new notification</span>
           </>
         )}
       </Box>
