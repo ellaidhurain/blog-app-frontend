@@ -122,7 +122,7 @@ const AddBlog = ({ picture }) => {
         sx={{
           bgcolor: "background.paper",
           marginBottom: 2,
-          borderRadius: {xs: "none", sm:"none", lg:"15px", md:"15px"},
+          borderRadius: {xs: "none", sm:"15px", lg:"15px", md:"15px"},
           height: "120px",
           border:
             mode === "light"

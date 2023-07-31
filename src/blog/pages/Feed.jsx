@@ -223,7 +223,7 @@ const Allblogs = ({ blog }) => {
             sx={{
               marginLeft:0,
               marginBottom: 2,
-              borderRadius: {xs: "none", sm:"none", lg:"15px", md:"15px"},
+              borderRadius: {xs: "none", sm:"15px", lg:"15px", md:"15px"},
               border:
                 mode === "light"
                   ? "1px solid rgba(0,0,0,0.15)"
