@@ -81,7 +81,6 @@ const Signup = () => {
                 name="Name"
                 type="text"
                 sx={{ width: "100%", py: 2 }}
-                value={inputs.Name}
                 {...register("Name", {
                   required: "Name is required",
                   minLength: {
@@ -102,7 +101,6 @@ const Signup = () => {
                 type="email"
                 placeholder="email"
                 sx={{ width: "100%", pb: 2 }}
-                value={inputs.Email}
                 {...register("Email", {
                   required: "Email is required",
                 })}
@@ -118,7 +116,6 @@ const Signup = () => {
                 type="password"
                 sx={{ width: "100%", pb: 2 }}
                 placeholder="password"
-                value={inputs.Password}
                 {...register("Password", {
                   required: "Password is required",
                 })}
