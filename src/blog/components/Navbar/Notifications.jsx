@@ -1,4 +1,4 @@
-import { Button } from "@mui/material";
+import { Button, Paper } from "@mui/material";
 import React, { useEffect, useRef } from "react";
 import {
   acceptFriendRequest,
@@ -13,13 +13,6 @@ import { Box, Typography } from "@mui/material";
 import { toast } from "react-toastify";
 
 const Notifications = () => {
-  const style = {
-    top: "70px",
-    right: "50px",
-    width: "380px",
-    zIndex: "9999",
-    borderRadius: "10px",
-  };
   const { FriendRequests } = useSelector((state) => state.user);
   const { mode } = useSelector((state) => state.blog);
 
@@ -82,16 +75,23 @@ const Notifications = () => {
   };
 
   return (
-    <Box
+    <>
+    <Paper
       sx={{
+        width:{lg:"380px", xs:"280px"},
         border:
           mode === "light"
             ? "1px solid rgba(0,0,0,0.15)"
             : "1px solid rgba(214, 213, 213, 0.15)",
         bgcolor: "background.paper",
+        p:5,
+        position:"absolute",
+        top: "70px",
+        right: "30px",
+        zIndex: "9999",
+        borderRadius: "10px",
       }}
-      className=" position-absolute shadow p-5"
-      style={style}
+      elevation={5}
     >
       <Box
         sx={{
@@ -176,7 +176,8 @@ const Notifications = () => {
           </>
         )}
       </Box>
-    </Box>
+    </Paper>
+    </>
   );
 };
 

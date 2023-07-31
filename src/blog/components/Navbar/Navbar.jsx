@@ -92,7 +92,6 @@ export const Navbar = () => {
             aria-label="open drawer"
             edge="start"
             onClick={handleDrawerToggle}
-            sx={{ display: { lg: "none" } }}
           >
             <MenuIcon />
           </IconButton>
@@ -205,6 +204,7 @@ export const Navbar = () => {
         <Paper
           component="form"
           sx={{
+            mx:{xs:2},
             padding: "2px 4px",
             display: "flex",
             alignItems: "left",
@@ -253,6 +253,7 @@ export const Navbar = () => {
           color="error"
           sx={{
             position: "relative",
+            pl:2
           }}
         >
           <NotificationsIcon
