@@ -174,10 +174,6 @@ function Comments({ blogId, commentData }) {
                 </small>
               </Typography>
             </Box>
-
-            <Typography sx={{ color: "gray", marginRight: "35px" }}>
-              <small>like | reply</small>
-            </Typography>
           </Box>
           <Box
             className="info"
