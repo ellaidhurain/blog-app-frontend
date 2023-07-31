@@ -18,9 +18,7 @@ export const Leftbar = (props) => {
   const { mode } = useSelector((state) => state.blog);
 
   // Initialize the active state with the value from localStorage
-  const [active, setActive] = useState(
-    localStorage.getItem("activeNavItem") || NavItems[0].id
-  );
+  const [active, setActive] = useState(0);
 
   const handleLogout = async () => {
     localStorage.removeItem("userId");
