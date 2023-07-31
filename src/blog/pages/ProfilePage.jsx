@@ -132,146 +132,141 @@ const ProfilePage = () => {
 
   return (
     <>
-      {isLoadingUser && (
-        <GlobalSkeleton height1={50} height2={150} height3={50} />
-      )}
       {isUserErr && <small>{isUserErr}</small>}
-      {!isLoadingUser && (
-        <Box flex={4} p={2}>
-          <ProfileCard>
-            <CardContent>
-              <Grid container spacing={2} p={2}>
-                <Grid item xs={12} md={4} align={isMobile ? "center" : "left"}>
-                  <ProfilePicture alt="Profile" src={userData?.picturePath} />
-                  <Box
-                    display={"flex"}
-                    justifyContent={"flex-end"}
-                    width={"150px"}
-                  >
-                    <label htmlFor="file-input" className="m-0">
-                      <IconButton component="span">
-                        <EditIcon />
-                      </IconButton>
-                    </label>
-                    <TextField
-                      name="image"
-                      accept="image/*"
-                      id="file-input"
-                      type="file"
-                      sx={{ display: "none" }}
-                      onChange={handleImageChange}
-                    />
-                    <Box>
-                      {selectedImage?.picturePath && !isImageUpdated && (
-                        <Button onClick={handleImageUpdate}>Save</Button>
-                      )}
-                    </Box>
+      <Box flex={4} p={2}>
+        <ProfileCard>
+          <CardContent>
+            <Grid container spacing={2} p={2}>
+              <Grid item xs={12} md={4} align={isMobile ? "center" : "left"}>
+                <ProfilePicture alt="Profile" src={userData?.picturePath} />
+                <Box
+                  display={"flex"}
+                  justifyContent={"flex-end"}
+                  width={"150px"}
+                >
+                  <label htmlFor="file-input" className="m-0">
+                    <IconButton component="span">
+                      <EditIcon />
+                    </IconButton>
+                  </label>
+                  <TextField
+                    name="image"
+                    accept="image/*"
+                    id="file-input"
+                    type="file"
+                    sx={{ display: "none" }}
+                    onChange={handleImageChange}
+                  />
+                  <Box>
+                    {selectedImage?.picturePath && !isImageUpdated && (
+                      <Button onClick={handleImageUpdate}>Save</Button>
+                    )}
                   </Box>
-                  <Typography variant="h2" pt={2}>
-                    {userData?.Name}
-                  </Typography>
-                  <Typography style={{ color: "gray" }}>
-                    {/* Actor */}
-                  </Typography>
-                </Grid>
-
-                <Grid item xs={12} md={8}>
-                  <Box display={"flex"} justifyContent={"space-between"} py={3}>
-                    <ProfileHeader>
-                      <Typography>
-                        Location:{" "}
-                        <span style={{ color: "gray" }}>
-                          {userData?.location}
-                        </span>
-                      </Typography>
-
-                      <Typography>
-                        Impressions:{" "}
-                        <span style={{ color: "gray" }}>
-                          {userData?.impressions}
-                        </span>
-                      </Typography>
-                      <Typography>
-                        Followers:{" "}
-                        <span style={{ color: "gray" }}>
-                          {userData?.viewedProfile}
-                        </span>
-                      </Typography>
-                      <Typography>
-                        Friends:
-                        <span style={{ color: "gray" }}>
-                          {userData?.friends?.length}
-                        </span>
-                      </Typography>
-                    </ProfileHeader>
-                    <Box mr={3} textAlign="center">
-                      <Button variant="outlined" onClick={handleOpen}>
-                        Edit
-                      </Button>
-                    </Box>
-                  </Box>
-                  <span variant="subtitle1">ABOUT ME:</span>
-                  <Typography style={{ color: "gray", textAlign: "justify" }}>
-                    {post?.about}
-                  </Typography>
-                </Grid>
+                </Box>
+                <Typography variant="h2" pt={2}>
+                  {userData?.Name}
+                </Typography>
+                <Typography style={{ color: "gray" }}>{/* Actor */}</Typography>
               </Grid>
-            </CardContent>
-          </ProfileCard>
-          <StyledModel
-            open={open}
-            onClose={handleClose}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
+
+              <Grid item xs={12} md={8}>
+                <Box display={"flex"} justifyContent={"space-between"} py={3}>
+                  <ProfileHeader>
+                    <Typography>
+                      Location:{" "}
+                      <span style={{ color: "gray" }}>
+                        {userData?.location}
+                      </span>
+                    </Typography>
+
+                    <Typography>
+                      Impressions:{" "}
+                      <span style={{ color: "gray" }}>
+                        {userData?.impressions}
+                      </span>
+                    </Typography>
+                    <Typography>
+                      Followers:{" "}
+                      <span style={{ color: "gray" }}>
+                        {userData?.viewedProfile}
+                      </span>
+                    </Typography>
+                    <Typography>
+                      Friends:
+                      <span style={{ color: "gray" }}>
+                        {userData?.friends?.length}
+                      </span>
+                    </Typography>
+                  </ProfileHeader>
+                  <Box mr={3} textAlign="center">
+                    <Button variant="outlined" onClick={handleOpen}>
+                      Edit
+                    </Button>
+                  </Box>
+                </Box>
+                <span variant="subtitle1">ABOUT ME:</span>
+                <Typography style={{ color: "gray", textAlign: "justify" }}>
+                  {post?.about}
+                </Typography>
+              </Grid>
+            </Grid>
+          </CardContent>
+        </ProfileCard>
+
+        <StyledModel
+          open={open}
+          onClose={handleClose}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          <Box
+            width={550}
+            height={450}
+            bgcolor={"background.default"}
+            color={"text.primary"}
+            p={4}
+            borderRadius={5}
           >
-            <Box
-              width={550}
-              height={450}
-              bgcolor={"background.default"}
-              color={"text.primary"}
-              p={4}
-              borderRadius={5}
-            >
-              <Typography variant="h6" color="grey" textAlign="center">
-                Update Post
-              </Typography>
-              <TextField
-                name="Name"
-                sx={{ width: "100%", pt: 2 }}
-                id="standard-multiline-static"
-                rows={4}
-                label="Name"
-                variant="standard"
-                onChange={handleInputChange}
-                value={post?.Name}
-                placeholder="title"
-              />
+            <Typography variant="h6" color="grey" textAlign="center">
+              Update Post
+            </Typography>
+            <TextField
+              name="Name"
+              sx={{ width: "100%", pt: 2 }}
+              id="standard-multiline-static"
+              rows={4}
+              label="Name"
+              variant="standard"
+              onChange={handleInputChange}
+              value={post?.Name}
+              placeholder="title"
+            />
 
-              <TextField
-                name="location"
-                sx={{ width: "100%", pt: 3 }}
-                id="standard-multiline-static"
-                onChange={handleInputChange}
-                rows={4}
-                label="Location"
-                variant="standard"
-                value={post?.location}
-                placeholder="Location"
-              />
-              <TextField
-                name="about"
-                sx={{ width: "100%", pt: 3 }}
-                id="standard-multiline-static"
-                onChange={handleInputChange}
-                rows={4}
-                label="about me"
-                variant="standard"
-                value={post?.about || ""}
-                placeholder="about me"
-                multiline
-              />
+            <TextField
+              name="location"
+              sx={{ width: "100%", pt: 3 }}
+              id="standard-multiline-static"
+              onChange={handleInputChange}
+              rows={4}
+              label="Location"
+              variant="standard"
+              value={post?.location}
+              placeholder="Location"
+            />
+            <TextField
+              name="about"
+              sx={{ width: "100%", pt: 3 }}
+              id="standard-multiline-static"
+              onChange={handleInputChange}
+              rows={4}
+              label="about me"
+              variant="standard"
+              value={post?.about || ""}
+              placeholder="about me"
+              multiline
+            />
 
-              {/* <Stack
+            {/* <Stack
               direction="row"
               gap={1}
               mb={3}
@@ -289,18 +284,17 @@ const ProfilePage = () => {
               )}
             </Stack> */}
 
-              <ButtonGroup
-                fullWidth
-                variant="contained"
-                aria-label="outlined primary button group"
-                className="mt-4 pt-5"
-              >
-                <Button onClick={handleUpdate}>Post</Button>
-              </ButtonGroup>
-            </Box>
-          </StyledModel>
-        </Box>
-      )}
+            <ButtonGroup
+              fullWidth
+              variant="contained"
+              aria-label="outlined primary button group"
+              className="mt-4 pt-5"
+            >
+              <Button onClick={handleUpdate}>Post</Button>
+            </ButtonGroup>
+          </Box>
+        </StyledModel>
+      </Box>
     </>
   );
 };
