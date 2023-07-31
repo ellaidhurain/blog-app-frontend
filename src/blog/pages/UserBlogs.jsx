@@ -44,8 +44,8 @@ import {
 import GlobalSkeleton from "./GlobalSkeleton";
 
 const api = axios.create({
-  baseURL: "http://localhost:5000/api/blog",
-  // baseURL: "https://snaplinkbackend.onrender.com/api/blog",
+  // baseURL: "http://localhost:5000/api/blog",
+  baseURL: "https://snaplinkbackend.onrender.com/api/blog",
   withCredentials: true, // Enable sending cookies with requests
 });
 
@@ -97,12 +97,14 @@ export default function UserBlogs(props) {
       </Box>
     </>
   );
-};
+}
 
 export function MyBlogs({ blogId, title, description, imageURL, createdAt }) {
   const userId = localStorage.getItem("userId");
   const dispatch = useDispatch();
-  const { userData,isLoadingUser,isUserErr } = useSelector((state) => state.user);
+  const { userData, isLoadingUser, isUserErr } = useSelector(
+    (state) => state.user
+  );
 
   const [post, setPost] = useState({
     title: title,
@@ -220,123 +222,127 @@ export function MyBlogs({ blogId, title, description, imageURL, createdAt }) {
 
   return (
     <>
-      {isLoadingUser && <GlobalSkeleton height1={50} height2={250} height3={50}/>}
+      {isLoadingUser && (
+        <GlobalSkeleton height1={50} height2={250} height3={50} />
+      )}
       {isUserErr && <small>{isUserErr}</small>}
-      <Box>
-        <Card
-          sx={{
-            marginBottom: 2,
-            borderRadius: "15px",
-            border:
-              mode === "light"
-                ? "1px solid rgba(0,0,0,0.15)"
-                : "1px solid rgba(214, 213, 213, 0.15)",
-            boxShadow: "none",
-            bgcolor: "background.paper",
-          }}
-        >
-          <CardHeader
-            avatar={
-              <Link to="/profile">
-                <Avatar alt="User Avatar" src={userData?.picturePath} />
-              </Link>
-            }
-            action={
-              <IconButton aria-label="settings">
-                <MoreHorizIcon />
-              </IconButton>
-            }
-            title={userData?.Name}
-            subheader={timestamp}
-          />
-
-          <CardContent>
-            <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-              <Typography variant="h6">{title}</Typography>
-              <Typography variant="subtitle1" sx={{ px: 2, color: "gray" }}>
-                <TimeAgo date={createdAt} formatter={formatter} />
-              </Typography>
-            </Box>
-            <Typography>
-              <ReadMore>{description}</ReadMore>
-            </Typography>
-          </CardContent>
-
-          <CardMedia
-            component="img"
-            height="300"
-            image={imageURL}
-            alt="Paella dish"
-          />
-          <Box
+      {!isLoadingUser && (
+        <Box>
+          <Card
             sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              pt: 2,
-              px: 2,
+              marginBottom: 2,
+              borderRadius: "15px",
+              border:
+                mode === "light"
+                  ? "1px solid rgba(0,0,0,0.15)"
+                  : "1px solid rgba(214, 213, 213, 0.15)",
+              boxShadow: "none",
+              bgcolor: "background.paper",
             }}
           >
-            <Box>
-              {matchedLikeList?.length > 0 && (
-                <Box className="text-gray-500 px-4">
-                  {matchedLikeList?.length}{" "}
-                  {matchedLikeList?.length === 1 ? "like" : "likes"}
-                </Box>
-              )}
-            </Box>
+            <CardHeader
+              avatar={
+                <Link to="/profile">
+                  <Avatar alt="User Avatar" src={userData?.picturePath} />
+                </Link>
+              }
+              action={
+                <IconButton aria-label="settings">
+                  <MoreHorizIcon />
+                </IconButton>
+              }
+              title={userData?.Name}
+              subheader={timestamp}
+            />
 
+            <CardContent>
+              <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+                <Typography variant="h6">{title}</Typography>
+                <Typography variant="subtitle1" sx={{ px: 2, color: "gray" }}>
+                  <TimeAgo date={createdAt} formatter={formatter} />
+                </Typography>
+              </Box>
+              <Typography>
+                <ReadMore>{description}</ReadMore>
+              </Typography>
+            </CardContent>
+
+            <CardMedia
+              component="img"
+              height="300"
+              image={imageURL}
+              alt="Paella dish"
+            />
             <Box
-              className="d-flex justify-content-end"
-              style={{ color: "gray" }}
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                pt: 2,
+                px: 2,
+              }}
             >
-              {matchedCommentList?.length > 0 && (
-                <Box className="text-gray-500 px-4">
-                  {matchedCommentList?.length}{" "}
-                  {matchedCommentList?.length === 1 ? "comment" : "comments"}
-                </Box>
-              )}
-            </Box>
-          </Box>
-          <hr className="mx-4"></hr>
+              <Box>
+                {matchedLikeList?.length > 0 && (
+                  <Box className="text-gray-500 px-4">
+                    {matchedLikeList?.length}{" "}
+                    {matchedLikeList?.length === 1 ? "like" : "likes"}
+                  </Box>
+                )}
+              </Box>
 
-          <CardActions
-            disableSpacing
-            sx={{ display: "flex", justifyContent: "flex-end" }}
-          >
-            <IconButton
-              aria-label="delete"
-              sx={{ marginLeft: "10px" }}
-              onClick={handleComments}
-            >
-              <CommentIcon />
-            </IconButton>
-            <Box style={{ fontSize: "15px" }} pr={3}>
-              10 comments
-            </Box>
-
-            <Box>
-              <IconButton aria-label="share" sx={{ marginLeft: "10px" }}>
-                <ShareIcon />
-              </IconButton>
-              <IconButton
-                aria-label="edit"
-                onClick={handleOpen}
-                sx={{ marginLeft: "10px" }}
+              <Box
+                className="d-flex justify-content-end"
+                style={{ color: "gray" }}
               >
-                <EditIcon />
-              </IconButton>
+                {matchedCommentList?.length > 0 && (
+                  <Box className="text-gray-500 px-4">
+                    {matchedCommentList?.length}{" "}
+                    {matchedCommentList?.length === 1 ? "comment" : "comments"}
+                  </Box>
+                )}
+              </Box>
+            </Box>
+            <hr className="mx-4"></hr>
+
+            <CardActions
+              disableSpacing
+              sx={{ display: "flex", justifyContent: "flex-end" }}
+            >
               <IconButton
                 aria-label="delete"
-                onClick={handleDelete}
                 sx={{ marginLeft: "10px" }}
+                onClick={handleComments}
               >
-                <DeleteIcon />
+                <CommentIcon />
               </IconButton>
-            </Box>
-          </CardActions>
-          {comments && <AllComments blogId={blogId} />}
-        </Card>
-      </Box>
+              <Box style={{ fontSize: "15px" }} pr={3}>
+                10 comments
+              </Box>
+
+              <Box>
+                <IconButton aria-label="share" sx={{ marginLeft: "10px" }}>
+                  <ShareIcon />
+                </IconButton>
+                <IconButton
+                  aria-label="edit"
+                  onClick={handleOpen}
+                  sx={{ marginLeft: "10px" }}
+                >
+                  <EditIcon />
+                </IconButton>
+                <IconButton
+                  aria-label="delete"
+                  onClick={handleDelete}
+                  sx={{ marginLeft: "10px" }}
+                >
+                  <DeleteIcon />
+                </IconButton>
+              </Box>
+            </CardActions>
+            {comments && <AllComments blogId={blogId} />}
+          </Card>
+        </Box>
+      )}
 
       <>
         <Box>

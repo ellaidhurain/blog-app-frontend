@@ -5,6 +5,15 @@ import Button from "@mui/material/Button";
 import { Box } from "@mui/system";
 import { toast } from "react-toastify";
 
+const api = axios.create({
+  // baseURL: "http://localhost:5000/api/blog",
+  baseURL: "https://snaplinkbackend.onrender.com/api/user",
+  withCredentials: true, // Enable sending cookies with requests
+});
+
+const token = localStorage.getItem("token");
+api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+
 const SettingsPage = () => {
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -18,8 +27,8 @@ const SettingsPage = () => {
 
     try {
       // Send the password change request using Axios
-      const response = await axios.put(
-        "http://localhost:5000/api/user/updatePassword",
+      const response = await api.put(
+        "/updatePassword",
         { Password: password },
         {
           headers: {
