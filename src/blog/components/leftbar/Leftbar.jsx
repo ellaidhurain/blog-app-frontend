@@ -15,14 +15,18 @@ import { Logout as LogoutIcon } from "@mui/icons-material";
 export const Leftbar = (props) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [active, setActive] = useState(null);
   const { mode } = useSelector((state) => state.blog);
 
-  const handleLogout = async () => {   
-      localStorage.removeItem("userId");
-      localStorage.removeItem("token");
-      navigate("/");
-      console.log("hi");
+  // Initialize the active state with the value from localStorage
+  const [active, setActive] = useState(
+    localStorage.getItem("activeNavItem") || null
+  );
+
+  const handleLogout = async () => {
+    localStorage.removeItem("userId");
+    localStorage.removeItem("token");
+    navigate("/");
+    console.log("hi");
   };
 
   useEffect(() => {
@@ -32,7 +36,6 @@ export const Leftbar = (props) => {
     }
   }, [active]);
 
-
   return (
     <>
       <Box
@@ -40,7 +43,6 @@ export const Leftbar = (props) => {
         p={2}
         sx={{ display: { md: "none", lg: "block", xs: "none", sm: "none" } }}
       >
-        {" "}
         <List
           sx={{
             position: "fixed",
@@ -59,7 +61,6 @@ export const Leftbar = (props) => {
                 onClick={() => {
                   navigate(data.path);
                   setActive(data.id);
-                  localStorage.setItem("activeNavItem", data.id);
                 }}
                 disableRipple
                 sx={{
