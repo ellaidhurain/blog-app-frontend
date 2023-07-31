@@ -114,7 +114,7 @@ const ProfilePage = () => {
 
     try {
       if (userId) {
-        await dispatch(updateProfileImageRequest({ formData })).then(() => {
+        await dispatch(updateProfileImageRequest({ formData,userId })).then(() => {
           dispatch(getOneUserRequest(userId));
           handleClose();
           toast.success("🦄 Wow so easy!");

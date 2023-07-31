@@ -103,9 +103,9 @@ export const updateUserRequest = createAsyncThunk(
 
 export const updateProfileImageRequest = createAsyncThunk(
   "update/updateProfileImage",
-  async ({ formData, thunkAPI }) => {
+  async ({ formData,userId, thunkAPI }) => {
     try {
-      const res = await api.put(`/updateProfileImage`, formData, {
+      const res = await api.put(`/updateProfileImage/${userId}`, formData, {
         headers: {
           "Content-Type": "multipart/form-data", // Set the content type to multipart/form-data
         },
