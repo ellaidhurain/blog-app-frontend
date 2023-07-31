@@ -157,14 +157,10 @@ export function MyBlogs({ blogId, title, description, imageURL, createdAt }) {
         // for (const [key, value] of formData.entries()) {
         //   console.log(`${key}: ${value}`);
         // }
-        await dispatch(updateBlogRequest({ blogId, formData })).then(() => {
-          dispatch(getOneUserRequest(userId));
-          handleClose();
-          toast.success("🦄 Wow so easy!");
-          if (err) {
-            throw new Error(err);
-          }
-        });
+        await dispatch(updateBlogRequest({ blogId, formData }));
+        await dispatch(getOneUserRequest(userId));
+        handleClose();
+        toast.success("🦄 Wow so easy!");
       }
     } catch (error) {
       toast.error(error.message);
@@ -178,9 +174,6 @@ export function MyBlogs({ blogId, title, description, imageURL, createdAt }) {
         await dispatch(deleteBlogRequest({ blogId })).then(() => {
           dispatch(getOneUserRequest(userId));
           toast.success("🦄 Wow so easy!");
-          if (err) {
-            throw new Error(err);
-          }
         });
       }
     } catch (error) {
