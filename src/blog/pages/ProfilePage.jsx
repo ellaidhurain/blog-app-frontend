@@ -137,6 +137,7 @@ const ProfilePage = () => {
       )}
       {isUserErr && <small>{isUserErr}</small>}
       <Box flex={4} p={2}>
+      {!isLoadingUser &&(
         <ProfileCard>
           <CardContent>
             <Grid container spacing={2} p={2}>
@@ -215,6 +216,7 @@ const ProfilePage = () => {
             </Grid>
           </CardContent>
         </ProfileCard>
+      )}
         <StyledModel
           open={open}
           onClose={handleClose}
