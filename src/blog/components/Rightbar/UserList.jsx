@@ -1,35 +1,40 @@
-import React from "react";
+import React, { useEffect } from "react";
 import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
 import Avatar from "@mui/material/Avatar";
 import Typography from "@mui/material/Typography";
-import { useSelector } from "react-redux";
-import { Box } from "@mui/system";
+import { useDispatch, useSelector } from "react-redux";
+import { Box } from "@mui/material";
+import {
+  getFriendRequests,
+  getUserFriendsRequest,
+} from "../../services/api/userApi";
 
 export default function UserList() {
   const { mode } = useSelector((state) => state.blog);
   const { userFriends } = useSelector((state) => state.user);
 
+  const dispatch = useDispatch();
+
   return (
     <>
       <Typography className="py-3">Friends</Typography>
       {userFriends?.map((friend) => (
-        <Box
-          key={friend?._id}
-          sx={{
-            width: 350,
-            maxWidth: 360,
-            border:
-              mode === "light"
-                ? "1px solid rgba(0,0,0,0.15)"
-                : "1px solid rgba(214, 213, 213, 0.15)",
-            bgcolor: "background.paper",
-            borderRadius: "10px",
-            margin: "10px",
-          }}
-        >
-          <Box>
+        <React.Fragment key={friend?._id}>
+          <Box
+            sx={{
+              width: 350,
+              maxWidth: 360,
+              border:
+                mode === "light"
+                  ? "1px solid rgba(0,0,0,0.15)"
+                  : "1px solid rgba(214, 213, 213, 0.15)",
+              bgcolor: "background.paper",
+              borderRadius: "10px",
+              margin: "10px",
+            }}
+          >
             <ListItem alignItems="flex-start">
               <ListItemAvatar>
                 <Avatar alt={friend?.Name} src={friend?.picturePath} />
@@ -37,21 +42,19 @@ export default function UserList() {
               <ListItemText
                 primary={friend?.Name}
                 secondary={
-                  <Box>
-                    <Typography
-                      sx={{ display: "inline" }}
-                      component="span"
-                      variant="body2"
-                      color="text.primary"
-                    >
-                      <span style={{ color: "gray" }}>{friend?.location}</span>
-                    </Typography>
-                  </Box>
+                  <Typography
+                    sx={{ display: "inline" }}
+                    component="span"
+                    variant="body2"
+                    color="text.primary"
+                  >
+                    <span style={{ color: "gray" }}>{friend?.location}</span>
+                  </Typography>
                 }
               />
             </ListItem>
           </Box>
-        </Box>
+        </React.Fragment>
       ))}
     </>
   );

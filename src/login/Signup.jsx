@@ -8,9 +8,12 @@ import { Box, Button, TextField, Typography } from "@mui/material";
 import { LoginImage } from "./lottiefiles";
 import { signupRequest } from "../blog/services/api/userApi";
 import { useForm } from "react-hook-form";
+import Grid from '@mui/material/Grid';
+
 
 const Signup = () => {
-  const { loading } = useSelector((state) => state.signup);
+  const { loading,err } = useSelector((state) => state.signup);
+
   const [inputs, setInputs] = useState({
     Name: "",
     Email: "",
@@ -65,22 +68,20 @@ const Signup = () => {
   } = useForm(inputs);
 
   return (
-    <Box
-      className="row justify-content-center align-items-center"
-    >
-      <Box className="col-5 ">
+    <Grid container justifyContent="center" alignItems="center">
+     <Grid item xs={12} md={5} p={2}>
         <LoginImage />
-      </Box>
-      <Box className="col signup-form">
+      </Grid>
+      <Grid item xs={12} md={4} p={2}>
         <Box>
-          <h2 className="text-center">SIGN UP</h2>
+          <Typography variant="h4" textAlign={"center"}>Sign Up</Typography>
           <form onSubmit={handleSubmit(handleSubmitForm)}>
-            <Box className="form-group">
+            <Box>
               <TextField
                 placeholder="username"
                 name="Name"
                 type="text"
-                className="form-control py-2"
+                 sx={{ width: "100%", py: 2 }}
                 value={inputs.Name}
                 {...register("Name", {
                   required: "Name is required",
@@ -101,8 +102,8 @@ const Signup = () => {
               <TextField
                 name="Email"
                 type="email"
-                className="form-control py-2"
                 placeholder="email"
+                sx={{ width: "100%", pb: 2 }}
                 value={inputs.Email}
                 {...register("Email", {
                   required: "Email is required",
@@ -117,7 +118,7 @@ const Signup = () => {
               <TextField
                 name="Password"
                 type="password"
-                className="form-control py-2"
+                sx={{ width: "100%", pb: 2 }}
                 placeholder="password"
                 value={inputs.Password}
                 {...register("Password", {
@@ -130,7 +131,8 @@ const Signup = () => {
                 error={!!errors.Password}
                 helperText={errors.Password && errors.Password.message}
               />
-            </Box>
+            </Box>  
+            {err && <small style={{color:"red"}}>{err}</small>}
 
             <Box className="d-flex my-2 justify-content-center">
               <Box className="form-group mx-4">
@@ -148,7 +150,7 @@ const Signup = () => {
                 </Button>
               </Box>
               <Link to="/login" style={{ textDecoration: "none" }}>
-                <Button className=" px-4" variant="contained">
+                <Button px={4} variant="outlined">
                   {" "}
                   Login
                 </Button>
@@ -156,8 +158,8 @@ const Signup = () => {
             </Box>
           </form>
         </Box>
-      </Box>
-    </Box>
+      </Grid>
+    </Grid>
   );
 };
 

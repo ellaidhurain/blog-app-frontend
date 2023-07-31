@@ -18,7 +18,7 @@ import {
   getallCommentsForBlogRequest,
   updateCommentRequest,
 } from "../../services/api/blogApi";
-import { formatter } from "../../helper/helper";
+import { formatter } from "../../helper/time";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 
 const AllComments = ({ Feed, blogId }) => {
@@ -113,7 +113,7 @@ function Comments({ blogId, commentData }) {
     setUpdatedCommentText(updatedText);
   };
 
-  // when handle Update we need pass id from where the comment is clicked
+  // when handle Update we need to pass id from where the comment is clicked
   const handleUpdateComment = () => {
     if (blogId && commentId && updatedCommentText.trim() !== "") {
       dispatch(updateCommentRequest({ updatedCommentText, blogId, commentId }))
@@ -122,17 +122,7 @@ function Comments({ blogId, commentData }) {
           setEditMode(!editMode);
         })
         .catch((error) => {
-          // If the response contains an 'error' message, show it in a toast
-          if (
-            error.response &&
-            error.response.data &&
-            error.response.data.error
-          ) {
-            toast.error(error.response.data.error);
-          } else {
-            // If there's no specific error message in the response, show a generic error message
-            toast.error("🚨 Not so easy!");
-          }
+          toast.error(error.message);
         });
     }
   };
@@ -144,16 +134,7 @@ function Comments({ blogId, commentData }) {
           dispatch(getallCommentsForBlogRequest(blogId));
         })
         .catch((error) => {
-          if (
-            error.response &&
-            error.response.data &&
-            error.response.data.error
-          ) {
-            toast.error(error.response.data.error);
-          } else {
-            // If there's no specific error message in the response, show a generic error message
-            toast.error("🚨 Not so easy!");
-          }
+          toast.error(error.message);
         });
     }
   };

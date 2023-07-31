@@ -15,81 +15,92 @@ import CommentIcon from "@mui/icons-material/Comment";
 import ReadMore from "./Readmore";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  getAllBlogsRequest,
-  getOneUserRequest,
-  refreshTokenRequest,
-} from "../services/api/blogApi";
+import { getAllBlogsRequest } from "../services/api/blogApi";
 import axios from "axios";
 import TimeAgo from "react-timeago";
-import { formatter } from "../helper/helper";
+import { formatter } from "../helper/time";
 import AllComments from "../components/comments/Comments";
-import AddBlog from "../components/leftbar/AddBlog";
+import AddBlog from "../components/AddBlog/AddBlog";
 import { Link } from "react-router-dom"; // Import the Link component from React Router
 import PersonAddAltIcon from "@mui/icons-material/PersonAddAlt";
 import {
   sendFriendRequest,
-  getUserFriendsRequest,
   removeFriendRequest,
+  getOneUserRequest,
+  getUserFriendsRequest,
+  refreshTokenRequest,
 } from "../services/api/userApi";
 import HowToRegIcon from "@mui/icons-material/HowToReg";
 import PersonRemoveIcon from "@mui/icons-material/PersonRemove";
-import Typography from '@mui/material/Typography';
-import styled from "@emotion/styled";
-import Divider from '@mui/material/Divider';
-
+import Typography from "@mui/material/Typography";
+import Divider from "@mui/material/Divider";
+import { Skeleton } from "@mui/material";
+import GlobalSkeleton from "./GlobalSkeleton";
 
 const api = axios.create({
-  // baseURL: "http://localhost:5000/api/blog",
-  baseURL: "https://snaplinkbackend.onrender.com/api/blog",
+  baseURL: "http://localhost:5000/api/blog",
+  // baseURL: "https://snaplinkbackend.onrender.com/api/blog",
   withCredentials: true, // Enable sending cookies with requests
 });
 
-const CustomHr = styled(Divider)(({ theme }) => ({
-  margin: theme.spacing(2), // Change the value according to your desired margin
-}));
+const token = localStorage.getItem("token");
+api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
-const Feed = () => {
+export default function Feed() {
   const { blogs } = useSelector((state) => state.blog);
-  const { userData } = useSelector((state) => state.blog);
+  const { userData, userStatus } = useSelector((state) => state.user);
 
   // sort by decending order
-  const sortByLatestUpdatedBlog = [...blogs].sort(
-    (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
-  );
+  const sortByLatestUpdatedBlog = Array.isArray(blogs)
+    ? [...blogs].sort((a, b) => new Date(b?.updatedAt) - new Date(a?.updatedAt))
+    : [];
+
   const dispatch = useDispatch();
-  const id = localStorage.getItem("userId");
+  const userId = localStorage.getItem("userId");
+  const { commentsList } = useSelector((state) => state.commentSlice); // initialState
+
 
   useEffect(() => {
-    if (id) {
-      dispatch(getOneUserRequest(id));
-      dispatch(getAllBlogsRequest());
-    } else {
-      console.log("User ID is not available");
-    }
-  }, [dispatch, id]);
+    const fetchData = async () => {
+      try {
+        // Fetch user data
+        if (userId) {
+          await dispatch(getOneUserRequest(userId));
+        }
 
-  useEffect(() => {
+        // Fetch blogs if userStatus is "success"
+        if (userStatus === "success") {
+          await dispatch(getAllBlogsRequest());
+        }
+      } catch (error) {
+        // Handle error, if any
+        console.error(error);
+      }
+    };
+
+    fetchData(); // Call the fetchData function to trigger the requests
+
     const interval = setInterval(() => {
-      dispatch(refreshTokenRequest());
-    }, 10000 * 60 * 5); // 5 mins
+      fetchData(); // Refresh data every 15 minute
+    }, 1000 * 60 * 15); // 1000 milliseconds * 60 seconds = 1 minute * 15 = 15 minute
 
     return () => clearInterval(interval);
-  }, [dispatch]);
+  }, [dispatch, userId, userStatus]);
 
   return (
     <>
       <Box flex={4} p={2}>
-        <AddBlog picture={userData?.picturePath}/>
+        <AddBlog picture={userData?.picturePath} />
         <Box>
-          {sortByLatestUpdatedBlog?.map((blog, index) => (
-            <Allblogs key={index} blog={blog} />
-          ))}
+          {blogs &&
+            sortByLatestUpdatedBlog?.map((blog, index) => (
+              <Allblogs key={index} blog={blog} />
+            ))}
         </Box>
       </Box>
     </>
   );
-};
+}
 
 const Allblogs = ({ blog }) => {
   const { _id: blogId, title, description, image, createdAt, user } = blog;
@@ -98,7 +109,12 @@ const Allblogs = ({ blog }) => {
   const [likes, setLikes] = useState([]);
   const { mode } = useSelector((state) => state.blog);
   const dispatch = useDispatch();
-  const { userFriends } = useSelector((state) => state.user);
+  
+  const { isUserErr, userFriends, isLoadingUser } = useSelector(
+    (state) => state.user
+  );
+
+  const { isBlogErr, isLoadingBlogs } = useSelector((state) => state.blog);
 
   const date = new Date(createdAt); // create Date obj
   const timestamp = date.toLocaleString("en-CA", { timeZone: "Asia/Kolkata" }); // convert to local time
@@ -114,26 +130,25 @@ const Allblogs = ({ blog }) => {
   };
 
   useEffect(() => {
-    getallLikesForBlog(blogId); // => this is only return promise obj not response.
+    if (blogId) {
+      getallLikesForBlog(blogId);
+    }
   }, [blogId]);
 
-  const matchedLikeList = likes?.filter((like) => like?.blog === blogId) || null;
+  const matchedLikeList =
+    likes?.filter((like) => like?.blog === blogId) || null;
   const liked = matchedLikeList?.some((like) => like?.blog === blogId) || false;
 
   const friend = userFriends?.some((data) => data?._id === user?._id) || false;
 
   const addRemoveLike = async (blogId) => {
-    try {
-      const res = await api.post(`/addRemoveLike/${blogId}`);
-      toast.success()
-      return res.data;
-    } catch (error) {
-      // If the response contains an 'error' message, show it in a toast
-      if (error.response && error.response.data && error.response.data.error) {
-        toast.error(error.response.data.error);
-      } else {
-        // If there's no specific error message in the response, show a generic error message
-        toast.error("🚨 Not so easy!");
+    if (blogId) {
+      try {
+        const res = await api.post(`/addRemoveLike/${blogId}`);
+        toast.success();
+        return res.data;
+      } catch (error) {
+        toast.error(error.message);
       }
     }
   };
@@ -147,17 +162,7 @@ const Allblogs = ({ blog }) => {
           getallLikesForBlog(blogId);
         })
         .catch((error) => {
-          // If the response contains an 'error' message, show it in a toast
-          if (
-            error.response &&
-            error.response.data &&
-            error.response.data.error
-          ) {
-            toast.error(error.response.data.error);
-          } else {
-            // If there's no specific error message in the response, show a generic error message
-            toast.error("🚨 Not so easy!");
-          }
+          toast.error(error.message);
         });
     }
   };
@@ -177,164 +182,189 @@ const Allblogs = ({ blog }) => {
 
   useEffect(() => {
     // Fetch user friends on component mount
-    dispatch(getUserFriendsRequest());
+    if (user) {
+      dispatch(getUserFriendsRequest());
+    }
   }, [user]);
 
-  const handleSendFriend = (friendId) => {
+  const handleSendFriend = async (friendId) => {
     try {
-      dispatch(sendFriendRequest(friendId));
+      if (friendId) {
+        await dispatch(sendFriendRequest(friendId));
+        toast.success("Friend Request sent");
+      }
     } catch (error) {
-      // If the response contains an 'error' message, show it in a toast
-      if (error.response && error.response.data && error.response.data.error) {
-        toast.error(error.response.data.error);
-      } else {
-        // If there's no specific error message in the response, show a generic error message
-        toast.error("🚨 Not so easy!");
+      toast.error(error.message);
+    }
+  };
+
+  const handleRemoveFriend = (friendId) => {
+    if (friendId) {
+      try {
+        dispatch(removeFriendRequest(friendId)).then(() => {
+          if (err) {
+            throw new Error(err);
+          }
+        });
+        dispatch(getAllBlogsRequest());
+      } catch (error) {
+        toast.error(error.message);
       }
     }
   };
-  
-  const handleRemoveFriend = (friendId) => {
-    try {
-      dispatch(removeFriendRequest(friendId));
-    } catch (err) {
-     // If the response contains an 'error' message, show it in a toast
-     if (error.response && error.response.data && error.response.data.error) {
-      toast.error(error.response.data.error);
-    } else {
-      // If there's no specific error message in the response, show a generic error message
-      toast.error("🚨 Not so easy!");
-    }
-    }
-  };
 
-  const id = localStorage.getItem("userId");
-  const loggedin_user = id === user?._id;
+  const userId = localStorage.getItem("userId");
+  const loggedIn_user = userId === user?._id;
 
   return (
     <>
       <Box>
-        <Card
-          sx={{
-            marginBottom: 2,
-            borderRadius: "15px",
-            border:
-              mode === "light"
-                ? "1px solid rgba(0,0,0,0.15)"
-                : "1px solid rgba(214, 213, 213, 0.15)",
-            boxShadow: "none",
-            bgcolor: "background.paper",
-          }}
-        >
-          <CardHeader
-            avatar={
-              <Link to="/profile">
-                <Avatar alt="User Avatar" src={user?.picturePath} />
-              </Link>
-            }
-            action={
-              !loggedin_user && !friend ? (
-                <IconButton
-                  aria-label="settings"
-                  onClick={() => handleSendFriend(user?._id)}
-                >
-                  <PersonAddAltIcon />
-                </IconButton>
-              ) : (
-                !loggedin_user &&
-                friend && (
-                  <>
-                    <IconButton aria-label="settings">
-                      <HowToRegIcon />
-                    </IconButton>
-                    <IconButton
-                      aria-label="settings"
-                      onClick={() => handleRemoveFriend(user._id)}
-                    >
-                      <PersonRemoveIcon />
-                    </IconButton>
-                  </>
+        {isLoadingBlogs && <GlobalSkeleton height1={50} height2={250} height3={50}/>}
+        {isBlogErr && <small>{isBlogErr}</small>}
+        {!isLoadingBlogs && (
+          <Card
+            sx={{
+              marginBottom: 2,
+              borderRadius: "15px",
+              border:
+                mode === "light"
+                  ? "1px solid rgba(0,0,0,0.15)"
+                  : "1px solid rgba(214, 213, 213, 0.15)",
+              boxShadow: "none",
+              bgcolor: "background.paper",
+            }}
+          >
+            <CardHeader
+              avatar={
+                <Link to="/profile">
+                  <Avatar alt="User Avatar" src={user?.picturePath} />
+                </Link>
+              }
+              action={
+                !loggedIn_user && !friend ? (
+                  <IconButton
+                    aria-label="settings"
+                    onClick={() => handleSendFriend(user?._id)}
+                  >
+                    <PersonAddAltIcon />
+                  </IconButton>
+                ) : (
+                  !loggedIn_user &&
+                  friend && (
+                    <>
+                      <IconButton aria-label="settings">
+                        <HowToRegIcon />
+                      </IconButton>
+                      <IconButton
+                        aria-label="settings"
+                        onClick={() => handleRemoveFriend(user._id)}
+                      >
+                        <PersonRemoveIcon />
+                      </IconButton>
+                    </>
+                  )
                 )
-              )
-            }
-            title={user?.Name}
-            subheader={timestamp}
-          />
+              }
+              title={user?.Name}
+              subheader={timestamp}
+            />
 
-          <CardContent>
-            <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-              <Typography variant="h6">{title}</Typography>
-              <Typography variant="subtitle1" px={2} style={{ color: "gray" }}>
-                <TimeAgo date={createdAt} formatter={formatter} />
-              </Typography>
-            </Box>
-            <Box>
-              <ReadMore>{description}</ReadMore>
-            </Box>
-          </CardContent>
+            <CardContent>
+              <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+                <Typography variant="h6">{title}</Typography>
+                <Typography
+                  variant="subtitle1"
+                  px={2}
+                  style={{ color: "gray" }}
+                >
+                  <TimeAgo date={createdAt} formatter={formatter} />
+                </Typography>
+              </Box>
+              <Box>
+                <ReadMore>{description}</ReadMore>
+              </Box>
+            </CardContent>
 
-          <CardMedia
-            component="img"
-            height="300"
-            image={image}
-            alt="Paella dish"
-          />
-
-          <Box sx={{ display:"flex", justifyContent:"space-between", pt:4, px:4 }}>
-            <Box>
-              {matchedLikeList?.length > 0 && (
-                <Box sx={{color:"gray", px:4 }}>
-                  {matchedLikeList?.length}{" "}
-                  {matchedLikeList?.length === 1 ? "like" : "likes"}
-                </Box>
-              )}
-            </Box>
+            <CardMedia
+              component="img"
+              height="300"
+              image={image}
+              alt="Paella dish"
+            />
 
             <Box
-              sx={{display:"flex", justifyContent:"flex-end"}}
-              style={{ color: "gray" }}
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                pt: 4,
+                px: 4,
+              }}
             >
-              {matchedCommentList?.length > 0 && (
-                <Box className="text-gray-500 px-4">
-                  {matchedCommentList?.length}{" "}
-                  {matchedCommentList?.length === 1 ? "comment" : "comments"}
-                </Box>
-              )}
+              <Box>
+                {matchedLikeList?.length > 0 && (
+                  <Box sx={{ color: "gray", px: 4 }}>
+                    {matchedLikeList?.length}{" "}
+                    {matchedLikeList?.length === 1 ? "like" : "likes"}
+                  </Box>
+                )}
+              </Box>
+
+              <Box
+                sx={{ display: "flex", justifyContent: "flex-end" }}
+                style={{ color: "gray" }}
+              >
+                {matchedCommentList?.length > 0 && (
+                  <Box className="text-gray-500 px-4">
+                    {matchedCommentList?.length}{" "}
+                    {matchedCommentList?.length === 1 ? "comment" : "comments"}
+                  </Box>
+                )}
+              </Box>
             </Box>
-          </Box>
-          <hr className="mx-4"></hr>
+            <hr className="mx-4"></hr>
 
-          <CardActions disableSpacing  sx={{display:"flex", justifyContent:"flex-end"}}>
-            <IconButton aria-label="add to favorites" onClick={handleLike}>
-              <Checkbox
-                icon={<FavoriteBorder />}
-                checkedIcon={<Favorite sx={{ color: "red" }} />}
-                checked={liked}
-              />
-            </IconButton>
-            <Typography variant="subtitle1" sx={{ color: "gray" }}>{liked ? "Liked" : "Like"}</Typography>
-
-            <IconButton
-              aria-label="delete"
-              sx={{ marginLeft: "10px" }}
-              onClick={handleComments}
+            <CardActions
+              disableSpacing
+              sx={{ display: "flex", justifyContent: "flex-end" }}
             >
-              <CommentIcon />
-            </IconButton>
+              <IconButton aria-label="add to favorites" onClick={handleLike}>
+                <Checkbox
+                  icon={<FavoriteBorder />}
+                  checkedIcon={<Favorite sx={{ color: "red" }} />}
+                  checked={liked}
+                />
+              </IconButton>
+              <Typography variant="subtitle1" sx={{ color: "gray" }}>
+                {liked ? "Liked" : "Like"}
+              </Typography>
 
-            <Typography variant="subtitle1" sx={{ color: "gray" }}>Comment</Typography>
+              <IconButton
+                aria-label="delete"
+                sx={{ marginLeft: "10px" }}
+                onClick={handleComments}
+              >
+                <CommentIcon />
+              </IconButton>
 
-            <IconButton aria-label="share">
-              <ShareIcon />
-            </IconButton>
+              <Typography variant="subtitle1" sx={{ color: "gray" }}>
+                Comment
+              </Typography>
 
-            <Typography variant="subtitle1" sx={{ color: "gray", paddingRight: "10px" }} >Share</Typography>
-          </CardActions>
-          {comments && <AllComments Feed={Feed} blogId={blogId} />}
-        </Card>
+              <IconButton aria-label="share">
+                <ShareIcon />
+              </IconButton>
+
+              <Typography
+                variant="subtitle1"
+                sx={{ color: "gray", paddingRight: "10px" }}
+              >
+                Share
+              </Typography>
+            </CardActions>
+            {comments && <AllComments Feed={Feed} blogId={blogId} />}
+          </Card>
+        )}
       </Box>
     </>
   );
 };
-
-export default Feed;

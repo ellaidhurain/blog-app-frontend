@@ -1,13 +1,14 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-axios.defaults.withCredentials = true;
 
 export const api = axios.create({
-  baseURL : "https://snaplinkbackend.onrender.com/api/user",
-  // baseURL: "http://localhost:5000/api/user",
+  // baseURL : "https://snaplinkbackend.onrender.com/api/user",
+  baseURL: "http://localhost:5000/api/user",
   withCredentials: true, // Enable sending cookies with requests
-  credentials: "include",
 });
+
+const token = localStorage.getItem("token");
+api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
 export const loginRequest = createAsyncThunk(
   "login/loginUser",
@@ -19,11 +20,25 @@ export const loginRequest = createAsyncThunk(
       });
 
       const data = res.data;
-
       return data;
-    } catch (error) {
-      console.log(error);
-      return thunkAPI.rejectWithValue(error.response.data);
+    } catch (err) {
+      const error = err.response.data.error;
+      // console.log(error);
+      return thunkAPI.rejectWithValue(error);
+    }
+  }
+);
+
+export const refreshTokenRequest = createAsyncThunk(
+  "blog/refreshToken",
+  async () => {
+    try {
+      const res = await api.get(`/refresh`);
+      return res.data;
+    } catch (err) {
+      const error = err.response.data.error;
+      // console.log(error);
+      return thunkAPI.rejectWithValue(error);
     }
   }
 );
@@ -40,17 +55,36 @@ export const signupRequest = createAsyncThunk(
 
       const data = res.data;
       return data;
-    } catch (error) {
-      return thunkAPI.rejectWithValue(error.response.data);
+    } catch (err) {
+      const error = err.response.data.error;
+      // console.log(error);
+      return thunkAPI.rejectWithValue(error);
+    }
+  }
+);
+
+export const getOneUserRequest = createAsyncThunk(
+  "blog/getOneUserRequest",
+  async () => {
+    if (token) {
+      try {
+        const res = await api.get(`/getUser`);
+        // console.log(res.data);
+        return res.data;
+      } catch (err) {
+        const error = err.response.data.error;
+        // console.log(error);
+        return thunkAPI.rejectWithValue(error);
+      }
     }
   }
 );
 
 export const updateUserRequest = createAsyncThunk(
   "update/updateUser",
-  async ({ userId, post, thunkAPI }) => {
+  async ({ post, thunkAPI }) => {
     try {
-      const res = await api.put(`/updateUser/${userId}`, {
+      const res = await api.put(`/updateUser`, {
         Name: post.Name,
         Email: post.Email,
         location: post.location,
@@ -59,17 +93,19 @@ export const updateUserRequest = createAsyncThunk(
 
       const data = res.data;
       return data;
-    } catch (error) {
-      return thunkAPI.rejectWithValue(error.response.data);
+    } catch (err) {
+      const error = err.response.data.error;
+      // console.log(error);
+      return thunkAPI.rejectWithValue(error);
     }
   }
 );
 
 export const updateProfileImageRequest = createAsyncThunk(
   "update/updateProfileImage",
-  async ({ userId, formData, thunkAPI }) => {
+  async ({ formData, thunkAPI }) => {
     try {
-      const res = await api.put(`/updateProfileImage/${userId}`, formData, {
+      const res = await api.put(`/updateProfileImage`, formData, {
         headers: {
           "Content-Type": "multipart/form-data", // Set the content type to multipart/form-data
         },
@@ -77,8 +113,10 @@ export const updateProfileImageRequest = createAsyncThunk(
 
       const data = res.data;
       return data;
-    } catch (error) {
-      return thunkAPI.rejectWithValue(error.response.data);
+    } catch (err) {
+      const error = err.response.data.error;
+      // console.log(error);
+      return thunkAPI.rejectWithValue(error);
     }
   }
 );
@@ -86,13 +124,20 @@ export const updateProfileImageRequest = createAsyncThunk(
 export const getUserFriendsRequest = createAsyncThunk(
   "get/getUserFriends",
   async () => {
-    try {
-      const res = await api.get(`/getUserFriends`);
-      // console.log(res.data);
-      return res.data;
-    } catch (err) {
-      console.log("Error:", err);
-      throw err;
+    if (token) {
+      try {
+        const res = await api.get(`/getUserFriends`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        // console.log(res.data);
+        return res.data;
+      } catch (err) {
+        const error = err.response.data.error;
+        // console.log(error);
+        return thunkAPI.rejectWithValue(error);
+      }
     }
   }
 );
@@ -100,13 +145,16 @@ export const getUserFriendsRequest = createAsyncThunk(
 export const getFriendRequests = createAsyncThunk(
   "get/getFriendRequests",
   async () => {
-    try {
-      const res = await api.get(`/getFriendRequests`);
-      // console.log(res.data);
-      return res.data;
-    } catch (err) {
-      console.log("Error:", err);
-      throw err;
+    if (token) {
+      try {
+        const res = await api.get(`/getFriendRequests`);
+        // console.log(res.data);
+        return res.data;
+      } catch (err) {
+        const error = err.response.data.error;
+        // console.log(error);
+        return thunkAPI.rejectWithValue(error);
+      }
     }
   }
 );
@@ -117,9 +165,12 @@ export const sendFriendRequest = createAsyncThunk(
     try {
       const res = await api.post(`/sendFriendRequest/${friendId}`);
       const data = res.data;
+      // console.log("Response data:", data);
       return data;
-    } catch (error) {
-      return thunkAPI.rejectWithValue(error.response.data);
+    } catch (err) {
+      const error = err.response.data.error;
+      // console.log(error);
+      return thunkAPI.rejectWithValue(error);
     }
   }
 );
@@ -131,8 +182,10 @@ export const acceptFriendRequest = createAsyncThunk(
       const res = await api.post(`/acceptFriendRequest/${friendId}`);
       const data = res.data;
       return data;
-    } catch (error) {
-      return thunkAPI.rejectWithValue(error.response.data);
+    } catch (err) {
+      const error = err.response.data.error;
+      // console.log(error);
+      return thunkAPI.rejectWithValue(error);
     }
   }
 );
@@ -144,8 +197,10 @@ export const rejectFriendRequest = createAsyncThunk(
       const res = await api.post(`/rejectFriendRequest/${friendId}`);
       const data = res.data;
       return data;
-    } catch (error) {
-      return thunkAPI.rejectWithValue(error.response.data);
+    } catch (err) {
+      const error = err.response.data.error;
+      // console.log(error);
+      return thunkAPI.rejectWithValue(error);
     }
   }
 );
@@ -157,8 +212,10 @@ export const removeFriendRequest = createAsyncThunk(
       const res = await api.post(`/removeFriend/${friendId}`);
       const data = res.data;
       return data;
-    } catch (error) {
-      return thunkAPI.rejectWithValue(error.response.data);
+    } catch (err) {
+      const error = err.response.data.error;
+      // console.log(error);
+      return thunkAPI.rejectWithValue(error);
     }
   }
 );

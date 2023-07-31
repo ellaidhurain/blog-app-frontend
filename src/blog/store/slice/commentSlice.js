@@ -69,7 +69,7 @@ const commentSlice = createSlice({
         // console.log(action.payload);
       })
       .addCase(getallCommentsForBlogRequest.rejected, (state, action) => {
-        state.err = action.error.message;
+        state.err = action.payload;
       })
       .addCase(addCommentRequest.pending,(state,action)=>{
         state.isLoading = true;
@@ -81,7 +81,7 @@ const commentSlice = createSlice({
       })
       .addCase(addCommentRequest.rejected,(state,action)=>{
         state.isLoading = false;
-        state.err = action.error?.message;
+        state.err = action.payload;
       })
   },
 });

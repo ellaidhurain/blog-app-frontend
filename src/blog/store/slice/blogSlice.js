@@ -2,26 +2,26 @@ import { createSlice } from "@reduxjs/toolkit";
 import {
   deleteBlogRequest,
   getAllBlogsRequest,
-  getOneUserRequest,
   postBlogRequest,
-  refreshTokenRequest,
   updateBlogRequest,
 } from "../../services/api/blogApi";
-
+import {
+  refreshTokenRequest,
+} from "../../services/api/userApi";
 
 const blogSlice = createSlice({
   name: "blog",
   initialState: {
-    userData: [],
     blogs: [],
     isLoadingUser: false,
     isLoadingBlogs: false,
-    error: null,
-    mode:"light"
+    isBlogErr: null,
+    mode: "light",
+    blogStatus: "idle",
   },
   reducers: {
-    setMode: (state,action) =>{
-      state.mode = action.payload
+    setMode: (state, action) => {
+      state.mode = action.payload;
     },
 
     // addBlog: (state, action) => {
@@ -41,19 +41,17 @@ const blogSlice = createSlice({
     //   state.blogs = state.blogs.filter(blog => blog.id !== deletedBlogId);
     // },
   },
-  
+
   extraReducers: (builder) => {
     builder
-      .addCase(getOneUserRequest.pending, (state) => {
+      .addCase(refreshTokenRequest.pending, (state) => {
         state.isLoadingUser = true;
       })
-      .addCase(getOneUserRequest.fulfilled, (state, action) => {
-        state.userData = action.payload;
-        state.isLoadingUser = false;
+      .addCase(refreshTokenRequest.fulfilled, (state, action) => {
+        state.blogs = action.payload;
       })
-      .addCase(getOneUserRequest.rejected, (state, action) => {
-        state.isLoadingUser = false;
-        state.error = action.error.message;
+      .addCase(refreshTokenRequest.rejected, (state, action) => {
+        state.isBlogErr = action.payload;
       })
       .addCase(getAllBlogsRequest.pending, (state) => {
         state.isLoadingBlogs = true;
@@ -63,27 +61,16 @@ const blogSlice = createSlice({
         state.isLoadingBlogs = false;
       })
       .addCase(getAllBlogsRequest.rejected, (state, action) => {
-        state.isLoadingBlogs = false;
-        state.error = action.error.message;
-      })
-      .addCase(refreshTokenRequest.pending, (state) => {
-        state.isLoadingUser = true;
-      })
-      .addCase(refreshTokenRequest.fulfilled, (state, action) => {
-        state.blogs = action.payload;
-      })
-      .addCase(refreshTokenRequest.rejected, (state, action) => {
-        state.error = action.error.message;
+        state.isBlogErr = action.payload;
       })
       .addCase(postBlogRequest.pending, (state) => {
         state.isLoadingBlogs = true;
       })
-      .addCase(postBlogRequest.fulfilled, (state) => {
+      .addCase(postBlogRequest.fulfilled, (state, action) => {
         state.isLoadingBlogs = false;
       })
       .addCase(postBlogRequest.rejected, (state, action) => {
-        state.isLoadingBlogs = false;
-        state.error = action.error.message;
+        state.isBlogErr = action.payload;
       })
       .addCase(updateBlogRequest.pending, (state) => {
         state.isLoadingBlogs = true;
@@ -92,8 +79,7 @@ const blogSlice = createSlice({
         state.isLoadingBlogs = false;
       })
       .addCase(updateBlogRequest.rejected, (state, action) => {
-        state.isLoadingBlogs = false;
-        state.error = action.error.message;
+        state.isBlogErr = action.payload;
       })
       .addCase(deleteBlogRequest.pending, (state) => {
         state.isLoadingBlogs = true;
@@ -102,11 +88,10 @@ const blogSlice = createSlice({
         state.isLoadingBlogs = false;
       })
       .addCase(deleteBlogRequest.rejected, (state, action) => {
-        state.isLoadingBlogs = false;
-        state.error = action.error.message;
+        state.isBlogErr = action.payload;
       });
   },
 });
 
 export default blogSlice.reducer;
-export const { setMode } = blogSlice.actions
+export const { setMode } = blogSlice.actions;

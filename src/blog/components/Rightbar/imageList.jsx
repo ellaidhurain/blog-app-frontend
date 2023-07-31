@@ -1,6 +1,5 @@
 import * as React from "react";
 import { ImageList, ImageListItem } from "@mui/material";
-import { useSelector } from "react-redux";
 
 
 const itemData = [
@@ -53,6 +52,7 @@ const itemData = [
     title: 'Bike',
   },
 ];
+
 const shuffleArray = (array) => {
   const newArray = [...array]; // Create a copy of the array
 

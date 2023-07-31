@@ -22,9 +22,9 @@ import {
   updateProfileImageRequest,
   updateUserRequest,
 } from "../services/api/userApi";
-import { getOneUserRequest } from "../services/api/blogApi";
 import EditIcon from "@mui/icons-material/Edit";
 import { toast } from "react-toastify";
+import { getOneUserRequest } from "../services/api/userApi";
 
 const StyledModel = styled(Modal)({
   display: "flex",
@@ -48,7 +48,9 @@ const ProfileCard = styled(Card)({
 });
 
 const ProfilePage = () => {
-  const { userData } = useSelector((state) => state.blog);
+  const { userData, isLoadingUser, isUserErr } = useSelector(
+    (state) => state.user
+  );
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [open, setOpen] = useState(false);
@@ -56,6 +58,7 @@ const ProfilePage = () => {
   const handleClose = () => setOpen(false);
 
   const userId = localStorage.getItem("userId");
+
   // get userData and set as initial state for update
   const [post, setPost] = useState({
     Name: userData.Name,
@@ -63,9 +66,11 @@ const ProfilePage = () => {
     location: userData.location,
     about: userData.about,
   });
+
   const [selectedImage, setSelectedImage] = useState({
     picturePath: null,
   });
+
   const [isImageUpdated, setIsImageUpdated] = useState(false);
 
   const dispatch = useDispatch();
@@ -88,22 +93,19 @@ const ProfilePage = () => {
 
   const handleUpdate = async (e) => {
     e.preventDefault();
-
     try {
-      const res = dispatch(updateUserRequest({ userId, post }));
-      console.log(res.data);
-      dispatch(getOneUserRequest(userId)).then(() => {
-        handleClose();
-        toast.success("🦄 Wow so easy!");
-      });
-    } catch (error) {
-      // If the response contains an 'error' message, show it in a toast
-      if (error.response && error.response.data && error.response.data.error) {
-        toast.error(error.response.data.error);
-      } else {
-        // If there's no specific error message in the response, show a generic error message
-        toast.error("🚨 Not so easy!");
+      if (userId) {
+        await dispatch(updateUserRequest(post)).then(() => {
+          dispatch(getOneUserRequest(userId));
+          handleClose();
+          toast.success("🦄 Wow so easy!");
+          if (err) {
+            throw new Error(err);
+          }
+        });
       }
+    } catch (error) {
+      toast.error(error.message);
     }
   };
 
@@ -113,34 +115,32 @@ const ProfilePage = () => {
     formData.append("picturePath", selectedImage?.picturePath);
 
     try {
-      dispatch(updateProfileImageRequest({ userId, formData }));
-      setPost((prevPost) => ({
-        ...prevPost,
-        picturePath: selectedImage?.picturePath, // Update the 'picturePath' property
-      }));
-      // toast.success("Successfully updated");
-      dispatch(getOneUserRequest(userId)).then(() => {
-        handleClose();
-        toast.success("🦄 Wow so easy!");
-      });
-      setIsImageUpdated(true);
+      if (userId) {
+        await dispatch(updateProfileImageRequest({ formData })).then(() => {
+          dispatch(getOneUserRequest(userId));
+          handleClose();
+          toast.success("🦄 Wow so easy!");
+          if (err) {
+            throw new Error(err);
+          }
+        });
+        setPost((prevPost) => ({
+          ...prevPost,
+          picturePath: selectedImage?.picturePath, // Update the 'picturePath' property
+        }));
+        setIsImageUpdated(true);
+      }
     } catch (error) {
-        // If the response contains an 'error' message, show it in a toast
-        if (error.response && error.response.data && error.response.data.error) {
-          toast.error(error.response.data.error);
-        } else {
-          // If there's no specific error message in the response, show a generic error message
-          toast.error("🚨 Not so easy!");
-        }
+      toast.error(error.message);
     }
   };
 
-  useEffect(() => {
-    dispatch(getOneUserRequest(userId));
-  }, [post]);
-
   return (
     <>
+      {isLoadingUser && (
+        <GlobalSkeleton height1={50} height2={150} height3={50} />
+      )}
+      {isUserErr && <small>{isUserErr}</small>}
       <Box flex={4} p={2}>
         <ProfileCard>
           <CardContent>
@@ -166,12 +166,14 @@ const ProfilePage = () => {
                     onChange={handleImageChange}
                   />
                   <Box>
-                    {selectedImage?.picturePath && !isImageUpdated &&  (
+                    {selectedImage?.picturePath && !isImageUpdated && (
                       <Button onClick={handleImageUpdate}>Save</Button>
                     )}
                   </Box>
                 </Box>
-                  <Typography variant="h2" pt={2}>{userData?.Name}</Typography>
+                <Typography variant="h2" pt={2}>
+                  {userData?.Name}
+                </Typography>
                 <Typography style={{ color: "gray" }}>{/* Actor */}</Typography>
               </Grid>
 
@@ -266,7 +268,7 @@ const ProfilePage = () => {
               rows={4}
               label="about me"
               variant="standard"
-              value={post?.about}
+              value={post?.about || ""}
               placeholder="about me"
               multiline
             />

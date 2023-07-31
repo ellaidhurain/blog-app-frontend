@@ -8,94 +8,110 @@ import {
   getFriendRequests,
   updateProfileImageRequest,
   updateUserRequest,
+  getOneUserRequest,
 } from "../../services/api/userApi";
 
 const userSlice = createSlice({
   name: "user",
   initialState: {
-    isLoading: false,
-    userData: null,
-    err: null,
+    isLoadingUser: false,
+    isLoadingFriend: false,
+    userData: [],
+    isUserErr: null,
+    isFriendErr: null,
     userFriends: [],
-    FriendRequests:[]
+    FriendRequests: [],
+    userStatus: "idle",
   },
   reducers: {},
   extraReducers: (builder) => {
+    builder.addCase(getOneUserRequest.pending, (state) => {
+      state.isLoadingUser = true;
+    })
+    builder.addCase(getOneUserRequest.fulfilled, (state, action) => {
+      state.userData = action.payload;
+      state.isLoadingUser = false;
+      state.userStatus = "success"
+    })
+    builder.addCase(getOneUserRequest.rejected, (state, action) => {
+      state.isUserErr = action.payload;
+      state.userStatus = "failed"
+    })
     builder.addCase(updateUserRequest.pending, (state, action) => {
-      state.isLoading = true;
+      state.isLoadingUser = true;
     });
     builder.addCase(updateUserRequest.fulfilled, (state, action) => {
-      state.isLoading = false;
+      state.isLoadingUser = false;
       state.userData = action.payload;
     });
     builder.addCase(updateUserRequest.rejected, (state, action) => {
-      state.isLoading = true;
+      state.isUserErr = action.payload;
     });
     builder.addCase(updateProfileImageRequest.pending, (state, action) => {
-      state.isLoading = true;
+      state.isLoadingUser = true;
     });
     builder.addCase(updateProfileImageRequest.fulfilled, (state, action) => {
-      state.isLoading = false;
+      state.isLoadingUser = false;
       state.userData = action.payload;
     });
     builder.addCase(updateProfileImageRequest.rejected, (state, action) => {
-      state.err = action.error.message;
+      state.isUserErr = action.payload;
     });
     builder.addCase(getUserFriendsRequest.pending, (state, action) => {
-      state.isLoading = true;
+      state.isLoadingFriend = true;
     });
     builder.addCase(getUserFriendsRequest.fulfilled, (state, action) => {
-      state.isLoading = false;
+      state.isLoadingFriend = false;
       state.userFriends = action.payload;
     });
     builder.addCase(getUserFriendsRequest.rejected, (state, action) => {
-      state.err = action.error.message;
+      state.isFriendErr = action.payload;
     });
     builder.addCase(sendFriendRequest.pending, (state, action) => {
-      state.isLoading = true;
+      state.isLoadingFriend = true;
     });
     builder.addCase(sendFriendRequest.fulfilled, (state, action) => {
-      state.isLoading = false;
+      state.isLoadingFriend = false;
     });
     builder.addCase(sendFriendRequest.rejected, (state, action) => {
-      state.err = action.error.message;
+      state.isFriendErr = action.payload;
     });
     builder.addCase(acceptFriendRequest.pending, (state, action) => {
-      state.isLoading = true;
+      state.isLoadingFriend = true;
     });
     builder.addCase(acceptFriendRequest.fulfilled, (state, action) => {
-      state.isLoading = false;
+      state.isLoadingFriend = false;
     });
     builder.addCase(acceptFriendRequest.rejected, (state, action) => {
-      state.err = action.error.message;
+      state.isFriendErr = action.payload;
     });
     builder.addCase(getFriendRequests.pending, (state, action) => {
-      state.isLoading = true;
+      state.isLoadingFriend = true;
     });
     builder.addCase(getFriendRequests.fulfilled, (state, action) => {
-      state.isLoading = false;
-      state.FriendRequests = action.payload
+      state.isLoadingFriend = false;
+      state.FriendRequests = action.payload;
     });
     builder.addCase(getFriendRequests.rejected, (state, action) => {
-      state.err = action.error.message;
+      state.isFriendErr = action.payload;
     });
     builder.addCase(rejectFriendRequest.pending, (state, action) => {
-      state.isLoading = true;
+      state.isLoadingFriend = true;
     });
     builder.addCase(rejectFriendRequest.fulfilled, (state, action) => {
-      state.isLoading = false;
+      state.isLoadingFriend = false;
     });
     builder.addCase(rejectFriendRequest.rejected, (state, action) => {
-      state.err = action.error.message;
+      state.isFriendErr = action.payload;
     });
     builder.addCase(removeFriendRequest.pending, (state, action) => {
-      state.isLoading = true;
+      state.isLoadingFriend = true;
     });
     builder.addCase(removeFriendRequest.fulfilled, (state, action) => {
-      state.isLoading = false;
+      state.isLoadingFriend = false;
     });
     builder.addCase(removeFriendRequest.rejected, (state, action) => {
-      state.err = action.error.message;
+      state.isFriendErr = action.payload;
     });
   },
 });

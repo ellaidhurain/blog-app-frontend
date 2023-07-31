@@ -1,52 +1,50 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Outlet, Route, Routes } from "react-router-dom";
-import { UserBlogs } from "../blog/pages/MyBlogs";
 import Feed from "../blog/pages/Feed";
 import ProfilePage from "../blog/pages/ProfilePage";
 import { Navbar } from "../blog/components/Navbar/Navbar";
 import { Stack } from "@mui/system";
 import { Leftbar } from "../blog/components/leftbar/Leftbar";
 import Rightbar from "../blog/components/Rightbar/Rightbar";
-import { Box, ThemeProvider, CssBaseline } from "@mui/material";
-import { createTheme } from "@mui/material/styles";
-import { useMemo } from "react";
-import { themeSettings } from "../blog/theme/theme";
+import { Box } from "@mui/material";
 import SettingsPage from "../blog/pages/SettingsPage";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import UserBlogs from "../blog/pages/UserBlogs";
 
 const Home = () => {
-  // dark/light mode
-  const { mode } = useSelector((state) => state.blog);
-
-  // useMemo is used to memoize the computational value. it prevents unnecessary rendering and optimize perfomance
-  const theme = useMemo(() => createTheme(themeSettings(mode)), [mode]);
-
   return (
     <>
-      {/* wrapping up of Theme provider will provide theme across all child elements */}
-      <ThemeProvider theme={theme}>
-        <CssBaseline /> {/* It fixes some inconsistencies across browsers */}
-        <Box color={"text.primary"}>
-          <Navbar />
-          {/* stack is used to create responsive and flexible layout */}
-          <Stack direction="row" mt={4} pt={4} spacing={4} justifyContent="space-between">
-            <Leftbar />
-            <Routes>
-              <Route path="/feed" element={<Feed />} />
-              <Route path="/myBlogs" element={<UserBlogs />} />
-              <Route path="/profile" element={<ProfilePage />} />
-              <Route path="/settings" element={<SettingsPage />} />
-            </Routes>
-            <Outlet />
-            <Rightbar />
-          </Stack>
-        </Box>
-      </ThemeProvider>
+      <Box color={"text.primary"}>
+        <Navbar />
+        {/* stack is used to create responsive and flexible layout */}
+        <Stack
+          direction="row"
+          mt={4}
+          pt={4}
+          spacing={4}
+          justifyContent="space-between"
+        >
+          <Leftbar />
+          <Routes>
+            <Route path="/feed" element={<Feed />} />
+            <Route path="/myBlogs" element={<UserBlogs />} />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/settings" element={<SettingsPage />} />
+          </Routes>
+
+          {/* <Route path="/blog/:blogId" element={<BlogPost />}>
+                <Route path="comments" element={<Comments />} />
+            </Route> */}
+          {/* <Outlet /> */}
+          {/* The <Outlet /> component is a placeholder used to render the child components of a parent route when the parent route matches the current URL.The parent component BlogPost would contain the <Outlet /> to render the Comments component whenever the URL matches the path "/blog/:blogId/comments". */}
+          <Rightbar />
+        </Stack>
+      </Box>
       <ToastContainer
         position="top-right"
-        autoClose={1000}
+        autoClose={2000}
         hideProgressBar={false}
         newestOnTop={false}
         closeOnClick

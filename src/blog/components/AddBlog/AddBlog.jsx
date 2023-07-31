@@ -1,8 +1,6 @@
 import React, { Fragment, useContext, useEffect, useState } from "react";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
-import Fab from "@mui/material/Fab";
-import AddIcon from "@mui/icons-material/Add";
 import { Box, TextField, Stack, ButtonGroup, Input } from "@mui/material";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
@@ -12,12 +10,10 @@ import Avatar from "@mui/material/Avatar";
 import ImageIcon from "@mui/icons-material/Image";
 import InsertInvitationIcon from "@mui/icons-material/InsertInvitation";
 import { toast } from "react-toastify";
-import axios from "axios";
 import { Navigate } from "react-router-dom";
 import Context from "../../Context/context";
 import {
   getAllBlogsRequest,
-  getOneUserRequest,
   postBlogRequest,
 } from "../../services/api/blogApi";
 import { useDispatch, useSelector } from "react-redux";
@@ -26,8 +22,7 @@ import AddPhotoAlternateOutlinedIcon from "@mui/icons-material/AddPhotoAlternate
 import AttachFileOutlinedIcon from "@mui/icons-material/AttachFileOutlined";
 import PlaceOutlinedIcon from "@mui/icons-material/PlaceOutlined";
 import SentimentSatisfiedAltOutlinedIcon from "@mui/icons-material/SentimentSatisfiedAltOutlined";
-
-axios.defaults.withCredentials = true;
+import { getOneUserRequest } from "../../services/api/userApi";
 
 const StyledModel = styled(Modal)({
   display: "flex",
@@ -94,11 +89,12 @@ const AddBlog = ({ picture }) => {
     // for (const pair of formData.entries()) {
     //   console.log(pair[0], pair[1]);
     // }
+    const userId = localStorage.getItem("userId");
 
     dispatch(postBlogRequest({ formData }))
       .then(() => {
         // toast.success("Blog added!");
-        dispatch(getOneUserRequest());
+        dispatch(getOneUserRequest(userId));
         dispatch(getAllBlogsRequest());
         setPost({
           title: "",

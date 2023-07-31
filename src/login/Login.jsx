@@ -1,20 +1,28 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
 import "./App.css";
-import { Box, Button, TextField } from "@mui/material";
+import {
+  Box,
+  Button,
+  TextField,
+  Typography,
+  FormControlLabel,
+} from "@mui/material";
 import { LoginImage } from "./lottiefiles";
-import { loginRequest } from "../blog/services/api/userApi";
+import {
+  loginRequest,
+  refreshTokenRequest,
+} from "../blog/services/api/userApi";
 import { useForm } from "react-hook-form";
+import Checkbox from "@mui/material/Checkbox";
+import Grid from "@mui/material/Grid";
+import CircularProgress from "@mui/material/CircularProgress";
 
 const Login = () => {
-  const { loading } = useSelector((state) => state.login);
-  const [inputs, setInputs] = useState({
-    Email: "",
-    Password: "",
-  });
+  const { loading, err } = useSelector((state) => state.login);
   const [passwordType, setPasswordType] = useState("password");
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -24,15 +32,18 @@ const Login = () => {
     handleSubmit,
     formState: { errors },
     clearErrors,
-    
-  } = useForm(inputs);
+    setValue
+  } = useForm({
+    defaultValues: {
+      Email: "",
+      Password: "",
+    },
+  });
 
-  // get user input
+  // The setValue function provided by react-hook-form takes care of updating the form values and triggering re-renders when the form inputs change
   const handleInputChange = (e) => {
-    setInputs((prevState) => ({
-      ...prevState,
-      [e.target.name]: e.target.value,
-    }));
+    setValue(e.target.name, e.target.value);
+    clearError(e.target.name);
   };
 
   const handleSubmitForm = async (validated_data) => {
@@ -43,21 +54,18 @@ const Login = () => {
       };
 
       const res = await dispatch(loginRequest(input));
-      // dispatch(setLogin())
-      const data = res.payload; // Assuming the response data is available in `payload` property
-      const userId = data.user._id;
+      const userId = res.payload.user._id;
+      const accessToken = res.payload.accessToken;
 
+      if (!accessToken) {
+        throw new Error("Invalid token format or token not found.");
+      }
+
+      localStorage.setItem("token", accessToken);
       localStorage.setItem("userId", userId);
-
-      navigate("/feed");
+      window.location.href = "/feed";
     } catch (error) {
-        // If the response contains an 'error' message, show it in a toast
-        if (error.response && error.response.data && error.response.data.error) {
-          toast.error(error.response.data.error);
-        } else {
-          // If there's no specific error message in the response, show a generic error message
-          toast.error("🚨 Not so easy!");
-        }
+      toast.error(error.message);
     }
   };
 
@@ -75,24 +83,27 @@ const Login = () => {
 
   return (
     <>
-      <Box className="row justify-content-center align-items-center">
-        <Box className="col-5">
+    
+      <Grid container justifyContent="center" alignItems="center">
+        <Grid item xs={12} md={5} p={2}>
           <LoginImage />
-        </Box>
-        <Box className="col signup-form">
+        </Grid>
+        <Grid item xs={12} md={4} p={2}>
           <Box>
-            <img
+            <Typography variant="h4" textAlign={"center"}>
+              Login
+            </Typography>
+            {/* <img
               src="//ssl.gstatic.com/accounts/ui/avatar_2x.png"
               alt="profile-img"
               className="profile-img-card"
-            />
+            /> */}
             <form onSubmit={handleSubmit(handleSubmitForm)}>
-              <Box className="form-group">
+              <Box>
                 <TextField
-                  autoComplete="off"
                   name="Email"
                   type="email"
-                  className="form-control py-2"
+                  sx={{ width: "100%", py: 2 }}
                   placeholder="email"
                   {...register("Email", {
                     required: "Email is required",
@@ -105,14 +116,14 @@ const Login = () => {
                     handleInputChange(e);
                     clearError("Email");
                   }}
-                  // error={!!errors.Email}
+                  // error={!!errors.Email} // if error it return boolean value true else return false
+                  error={errors.Email ? true : false}
                   helperText={errors.Email && errors.Email.message}
                 />
                 <TextField
-                  autoComplete="off"
                   name="Password"
                   type={passwordType}
-                  className="form-control py-2"
+                  sx={{ width: "100%", pb: 2 }}
                   placeholder="password"
                   {...register("Password", {
                     required: "Password is required",
@@ -125,53 +136,53 @@ const Login = () => {
                     handleInputChange(e);
                     clearError("Password");
                   }}
-                  // error={!!errors.Password}
+                  error={errors.Password ? true : false}
                   helperText={errors.Password && errors.Password.message}
                 />
                 {/* {!errors.Email && !errors.Password && loginError && (
-                  <Typography variant="caption" color="error">
-                    {loginError}
-                  </Typography>
-                )} */}
+                <Typography variant="caption" color="error">
+                  {loginError}
+                </Typography>
+              )} */}
               </Box>
-              <Box className="input-group-btn ">
-                <label htmlFor="pass" className="d-flex justify-content-center">
-                  <input
-                    id="pass"
-                    type="checkbox"
-                    style={{ color: "blue" }}
-                    onClick={togglePassword}
-                  />
-                  <p className="m-2 ">check password</p>
-                </label>
+              {err && <small style={{ color: "red" }}>{err}</small>}
+              <Box>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      id="pass"
+                      type="checkbox"
+                      sx={{ color: "primary" }}
+                      onClick={togglePassword}
+                    />
+                  }
+                  label="Check password"
+                />
               </Box>
-              <Box className="form-group d-flex justify-content-center my-2">
-                <Button disabled={loading} type="submit" variant="contained" className=" px-4 m-2">
-                  {loading ? (
-                    <>
-                      <span className="spinner-border spinner-border-sm"></span>
-                    </>
-                  ) : (
-                    <>
-                      {" "}
-                      <span> Login</span>
-                    </>
-                  )}
-                </Button>{" "}
+              <Box sx={{ display: "flex", justifyContent: "center", my: 2 }}>
+                <Button
+                  disabled={loading}
+                  type="submit"
+                  variant="contained"
+                  sx={{ px: 4, m: 2 }}
+                  startIcon={
+                    loading ? (
+                      <CircularProgress size={15} color="inherit" />
+                    ) : null
+                  }
+                >
+                  {loading ? "Loading..." : "Login"}
+                </Button>
                 <Link to="/signup" style={{ textDecoration: "none" }}>
-                  <Button
-                    type="submit"
-                    variant="contained"
-                    className="px-4 m-2"
-                  >
+                  <Button type="submit" variant="outlined" sx={{ px: 4, m: 2 }}>
                     <span> Signup</span>
                   </Button>
                 </Link>
               </Box>
             </form>
           </Box>
-        </Box>
-      </Box>
+        </Grid>
+      </Grid>
     </>
   );
 };

@@ -11,15 +11,15 @@ const loginSlice = createSlice({
   },
 
   reducers: {
-    setLogin(state) {
-      return {
-        ...state,
-        isLoggedIn: true,
-      };
-    },
-    setLogout(state) {
-      state.isLoggedIn = false;
-    },
+    // setLogin(state) {
+    //   return {
+    //     ...state,
+    //     isLoggedIn: true,
+    //   };
+    // },
+    // setLogout(state) {
+    //   state.isLoggedIn = false;
+    // },
   },
 
   extraReducers: (builder) => {
@@ -34,10 +34,9 @@ const loginSlice = createSlice({
         state.data = action.payload;
       })
       .addCase(loginRequest.rejected, (state, action) => {
-        // Handle the error state
-        state.loading = false;
         state.err = action.payload;
-      });
+        state.loading = false;
+      })
   },
 });
 

@@ -18,28 +18,13 @@ export const Leftbar = (props) => {
   const [active, setActive] = useState(null);
   const { mode } = useSelector((state) => state.blog);
 
-  const api = axios.create({
-    // baseURL: "http://localhost:5000/api/blog",
-    baseURL: "https://snaplinkbackend.onrender.com/api/user",
-    withCredentials: true, // Enable sending cookies with requests
-  });
-
-  const handleLogout = async () => {
-    try {
-      await api.post("/logout");
+  const handleLogout = async () => {   
       localStorage.removeItem("userId");
+      localStorage.removeItem("token");
       navigate("/");
-      dispatch(setLogout());
-    } catch (error) {
-      // If the response contains an 'error' message, show it in a toast
-      if (error.response && error.response.data && error.response.data.error) {
-        toast.error(error.response.data.error);
-      } else {
-        // If there's no specific error message in the response, show a generic error message
-        toast.error("🚨 Not so easy!");
-      }
-    }
+      console.log("hi");
   };
+
 
   return (
     <>

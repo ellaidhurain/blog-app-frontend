@@ -17,7 +17,6 @@ export default function Rightbar() {
           <UserList />
         </Box>
       </Box>
-      {/* <ScrolltoTop/> */}
       <ScrollPage/>
     </Box>
   );

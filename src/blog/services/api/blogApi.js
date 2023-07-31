@@ -2,63 +2,35 @@ import { createAsyncThunk, isRejectedWithValue } from "@reduxjs/toolkit";
 import axios from "axios";
 
 const api = axios.create({
-  // baseURL: "http://localhost:5000/api/blog",
-  baseURL : "https://snaplinkbackend.onrender.com/api/blog",
+  baseURL: "http://localhost:5000/api/blog",
+  // baseURL : "https://snaplinkbackend.onrender.com/api/blog",
   withCredentials: true, // Enable sending cookies with requests
-  credentials: "include",
 });
 
-const url = "https://snaplinkbackend.onrender.com/api/user"
-// const url = "http://localhost:5000/api/user"
+const token = localStorage.getItem("token");
+api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
 // Redux AsyncThunk is a Middleware for handling asynchronous actions in Redux and do operations on promise obj handled by redux
-
-export const getOneUserRequest = createAsyncThunk(
-  "blog/getOneUserRequest",
-  async () => {
-    try {
-      const res = await axios.get(`${url}/getUser`);
-      // console.log(res.data);
-      return res.data;
-    } catch (err) {
-      console.log("Error:", err);
-      throw err;
-    }
-  }
-);
-
+// synchronous operation waits for response of previous line or request
+// asynchronous operation not waits for response of previous line or request. like api calls is asynchronous. 
+// to handle this we use js built in method called Promise. Redux thunk use This Promise internally we can access using Redux middleware called thunk.
 export const getAllBlogsRequest = createAsyncThunk(
   "blog/getAllBlogsRequest",
   async () => {
-    try {
-      const res = await api.get(`/getAllBlogs`, {
-        withCredentials: true,
-      });
-      // console.log(res.data);
-      return res.data;
-    } catch (err) {
-      console.log(err);
-      throw err;
+    if (token) {
+      try {
+        const res = await api.get(`/getAllBlogs`);
+        return res.data;
+      } catch (err) {
+        const error = err.response.data.error;
+        // console.log(error);
+        return thunkAPI.rejectWithValue(error);
+      }
     }
   }
 );
 
-export const refreshTokenRequest = createAsyncThunk(
-  "blog/refreshToken",
-  async () => {
-    try {
-      const res = await api.get(`/refresh`, {
-        withCredentials: true,
-      });
-      console.log(res.data);
-      return res.data;
-    } catch (err) {
-      console.log(err);
-      throw err;
-    }
-  }
-);
-
+// createAsyncThunk accepts two arguments first one is string which is action type, second one is call back fn which returns promise.
 export const postBlogRequest = createAsyncThunk(
   "blog/postBlogRequest",
   async ({ formData }) => {
@@ -71,8 +43,10 @@ export const postBlogRequest = createAsyncThunk(
       const data = await res.data;
       return data;
     } catch (err) {
-      console.log(err);
-      return err;
+      // error throwed here is captured in extra reducers
+      const error = err.response.data.error;
+      // console.log(error);
+      return thunkAPI.rejectWithValue(error); //sending the captured error to Slice
     }
   }
 );
@@ -82,20 +56,18 @@ export const updateBlogRequest = createAsyncThunk(
   //When using createAsyncThunk, the payload creator function should only take one argument, which is an object containing the parameters you need.
   async ({ blogId, formData }) => {
     try {
-      const res = await api.put(
-        `updateBlog/${blogId}`,formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data", // Set the content type to multipart/form-data
-          },
-        }
-      );
+      const res = await api.put(`updateBlog/${blogId}`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data", // Set the content type to multipart/form-data
+        },
+      });
 
       const data = res.data;
       return data;
     } catch (err) {
-      console.log(err);
-      return isRejectedWithValue(err.response.data);
+      const error = err.response.data.error;
+      // console.log(error);
+      return thunkAPI.rejectWithValue(error);
     }
   }
 );
@@ -104,15 +76,13 @@ export const deleteBlogRequest = createAsyncThunk(
   "blog/blogDeleteRequest",
   async ({ blogId }) => {
     try {
-      const res = await api.delete(`/deleteOneBlog/${blogId}`, {
-        withCredentials: true,
-      });
-
+      const res = await api.delete(`/deleteOneBlog/${blogId}`);
       const data = res.data;
       return data;
     } catch (err) {
-      console.log(err);
-      throw err;
+      const error = err.response.data.error;
+      // console.log(error);
+      return thunkAPI.rejectWithValue(error);
     }
   }
 );
@@ -120,14 +90,16 @@ export const deleteBlogRequest = createAsyncThunk(
 export const getCommentRequest = createAsyncThunk(
   "blog/getCommentRequest",
   async () => {
-    try {
-      const res = await api.get(`/getAllComments`, {
-        withCredentials: true,
-      });
-      // console.log(res.data);
-      return res.data;
-    } catch (err) {
-      throw err;
+    if (token) {
+      try {
+        const res = await api.get(`/getAllComments`);
+        // console.log(res.data);
+        return res.data;
+      } catch (err) {
+        const error = err.response.data.error;
+        // console.log(error);
+        return thunkAPI.rejectWithValue(error);
+      }
     }
   }
 );
@@ -135,12 +107,16 @@ export const getCommentRequest = createAsyncThunk(
 export const getallCommentsForBlogRequest = createAsyncThunk(
   "blog/getAllCommentsForBlog",
   async (blogId) => {
-    try {
-      const res = await api.get(`/getAllCommentsForBlog/${blogId}`);
-      // console.log(res.data);
-      return res.data;
-    } catch (err) {
-      throw err;
+    if (token) {
+      try {
+        const res = await api.get(`/getAllCommentsForBlog/${blogId}`);
+        // console.log(res.data);
+        return res.data;
+      } catch (err) {
+        const error = err.response.data.error;
+        // console.log(error);
+        return thunkAPI.rejectWithValue(error);
+      }
     }
   }
 );
@@ -155,7 +131,9 @@ export const addCommentRequest = createAsyncThunk(
 
       return res.data;
     } catch (err) {
-      throw err;
+      const error = err.response.data.error;
+      // console.log(error);
+      return thunkAPI.rejectWithValue(error);
     }
   }
 );
@@ -170,7 +148,9 @@ export const updateCommentRequest = createAsyncThunk(
 
       return res.data;
     } catch (err) {
-      throw err;
+      const error = err.response.data.error;
+      // console.log(error);
+      return thunkAPI.rejectWithValue(error);
     }
   }
 );
@@ -182,7 +162,9 @@ export const deleteCommentRequest = createAsyncThunk(
       const res = await api.delete(`/deleteComment/${commentId}`);
       return res.data;
     } catch (err) {
-      throw err;
+      const error = err.response.data.error;
+      // console.log(error);
+      return thunkAPI.rejectWithValue(error);
     }
   }
 );
@@ -194,7 +176,9 @@ export const addRemoveLikeRequest = createAsyncThunk(
       const res = await api.post(`/addRemoveLike/${blogId}`);
       return res.data;
     } catch (err) {
-      throw err;
+      const error = err.response.data.error;
+      // console.log(error);
+      return thunkAPI.rejectWithValue(error);
     }
   }
 );
@@ -214,12 +198,16 @@ export const addRemoveLikeRequest = createAsyncThunk(
 export const getallLikesForBlogRequest = createAsyncThunk(
   "blog/getallLikesForBlogRequest",
   async (blogId) => {
-    try {
-      const res = await api.get(`/getallLikesForBlog/${blogId}`);
-      // console.log(res.data);
-      return res.data;
-    } catch (err) {
-      throw err;
+    if (token) {
+      try {
+        const res = await api.get(`/getallLikesForBlog/${blogId}`);
+        // console.log(res.data);
+        return res.data;
+      } catch (err) {
+        const error = err.response.data.error;
+        // console.log(error);
+        return thunkAPI.rejectWithValue(error);
+      }
     }
   }
 );
@@ -246,11 +234,15 @@ export const getallLikesForBlogRequest = createAsyncThunk(
 export const getAllLikesRequest = createAsyncThunk(
   "blog/getAllLikesRequest",
   async () => {
-    try {
-      const res = await api.get(`/getAllLikes`);
-      return res.data;
-    } catch (err) {
-      throw err;
+    if (token) {
+      try {
+        const res = await api.get(`/getAllLikes`);
+        return res.data;
+      } catch (err) {
+        const error = err.response.data.error;
+        // console.log(error);
+        return thunkAPI.rejectWithValue(error);
+      }
     }
   }
 );

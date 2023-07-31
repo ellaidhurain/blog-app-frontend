@@ -3,6 +3,7 @@ import React, { useEffect, useRef } from "react";
 import {
   acceptFriendRequest,
   getFriendRequests,
+  rejectFriendRequest,
 } from "../../services/api/userApi";
 import { useDispatch, useSelector } from "react-redux";
 import PersonAddAltIcon from "@mui/icons-material/PersonAddAlt";
@@ -22,12 +23,12 @@ const Notifications = () => {
   const { FriendRequests } = useSelector((state) => state.user);
   const { mode } = useSelector((state) => state.blog);
 
+
   const dispatch = useDispatch();
 
   const isMountedRef = useRef(false); // initially mount is false
 
   useEffect(() => {
-    console.log(FriendRequests);
     // Set the flag to true when the component mounts
     isMountedRef.current = true;
 
@@ -38,7 +39,7 @@ const Notifications = () => {
     return () => {
       isMountedRef.current = false;
     };
-  }, []);
+  }, [dispatch]);
 
   const handleAcceptFriend = (friendId) => {
     try {
@@ -109,6 +110,7 @@ const Notifications = () => {
       <Box>
         {FriendRequests?.map((friend) => (
           <Box
+          key={friend._id}
             sx={{
               display: "flex",
               borderBottom: "1px solid #E0E0E0",
