@@ -25,6 +25,12 @@ export const Leftbar = (props) => {
       console.log("hi");
   };
 
+  useEffect(() => {
+    // Get the active item from localStorage when the component mounts
+    const activeNavItem = localStorage.getItem("activeNavItem");
+    setActive(activeNavItem);
+  }, []); 
+
 
   return (
     <>
@@ -52,6 +58,7 @@ export const Leftbar = (props) => {
                 onClick={() => {
                   navigate(data.path);
                   setActive(data.id);
+                  localStorage.setItem("activeNavItem", data.id);
                 }}
                 disableRipple
                 sx={{

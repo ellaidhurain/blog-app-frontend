@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React from "react";
 import { Box, Button } from "@mui/material";
 import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
@@ -33,8 +33,6 @@ import {
 import HowToRegIcon from "@mui/icons-material/HowToReg";
 import PersonRemoveIcon from "@mui/icons-material/PersonRemove";
 import Typography from "@mui/material/Typography";
-import Divider from "@mui/material/Divider";
-import { Skeleton } from "@mui/material";
 import GlobalSkeleton from "./GlobalSkeleton";
 
 const api = axios.create({
@@ -57,8 +55,6 @@ export default function Feed() {
 
   const dispatch = useDispatch();
   const userId = localStorage.getItem("userId");
-  const { commentsList } = useSelector((state) => state.commentSlice); // initialState
-
 
   useEffect(() => {
     const fetchData = async () => {

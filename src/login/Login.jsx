@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
 import "./App.css";
@@ -14,7 +13,6 @@ import {
 import { LoginImage } from "./lottiefiles";
 import {
   loginRequest,
-  refreshTokenRequest,
 } from "../blog/services/api/userApi";
 import { useForm } from "react-hook-form";
 import Checkbox from "@mui/material/Checkbox";
@@ -24,7 +22,6 @@ import CircularProgress from "@mui/material/CircularProgress";
 const Login = () => {
   const { loading, err } = useSelector((state) => state.login);
   const [passwordType, setPasswordType] = useState("password");
-  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const {

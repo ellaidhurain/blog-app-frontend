@@ -146,7 +146,7 @@ const AddBlog = ({ picture }) => {
                 width: "100%",
                 padding: "10px",
                 paddingLeft: "15px",
-                color: "white",
+                color: mode === "dark" ? "white" : "black",
               }}
               placeholder="What's on your mind?"
               required

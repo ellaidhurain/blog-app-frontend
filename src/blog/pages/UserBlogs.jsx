@@ -4,7 +4,6 @@ import {
   ButtonGroup,
   IconButton,
   Modal,
-  Skeleton,
   Stack,
   TextField,
 } from "@mui/material";
@@ -29,7 +28,6 @@ import { formatter } from "../helper/time";
 import AddPhotoAlternateOutlinedIcon from "@mui/icons-material/AddPhotoAlternateOutlined";
 import {
   deleteBlogRequest,
-  getAllBlogsRequest,
   updateBlogRequest,
 } from "../services/api/blogApi";
 import { useDispatch, useSelector } from "react-redux";
@@ -199,6 +197,13 @@ export function MyBlogs({ blogId, title, description, imageURL, createdAt }) {
     } // => this is only return promise obj not response.
   }, [blogId]);
 
+  useEffect(() => {
+    if (blogId) {
+      dispatch(getallCommentsForBlogRequest(blogId));
+    } // => this is only return promise obj not response.
+  }, [blogId]);  
+
+
   const matchedLikeList = likes?.filter((like) => like.blog === blogId) || null;
 
   const date = new Date();
@@ -308,10 +313,6 @@ export function MyBlogs({ blogId, title, description, imageURL, createdAt }) {
               >
                 <CommentIcon />
               </IconButton>
-              <Box style={{ fontSize: "15px" }} pr={3}>
-                10 comments
-              </Box>
-
               <Box>
                 <IconButton aria-label="share" sx={{ marginLeft: "10px" }}>
                   <ShareIcon />
