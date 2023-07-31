@@ -90,8 +90,9 @@ const Notifications = () => {
         right: "30px",
         zIndex: "9999",
         borderRadius: "10px",
+        boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.2)",
       }}
-      elevation={5}
+      // elevation={3}
     >
       <Box
         sx={{
