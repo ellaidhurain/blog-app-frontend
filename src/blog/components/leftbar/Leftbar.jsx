@@ -19,7 +19,7 @@ export const Leftbar = (props) => {
 
   // Initialize the active state with the value from localStorage
   const [active, setActive] = useState(
-    localStorage.getItem("activeNavItem") || null
+    localStorage.getItem("activeNavItem") || NavItems[0].id
   );
 
   const handleLogout = async () => {
