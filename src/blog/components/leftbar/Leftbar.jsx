@@ -26,10 +26,11 @@ export const Leftbar = (props) => {
   };
 
   useEffect(() => {
-    // Get the active item from localStorage when the component mounts
-    const activeNavItem = localStorage.getItem("activeNavItem");
-    setActive(activeNavItem);
-  }, []); 
+    // The effect is used to update localStorage whenever the active state changes
+    if (active !== null) {
+      localStorage.setItem("activeNavItem", active);
+    }
+  }, [active]);
 
 
   return (
