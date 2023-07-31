@@ -53,14 +53,14 @@ const Icons = styled("div")(({ theme }) => ({
   },
 }));
 
-const UserBox = styled("div")(({ theme }) => ({
-  display: "flex",
-  alignItems: "center",
-  gap: "20px",
-  [theme.breakpoints.up("sm")]: {
-    display: "none",
-  },
-}));
+// const UserBox = styled("div")(({ theme }) => ({
+//   display: "flex",
+//   alignItems: "center",
+//   gap: "20px",
+//   [theme.breakpoints.up("sm")]: {
+//     display: "none",
+//   },
+// }));
 
 export const Navbar = () => {
   const navigate = useNavigate();
@@ -173,7 +173,7 @@ export const Navbar = () => {
                 >
                   <ListItemIcon
                     sx={{
-                      pt:2,
+                      pt: 2,
                       "&:hover": {
                         cursor: "pointer",
                       },
@@ -221,7 +221,7 @@ export const Navbar = () => {
           </IconButton>
           <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
         </Paper>
-
+        <Box sx={{display:"flex"}}>
         <Icons size="large" aria-label="show 4 new mails" color="inherit">
           <Badge color="error" sx={{ position: "relative" }}>
             <ListItemIcon
@@ -246,49 +246,41 @@ export const Navbar = () => {
               }}
             /> */}
           </Badge>
-          <Badge
-            onClick={() => setIsClicked(!isClicked)}
-            badgeContent={FriendRequests?.length}
-            color="error"
-            sx={{ position: "relative" }}
-          >
-            <NotificationsIcon
-              sx={{
-                "&:hover": {
-                  cursor: "pointer",
-                },
-              }}
-            />
-          </Badge>
-          {/* {isChat && <Messages />} */}
-          {isClicked && <Notifications />}
-          <Avatar
-            alt="Remy Sharp"
-            src={userData?.picturePath}
-            sx={{
-              backgroundColor: "#fff",
-              color: "gray",
-              "&:hover": {
-                cursor: "pointer",
-              },
-            }}
-          />
         </Icons>
-
-        <UserBox>
-          <Avatar
-            alt="Remy Sharp"
-            src={userData?.picturePath}
+        <Badge
+          onClick={() => setIsClicked(!isClicked)}
+          badgeContent={FriendRequests?.length}
+          color="error"
+          sx={{
+            position: "relative",
+          }}
+        >
+          <NotificationsIcon
             sx={{
-              backgroundColor: "#fff",
-              color: "gray",
-              marginLeft: "8px",
               "&:hover": {
                 cursor: "pointer",
               },
             }}
           />
-        </UserBox>
+        </Badge>
+         {/* {isChat && <Messages />} */}
+         {isClicked && <Notifications />}
+      
+      {/* <UserBox>
+        <Avatar
+          alt="Remy Sharp"
+          src={userData?.picturePath}
+          sx={{
+            backgroundColor: "#fff",
+            color: "gray",
+            marginLeft: "8px",
+            "&:hover": {
+              cursor: "pointer",
+            },
+          }}
+        />
+      </UserBox> */}
+        </Box>       
       </MyToolbar>
     </AppBar>
   );
