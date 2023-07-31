@@ -85,7 +85,7 @@ export default function Feed() {
 
   return (
     <>
-      <Box flex={4} sx={{padding:{lg:2, md:2, sm:0, xs:0}}}>
+      <Box flex={4} p={2}>
         <AddBlog picture={userData?.picturePath} />
         <Box>
           {blogs &&
@@ -223,7 +223,7 @@ const Allblogs = ({ blog }) => {
             sx={{
               marginLeft:0,
               marginBottom: 2,
-              borderRadius: {xs: "none", sm:"15px", lg:"15px", md:"15px"},
+              borderRadius: "15px",
               border:
                 mode === "light"
                   ? "1px solid rgba(0,0,0,0.15)"
@@ -294,8 +294,8 @@ const Allblogs = ({ blog }) => {
               sx={{
                 display: "flex",
                 justifyContent: "space-between",
-                pt: 4,
-                px: 4,
+                pt: 2,
+                px: 2,
               }}
             >
               <Box>
@@ -312,7 +312,7 @@ const Allblogs = ({ blog }) => {
                 style={{ color: "gray" }}
               >
                 {matchedCommentList?.length > 0 && (
-                  <Box className="text-gray-500 px-4">
+                  <Box sx={{ color: "gray", px: 4 }}>
                     {matchedCommentList?.length}{" "}
                     {matchedCommentList?.length === 1 ? "comment" : "comments"}
                   </Box>

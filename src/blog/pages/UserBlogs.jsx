@@ -282,7 +282,7 @@ export function MyBlogs({ blogId, title, description, imageURL, createdAt }) {
             >
               <Box>
                 {matchedLikeList?.length > 0 && (
-                  <Box className="text-gray-500 px-4">
+                  <Box sx={{ color: "gray", px: 4 }}>
                     {matchedLikeList?.length}{" "}
                     {matchedLikeList?.length === 1 ? "like" : "likes"}
                   </Box>
@@ -290,11 +290,11 @@ export function MyBlogs({ blogId, title, description, imageURL, createdAt }) {
               </Box>
 
               <Box
-                className="d-flex justify-content-end"
+                sx={{ display: "flex", justifyContent: "flex-end" }}
                 style={{ color: "gray" }}
               >
                 {matchedCommentList?.length > 0 && (
-                  <Box className="text-gray-500 px-4">
+                  <Box sx={{ color: "gray", px: 4 }}>
                     {matchedCommentList?.length}{" "}
                     {matchedCommentList?.length === 1 ? "comment" : "comments"}
                   </Box>
@@ -315,7 +315,7 @@ export function MyBlogs({ blogId, title, description, imageURL, createdAt }) {
                 <CommentIcon />
               </IconButton>
               <Box>
-                <IconButton aria-label="share" sx={{ marginLeft: "10px" }}>
+                <IconButton aria-label="share">
                   <ShareIcon />
                 </IconButton>
                 <IconButton
