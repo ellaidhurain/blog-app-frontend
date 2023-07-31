@@ -85,7 +85,7 @@ export default function Feed() {
 
   return (
     <>
-      <Box flex={4} p={2}>
+      <Box flex={4} sx={{padding:{lg:2, md:2, sm:0, xs:0}}}>
         <AddBlog picture={userData?.picturePath} />
         <Box>
           {blogs &&
@@ -97,6 +97,7 @@ export default function Feed() {
     </>
   );
 }
+
 
 const Allblogs = ({ blog }) => {
   const { _id: blogId, title, description, image, createdAt, user } = blog;
@@ -220,8 +221,9 @@ const Allblogs = ({ blog }) => {
         {!isLoadingBlogs && (
           <Card
             sx={{
+              marginLeft:0,
               marginBottom: 2,
-              borderRadius: "15px",
+              borderRadius: {xs: "none", sm:"none", lg:"15px", md:"15px"},
               border:
                 mode === "light"
                   ? "1px solid rgba(0,0,0,0.15)"

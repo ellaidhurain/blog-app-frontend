@@ -23,7 +23,7 @@ const Home = () => {
           direction="row"
           mt={4}
           pt={4}
-          spacing={4}
+          // spacing={4}
           justifyContent="space-between"
         >
           <Leftbar />

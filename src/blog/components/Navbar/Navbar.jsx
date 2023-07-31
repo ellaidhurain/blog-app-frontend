@@ -175,7 +175,7 @@ export const Navbar = () => {
           </Drawer>
         </Box>
         <LinkedCameraIcon
-          sx={{ display: { xs: "block", sm: "none" }, marginRight: "8px" }}
+          sx={{ display: { xs: "none", sm: "none" }, marginRight: "8px" }}
         />
         <Typography
           px={2}
