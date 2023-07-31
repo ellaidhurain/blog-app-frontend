@@ -76,13 +76,12 @@ export const Navbar = () => {
   };
 
   const dispatch = useDispatch();
-  const handleLogout = async () => {   
+  const handleLogout = async () => {
     localStorage.removeItem("userId");
     localStorage.removeItem("token");
     navigate("/");
     console.log("hi");
-};
-
+  };
 
   return (
     <AppBar position="fixed" style={{ top: 0, left: 0, width: "100%" }}>
@@ -149,10 +148,7 @@ export const Navbar = () => {
                     </ListItemButton>
                   </Box>
                 ))}
-                <ListItem
-                  key="logout"
-                  sx={{ padding: 0 }}
-                >
+                <ListItem key="logout" sx={{ padding: 0 }}>
                   <ListItemButton
                     onClick={handleLogout}
                     sx={{
@@ -169,6 +165,22 @@ export const Navbar = () => {
                       <span className="px-2">Logout</span>
                     </ListItemIcon>
                   </ListItemButton>
+                </ListItem>
+                <ListItem
+                  onClick={() =>
+                    dispatch(setMode(mode === "light" ? "dark" : "light"))
+                  }
+                >
+                  <ListItemIcon
+                    sx={{
+                      pt:2,
+                      "&:hover": {
+                        cursor: "pointer",
+                      },
+                    }}
+                  >
+                    {mode == "light" ? <DarkModeIcon /> : <LightModeIcon />}
+                  </ListItemIcon>
                 </ListItem>
               </List>
             </Box>

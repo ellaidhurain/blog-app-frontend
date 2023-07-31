@@ -11,6 +11,9 @@ import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { setLogout } from "../../store/slice/loginSlice";
 import { Logout as LogoutIcon } from "@mui/icons-material";
+import DarkModeIcon from "@mui/icons-material/DarkMode";
+import LightModeIcon from "@mui/icons-material/LightMode";
+import { setMode } from "../../store/slice/blogSlice";
 
 export const Leftbar = (props) => {
   const navigate = useNavigate();
