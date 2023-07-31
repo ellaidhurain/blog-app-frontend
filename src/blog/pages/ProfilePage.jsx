@@ -100,9 +100,6 @@ const ProfilePage = () => {
           dispatch(getOneUserRequest(userId));
           handleClose();
           toast.success("🦄 Wow so easy!");
-          if (err) {
-            throw new Error(err);
-          }
         });
       }
     } catch (error) {
@@ -121,9 +118,6 @@ const ProfilePage = () => {
           dispatch(getOneUserRequest(userId));
           handleClose();
           toast.success("🦄 Wow so easy!");
-          if (err) {
-            throw new Error(err);
-          }
         });
         setPost((prevPost) => ({
           ...prevPost,
