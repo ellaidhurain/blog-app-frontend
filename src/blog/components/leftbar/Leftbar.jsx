@@ -27,13 +27,6 @@ export const Leftbar = (props) => {
     console.log("hi");
   };
 
-  useEffect(() => {
-    // The effect is used to update localStorage whenever the active state changes
-    if (active !== null) {
-      localStorage.setItem("activeNavItem", active);
-    }
-  }, [active]);
-
   return (
     <>
       <Box
