@@ -10,7 +10,7 @@ import { signupRequest } from "../blog/services/api/userApi";
 import { useForm } from "react-hook-form";
 import Grid from "@mui/material/Grid";
 
-const Signup = () => {
+const SignUp = () => {
   const { loading, err } = useSelector((state) => state.signup);
 
   const {
@@ -30,7 +30,7 @@ const Signup = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const handleSubmitForm = (validated_data) => {
+  const handleSignUpForm = (validated_data) => {
     try {
       const inputs = {
         Name: validated_data.Name,
@@ -60,6 +60,7 @@ const Signup = () => {
   };
 
   const handleInputChange = (e) => {
+    // pass the key value to setValue function it automatically assign to default values
     setValue(e.target.name, e.target.value);
     clearError(e.target.name);
   };
@@ -74,7 +75,7 @@ const Signup = () => {
           <Typography variant="h4" textAlign={"center"}>
             Sign Up
           </Typography>
-          <form onSubmit={handleSubmit(handleSubmitForm)}>
+          <form onSubmit={handleSubmit(handleSignUpForm)}>
             <Box>
               <TextField
                 placeholder="username"
@@ -82,6 +83,7 @@ const Signup = () => {
                 type="text"
                 sx={{ width: "100%", py: 2 }}
                 {...register("Name", {
+                  // add the validation rule as key value pair
                   required: "Name is required",
                   minLength: {
                     value: 3,
@@ -118,6 +120,10 @@ const Signup = () => {
                 placeholder="password"
                 {...register("Password", {
                   required: "Password is required",
+                  minLength: {
+                    value: 6,
+                    message: "Password must be at least 6 characters",
+                  },
                 })}
                 onChange={(e) => {
                   handleInputChange(e);
@@ -131,17 +137,17 @@ const Signup = () => {
 
             <Box className="d-flex my-2 justify-content-center">
               <Box className="form-group mx-4">
-                <Button type="submit" variant="contained" className=" px-4">
-                  {loading ? (
-                    <>
-                      <span className="spinner-border spinner-border-sm"></span>
-                    </>
-                  ) : (
-                    <>
-                      {" "}
-                      <span> register</span>
-                    </>
-                  )}
+                <Button
+                  disabled={loading}
+                  type="submit"
+                  variant="contained"
+                  startIcon={
+                    loading ? (
+                      <CircularProgress size={15} color="inherit" />
+                    ) : null
+                  }
+                >
+                  {loading ? "Loading..." : "Register"}
                 </Button>
               </Box>
               <Link to="/login" style={{ textDecoration: "none" }}>
@@ -158,4 +164,4 @@ const Signup = () => {
   );
 };
 
-export default Signup;
+export default SignUp;

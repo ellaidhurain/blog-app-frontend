@@ -32,15 +32,15 @@ import {
   updateBlogRequest,
 } from "../services/api/blogApi";
 import { useDispatch, useSelector } from "react-redux";
-import AddBlog from "../components/AddBlog/AddBlog";
+import AddBlog from "../components/AddSnap";
 import axios from "axios";
-import ReadMore from "./Readmore";
-import AllComments from "../components/comments/Comments";
+import ReadMore from "../components/ReadMore";
+import AllComments from "../components/Comments";
 import {
   getOneUserRequest,
   refreshTokenRequest,
 } from "../services/api/userApi";
-import GlobalSkeleton from "./GlobalSkeleton";
+import GlobalSkeleton from "../components/Loader";
 
 const api = axios.create({
   // baseURL: "http://localhost:5000/api/blog",

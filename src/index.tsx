@@ -6,16 +6,18 @@ import { BrowserRouter } from "react-router-dom";
 import store from "./blog/store/store";
 import App from "./App";
 
-
 const container = document.getElementById("root")!;
 const root = createRoot(container);
 
 root.render(
-  // <React.StrictMode>
+  <React.StrictMode>
     <BrowserRouter>
       <Provider store={store}>
-          <App />
+        <App />
       </Provider>
     </BrowserRouter>
-  // </React.StrictMode>
+  </React.StrictMode>
 );
+
+
+// index.js is entry point of this application

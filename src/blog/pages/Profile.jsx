@@ -25,7 +25,7 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import { toast } from "react-toastify";
 import { getOneUserRequest } from "../services/api/userApi";
-import GlobalSkeleton from "./GlobalSkeleton";
+import GlobalSkeleton from "../components/Loader";
 
 const StyledModel = styled(Modal)({
   display: "flex",

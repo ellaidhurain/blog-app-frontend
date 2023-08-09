@@ -9,7 +9,7 @@ import { Box } from "@mui/material";
 import {
   getFriendRequests,
   getUserFriendsRequest,
-} from "../../services/api/userApi";
+} from "../../../services/api/userApi";
 
 export default function UserList() {
   const { mode } = useSelector((state) => state.blog);

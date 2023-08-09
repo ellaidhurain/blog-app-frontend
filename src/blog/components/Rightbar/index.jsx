@@ -1,8 +1,8 @@
 import React from "react";
 import { Box } from "@mui/material";
 import Typography from "@mui/material/Typography";
-import StandardImageList from "./imageList";
-import UserList from "./UserList";
+import StandardImageList from "./LatestSnaps";
+import UserList from "./Friends";
 import ScrollPage from "../scroll/ScrollPage";
 
 export default function Rightbar() {

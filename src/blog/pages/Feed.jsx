@@ -12,15 +12,15 @@ import Favorite from "@mui/icons-material/Favorite";
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import CommentIcon from "@mui/icons-material/Comment";
-import ReadMore from "./Readmore";
+import ReadMore from "../components/ReadMore";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllBlogsRequest } from "../services/api/blogApi";
 import axios from "axios";
 import TimeAgo from "react-timeago";
 import { formatter } from "../helper/time";
-import AllComments from "../components/comments/Comments";
-import AddBlog from "../components/AddBlog/AddBlog";
+import AllComments from "../components/Comments";
+import AddBlog from "../components/AddSnap";
 import { Link } from "react-router-dom"; // Import the Link component from React Router
 import PersonAddAltIcon from "@mui/icons-material/PersonAddAlt";
 import {
@@ -33,7 +33,7 @@ import {
 import HowToRegIcon from "@mui/icons-material/HowToReg";
 import PersonRemoveIcon from "@mui/icons-material/PersonRemove";
 import Typography from "@mui/material/Typography";
-import GlobalSkeleton from "./GlobalSkeleton";
+import GlobalSkeleton from "../components/Loader";
 
 const api = axios.create({
   // baseURL: "http://localhost:5000/api/blog",
@@ -46,6 +46,7 @@ api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
 export default function Feed() {
   const { blogs } = useSelector((state) => state.blog);
+
   const { userData, userStatus } = useSelector((state) => state.user);
 
   // sort by decending order
@@ -54,6 +55,7 @@ export default function Feed() {
     : [];
 
   const dispatch = useDispatch();
+
   const userId = localStorage.getItem("userId");
 
   useEffect(() => {
@@ -98,15 +100,17 @@ export default function Feed() {
   );
 }
 
-
 const Allblogs = ({ blog }) => {
   const { _id: blogId, title, description, image, createdAt, user } = blog;
 
   const [comments, setComments] = useState(false);
+
   const [likes, setLikes] = useState([]);
+
   const { mode } = useSelector((state) => state.blog);
+
   const dispatch = useDispatch();
-  
+
   const { isUserErr, userFriends, isLoadingUser } = useSelector(
     (state) => state.user
   );
@@ -114,6 +118,7 @@ const Allblogs = ({ blog }) => {
   const { isBlogErr, isLoadingBlogs } = useSelector((state) => state.blog);
 
   const date = new Date(createdAt); // create Date obj
+
   const timestamp = date.toLocaleString("en-CA", { timeZone: "Asia/Kolkata" }); // convert to local time
 
   const getallLikesForBlog = async (blogId) => {
@@ -134,6 +139,7 @@ const Allblogs = ({ blog }) => {
 
   const matchedLikeList =
     likes?.filter((like) => like?.blog === blogId) || null;
+
   const liked = matchedLikeList?.some((like) => like?.blog === blogId) || false;
 
   const friend = userFriends?.some((data) => data?._id === user?._id) || false;
@@ -165,6 +171,7 @@ const Allblogs = ({ blog }) => {
   };
 
   const { commentsList } = useSelector((state) => state.commentSlice);
+
   const matchedCommentList = commentsList?.filter(
     (comment) => comment.blog === blogId
   );
@@ -211,17 +218,20 @@ const Allblogs = ({ blog }) => {
   };
 
   const userId = localStorage.getItem("userId");
+
   const loggedIn_user = userId === user?._id;
 
   return (
     <>
       <Box>
-        {isLoadingBlogs && <GlobalSkeleton height1={50} height2={250} height3={50}/>}
+        {isLoadingBlogs && (
+          <GlobalSkeleton height1={50} height2={250} height3={50} />
+        )}
         {isBlogErr && <small>{isBlogErr}</small>}
         {!isLoadingBlogs && (
           <Card
             sx={{
-              marginLeft:0,
+              marginLeft: 0,
               marginBottom: 2,
               borderRadius: "15px",
               border:
@@ -332,6 +342,7 @@ const Allblogs = ({ blog }) => {
                   checked={liked}
                 />
               </IconButton>
+              
               <Typography variant="subtitle1" sx={{ color: "gray" }}>
                 {liked ? "Liked" : "Like"}
               </Typography>

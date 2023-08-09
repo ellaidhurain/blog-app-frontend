@@ -11,9 +11,7 @@ import {
   FormControlLabel,
 } from "@mui/material";
 import { LoginImage } from "./lottiefiles";
-import {
-  loginRequest,
-} from "../blog/services/api/userApi";
+import { loginRequest } from "../blog/services/api/userApi";
 import { useForm } from "react-hook-form";
 import Checkbox from "@mui/material/Checkbox";
 import Grid from "@mui/material/Grid";
@@ -29,7 +27,7 @@ const Login = () => {
     handleSubmit,
     formState: { errors },
     clearErrors,
-    setValue
+    setValue,
   } = useForm({
     defaultValues: {
       Email: "",
@@ -43,7 +41,13 @@ const Login = () => {
     clearError(e.target.name);
   };
 
-  const handleSubmitForm = async (validated_data) => {
+  const clearError = (fieldName) => {
+    if (errors[fieldName]) {
+      clearErrors(fieldName);
+    }
+  };
+
+  const handleLoginForm = async (validated_data) => {
     try {
       const input = {
         Email: validated_data.Email,
@@ -66,12 +70,6 @@ const Login = () => {
     }
   };
 
-  const clearError = (fieldName) => {
-    if (errors[fieldName]) {
-      clearErrors(fieldName);
-    }
-  };
-
   const togglePassword = () => {
     setPasswordType((prevType) =>
       prevType === "password" ? "text" : "password"
@@ -80,7 +78,6 @@ const Login = () => {
 
   return (
     <>
-    
       <Grid container justifyContent="center" alignItems="center">
         <Grid item xs={12} md={5} p={2}>
           <LoginImage />
@@ -95,7 +92,7 @@ const Login = () => {
               alt="profile-img"
               className="profile-img-card"
             /> */}
-            <form onSubmit={handleSubmit(handleSubmitForm)}>
+            <form onSubmit={handleSubmit(handleLoginForm)}>
               <Box>
                 <TextField
                   name="Email"
@@ -124,10 +121,6 @@ const Login = () => {
                   placeholder="password"
                   {...register("Password", {
                     required: "Password is required",
-                    minLength: {
-                      value: 6,
-                      message: "Password must be at least 6 characters",
-                    },
                   })}
                   onChange={(e) => {
                     handleInputChange(e);
@@ -136,11 +129,7 @@ const Login = () => {
                   error={errors.Password ? true : false}
                   helperText={errors.Password && errors.Password.message}
                 />
-                {/* {!errors.Email && !errors.Password && loginError && (
-                <Typography variant="caption" color="error">
-                  {loginError}
-                </Typography>
-              )} */}
+
               </Box>
               {err && <small style={{ color: "red" }}>{err}</small>}
               <Box>
@@ -172,7 +161,7 @@ const Login = () => {
                 </Button>
                 <Link to="/signup" style={{ textDecoration: "none" }}>
                   <Button type="submit" variant="outlined" sx={{ px: 4, m: 2 }}>
-                    <span> Signup</span>
+                    <span> SignUp</span>
                   </Button>
                 </Link>
               </Box>

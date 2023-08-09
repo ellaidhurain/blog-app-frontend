@@ -4,7 +4,7 @@ import {
   acceptFriendRequest,
   getFriendRequests,
   rejectFriendRequest,
-} from "../../services/api/userApi";
+} from "../../../services/api/userApi";
 import { useDispatch, useSelector } from "react-redux";
 import PersonAddAltIcon from "@mui/icons-material/PersonAddAlt";
 import PersonRemoveIcon from "@mui/icons-material/PersonRemove";
@@ -14,8 +14,8 @@ import { toast } from "react-toastify";
 
 const Notifications = () => {
   const { FriendRequests } = useSelector((state) => state.user);
-  const { mode } = useSelector((state) => state.blog);
 
+  const { mode } = useSelector((state) => state.blog);
 
   const dispatch = useDispatch();
 
@@ -126,6 +126,7 @@ const Notifications = () => {
               src={friend?.picturePath}
               alt="image"
             />
+
             <Box>
               <Typography
                 sx={{

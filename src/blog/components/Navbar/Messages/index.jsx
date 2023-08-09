@@ -1,6 +1,6 @@
 import { Button } from "@mui/material";
 import React from "react";
-import { chatData } from "../../data/chatData";
+import { chatData } from "../../../constants/chatData";
 import { Box } from "@mui/material";
 
 const Messages = () => {
