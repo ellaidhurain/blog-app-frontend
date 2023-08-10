@@ -21,9 +21,22 @@ import {
 import { formatter } from "../../helper/time";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 
+const StyledCommentBtn = styled(Button)(({ theme }) => ({
+  my: 1,
+  mx: 1,
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "flex-start",
+  textAlign: "left",
+}));
+
 const AllComments = ({ Feed, blogId }) => {
   const dispatch = useDispatch();
   const [commentText, setCommentText] = useState("");
+  const { commentsList } = useSelector((state) => state.commentSlice); // initialState
+  const matchedCommentList = commentsList.filter(
+    (comment) => comment.blog === blogId
+  );
 
   const handleAddComment = () => {
     if (blogId) {
@@ -42,11 +55,6 @@ const AllComments = ({ Feed, blogId }) => {
     setCommentText(e.target.value);
   };
 
-  const { commentsList } = useSelector((state) => state.commentSlice); // initialState
-  const matchedCommentList = commentsList.filter(
-    (comment) => comment.blog === blogId
-  );
-
   useEffect(() => {
     if (blogId) {
       dispatch(getallCommentsForBlogRequest(blogId));
@@ -55,7 +63,7 @@ const AllComments = ({ Feed, blogId }) => {
 
   return (
     <>
-      <Box sx={{display:"flex", m:3}}>
+      <Box sx={{ display: "flex", m: 3 }}>
         <Avatar
           alt="Remy Sharp"
           // src={commentsList.map((data) => data.user.picturePath)}
@@ -159,14 +167,23 @@ function Comments({ blogId, commentData }) {
       <Box className="comments">
         <React.Fragment key={commentId}>
           <Box
-            sx={{ marginLeft: "35px", display:"flex", justifyContent:"between", alignItems:"center" }}
+            sx={{
+              marginLeft: "35px",
+              display: "flex",
+              justifyContent: "between",
+              alignItems: "center",
+            }}
             gap={1}
           >
-            <Box sx={{display:"flex", justifyContent:"between", alignItems:"center" }}>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "between",
+                alignItems: "center",
+              }}
+            >
               <Avatar alt="Remy Sharp" src={picturePath} />
-              <Typography sx={{ fontWeight: "bold", px:2 }} >
-                {name}
-              </Typography>
+              <Typography sx={{ fontWeight: "bold", px: 2 }}>{name}</Typography>
               <Typography className="date" px={2}>
                 |{" "}
                 <small style={{ color: "gray", paddingLeft: "10px" }}>
@@ -177,7 +194,12 @@ function Comments({ blogId, commentData }) {
           </Box>
           <Box
             className="info"
-            sx={{ paddingLeft: "65px", paddingRight: "10px", display:"flex", py:3, }}
+            sx={{
+              paddingLeft: "65px",
+              paddingRight: "10px",
+              display: "flex",
+              py: 3,
+            }}
           >
             <Box sx={{ flex: 2 }}>
               {editMode ? (
@@ -212,11 +234,11 @@ function Comments({ blogId, commentData }) {
               <Box>
                 <Box
                   aria-label="settings"
-                  sx={{position:"relative",mx:3 }}
+                  sx={{ position: "relative", mx: 3 }}
                   onClick={handleOpen}
                 >
                   {loggedin_user && (
-                    <Box style={{cursor:"pointer"}}>
+                    <Box style={{ cursor: "pointer" }}>
                       <MoreHorizIcon />
                     </Box>
                   )}
@@ -224,24 +246,24 @@ function Comments({ blogId, commentData }) {
                   {open ? (
                     <>
                       <Box
-                        sx={{  boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)', bgcolor: "background.paper", position:"absolute", display:"flex", flexDirection:"column" }}
+                        sx={{
+                          boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
+                          bgcolor: "background.paper",
+                          position: "absolute",
+                          display: "flex",
+                          flexDirection: "column",
+                        }}
                         style={style}
                       >
-                        <Button
-                          sx={{my:1,mx:1, display:"flex", alignItems:"center", justifyContent:"flex-start", textAlign:"left"}}
-                          onClick={handleEdit}
-                        >
+                        <StyledCommentBtn onClick={handleEdit}>
                           <EditIcon />
                           <small className="mx-2">Edit comment</small>
-                        </Button>
+                        </StyledCommentBtn>
 
-                        <Button
-                          sx={{my:1,mx:1, display:"flex", alignItems:"center", justifyContent:"flex-start", textAlign:"left"}}
-                          onClick={handleDeleteComment}
-                        >
+                        <StyledCommentBtn onClick={handleDeleteComment}>
                           <DeleteIcon />
                           <small className="mx-2">Delete comment</small>
-                        </Button>
+                        </StyledCommentBtn>
                       </Box>
                     </>
                   ) : (

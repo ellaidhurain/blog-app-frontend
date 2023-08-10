@@ -13,6 +13,7 @@ import {
   Badge,
   Avatar,
   ListItem,
+  Tooltip,
 } from "@mui/material";
 import {
   Search as SearchIcon,
@@ -21,13 +22,10 @@ import {
   Person as PersonIcon,
   Logout as LogoutIcon,
 } from "@mui/icons-material";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import Notifications from "./Notifications";
-import Messages from "./Messages";
 import { useDispatch, useSelector } from "react-redux";
-import { setLogout } from "../../store/slice/loginSlice";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import { setMode } from "../../store/slice/blogSlice";
@@ -53,20 +51,11 @@ const Icons = styled("div")(({ theme }) => ({
   },
 }));
 
-// const UserBox = styled("div")(({ theme }) => ({
-//   display: "flex",
-//   alignItems: "center",
-//   gap: "20px",
-//   [theme.breakpoints.up("sm")]: {
-//     display: "none",
-//   },
-// }));
 
 export const Navbar = () => {
   const navigate = useNavigate();
   const [isClicked, setIsClicked] = useState(false);
   const { mode } = useSelector((state) => state.blog);
-  const { userData } = useSelector((state) => state.blog);
   const { FriendRequests } = useSelector((state) => state.user);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false); // State to manage the drawer visibility
   const [active, setActive] = useState(null);
@@ -204,7 +193,7 @@ export const Navbar = () => {
         <Paper
           component="form"
           sx={{
-            mx:{xs:2},
+            mx: { xs: 2 },
             padding: "2px 4px",
             display: "flex",
             alignItems: "left",
@@ -221,23 +210,32 @@ export const Navbar = () => {
           </IconButton>
           <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
         </Paper>
-        <Box sx={{display:"flex"}}>
-        <Icons size="large" aria-label="show 4 new mails" color="inherit">
-          <Badge color="error" sx={{ position: "relative" }}>
-            <ListItemIcon
-              onClick={() =>
-                dispatch(setMode(mode === "light" ? "dark" : "light"))
-              }
+        <Box sx={{ display: "flex" }}>
+          <Icons size="large" aria-label="show 4 new mails" color="inherit">
+            <Badge color="error" sx={{ position: "relative" }}>
+            <Tooltip
+              title="theme"
               sx={{
-                "&:hover": {
-                  cursor: "pointer",
-                },
+                position: "fixed",
+                bottom: 20,
+                left: { xs: "calc(50% - 25px)", md: 30 },
               }}
             >
-              {mode == "light" ? <DarkModeIcon /> : <LightModeIcon />}
-            </ListItemIcon>
+              <ListItemIcon
+                onClick={() =>
+                  dispatch(setMode(mode === "light" ? "dark" : "light"))
+                }
+                sx={{
+                  "&:hover": {
+                    cursor: "pointer",
+                  },
+                }}
+              >
+                {mode == "light" ? <DarkModeIcon /> : <LightModeIcon />}
+              </ListItemIcon>
+              </Tooltip>
 
-            {/* <MailIcon
+              {/* <MailIcon
               onClick={() => setIsChat(!isChat)}
               sx={{
                 "&:hover": {
@@ -245,43 +243,38 @@ export const Navbar = () => {
                 },
               }}
             /> */}
-          </Badge>
-        </Icons>
-        <Badge
-          onClick={() => setIsClicked(!isClicked)}
-          badgeContent={FriendRequests?.length}
-          color="error"
-          sx={{
-            position: "relative",
-            pl:2
-          }}
-        >
-          <NotificationsIcon
+            </Badge>
+          </Icons>
+
+          <Badge
+            onClick={() => setIsClicked(!isClicked)}
+            badgeContent={FriendRequests?.length}
+            color="error"
             sx={{
-              "&:hover": {
-                cursor: "pointer",
-              },
+              position: "relative",
+              pl: 2,
             }}
-          />
-        </Badge>
-         {/* {isChat && <Messages />} */}
-         {isClicked && <Notifications />}
-      
-      {/* <UserBox>
-        <Avatar
-          alt="Remy Sharp"
-          src={userData?.picturePath}
-          sx={{
-            backgroundColor: "#fff",
-            color: "gray",
-            marginLeft: "8px",
-            "&:hover": {
-              cursor: "pointer",
-            },
-          }}
-        />
-      </UserBox> */}
-        </Box>       
+          >
+            <Tooltip
+              title="notifications"
+              sx={{
+                position: "fixed",
+                bottom: 20,
+                left: { xs: "calc(50% - 25px)", md: 30 },
+              }}
+            >
+              <NotificationsIcon
+                sx={{
+                  "&:hover": {
+                    cursor: "pointer",
+                  },
+                }}
+              />
+            </Tooltip>
+          </Badge>
+          {/* {isChat && <Messages />} */}
+          {isClicked && <Notifications />}
+        </Box>
       </MyToolbar>
     </AppBar>
   );

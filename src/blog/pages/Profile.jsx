@@ -25,7 +25,6 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import { toast } from "react-toastify";
 import { getOneUserRequest } from "../services/api/userApi";
-import GlobalSkeleton from "../components/Loader";
 
 const StyledModel = styled(Modal)({
   display: "flex",
@@ -114,11 +113,13 @@ const ProfilePage = () => {
 
     try {
       if (userId) {
-        await dispatch(updateProfileImageRequest({ formData,userId })).then(() => {
-          dispatch(getOneUserRequest(userId));
-          handleClose();
-          toast.success("🦄 Wow so easy!");
-        });
+        await dispatch(updateProfileImageRequest({ formData, userId })).then(
+          () => {
+            dispatch(getOneUserRequest(userId));
+            handleClose();
+            toast.success("🦄 Wow so easy!");
+          }
+        );
         setPost((prevPost) => ({
           ...prevPost,
           picturePath: selectedImage?.picturePath, // Update the 'picturePath' property
@@ -132,84 +133,89 @@ const ProfilePage = () => {
 
   return (
     <>
-      {isUserErr && <small>{isUserErr}</small>}
       <Box flex={4} p={2}>
         <ProfileCard>
           <CardContent>
-            <Grid container spacing={2} p={2}>
-              <Grid item xs={12} md={4} align={isMobile ? "center" : "left"}>
-                <ProfilePicture alt="Profile" src={userData?.picturePath} />
-                <Box
-                  display={"flex"}
-                  justifyContent={"flex-end"}
-                  width={"150px"}
-                >
-                  <label htmlFor="file-input" className="m-0">
-                    <IconButton component="span">
-                      <EditIcon />
-                    </IconButton>
-                  </label>
-                  <TextField
-                    name="image"
-                    accept="image/*"
-                    id="file-input"
-                    type="file"
-                    sx={{ display: "none" }}
-                    onChange={handleImageChange}
-                  />
-                  <Box>
-                    {selectedImage?.picturePath && !isImageUpdated && (
-                      <Button onClick={handleImageUpdate}>Save</Button>
-                    )}
+            {isUserErr && <small>{isUserErr}</small>}
+            {isLoadingUser && <p>Loading...</p>}
+            {!isLoadingUser && (
+              <Grid container spacing={2} p={2}>
+                <Grid item xs={12} md={4} align={isMobile ? "center" : "left"}>
+                  <ProfilePicture alt="Profile" src={userData?.picturePath} />
+                  <Box
+                    display={"flex"}
+                    justifyContent={"flex-end"}
+                    width={"150px"}
+                  >
+                    <label htmlFor="file-input" className="m-0">
+                      <IconButton component="span">
+                        <EditIcon />
+                      </IconButton>
+                    </label>
+                    <TextField
+                      name="image"
+                      accept="image/*"
+                      id="file-input"
+                      type="file"
+                      sx={{ display: "none" }}
+                      onChange={handleImageChange}
+                    />
+                    <Box>
+                      {selectedImage?.picturePath && !isImageUpdated && (
+                        <Button onClick={handleImageUpdate}>Save</Button>
+                      )}
+                    </Box>
                   </Box>
-                </Box>
-                <Typography variant="h2" pt={2}>
-                  {userData?.Name}
-                </Typography>
-                <Typography style={{ color: "gray" }}>{/* Actor */}</Typography>
-              </Grid>
+                  <Typography variant="h2" pt={2}>
+                    {userData?.Name}
+                  </Typography>
+                  <Typography style={{ color: "gray" }}>
+                    {/* Actor */}
+                  </Typography>
+                </Grid>
 
-              <Grid item xs={12} md={8}>
-                <Box display={"flex"} justifyContent={"space-between"} py={3}>
-                  <ProfileHeader>
-                    <Typography>
-                      Location:{" "}
-                      <span style={{ color: "gray" }}>
-                        {userData?.location}
-                      </span>
-                    </Typography>
+                <Grid item xs={12} md={8}>
+                  <Box display={"flex"} justifyContent={"space-between"} py={3}>
+                    <ProfileHeader>
+                      <Typography>
+                        Location:{" "}
+                        <span style={{ color: "gray" }}>
+                          {userData?.location}
+                        </span>
+                      </Typography>
 
-                    <Typography>
-                      Impressions:{" "}
-                      <span style={{ color: "gray" }}>
-                        {userData?.impressions}
-                      </span>
-                    </Typography>
-                    <Typography>
-                      Followers:{" "}
-                      <span style={{ color: "gray" }}>
-                        {userData?.viewedProfile}
-                      </span>
-                    </Typography>
-                    <Typography>
-                      Friends:
-                      <span style={{ color: "gray" }}>
-                        {userData?.friends?.length}
-                      </span>
-                    </Typography>
-                  </ProfileHeader>
-                  <Box mr={3} textAlign="center">
-                    <Button variant="outlined" onClick={handleOpen}>
-                      Edit
-                    </Button>
+                      <Typography>
+                        Impressions:{" "}
+                        <span style={{ color: "gray" }}>
+                          {userData?.impressions}
+                        </span>
+                      </Typography>
+                      <Typography>
+                        Followers:{" "}
+                        <span style={{ color: "gray" }}>
+                          {userData?.viewedProfile}
+                        </span>
+                      </Typography>
+                      <Typography>
+                        Friends:
+                        <span style={{ color: "gray" }}>
+                          {userData?.friends?.length}
+                        </span>
+                      </Typography>
+                    </ProfileHeader>
+                    <Box mr={3} textAlign="center">
+                      <Button variant="outlined" onClick={handleOpen}>
+                        Edit
+                      </Button>
+                    </Box>
                   </Box>
-                </Box>
-                <span variant="subtitle1">ABOUT ME:</span>
-                <Typography style={{ color: "gray", textAlign: "justify" }}>
-                  {post?.about}
-                </Typography>
+                  <span variant="subtitle1">ABOUT ME:</span>
+                  <Typography style={{ color: "gray", textAlign: "justify" }}>
+                    {post?.about}
+                  </Typography>
+                </Grid>
               </Grid>
-            </Grid>
+            )}
           </CardContent>
         </ProfileCard>
 
@@ -265,25 +271,6 @@ const ProfilePage = () => {
               placeholder="about me"
               multiline
             />
-
-            {/* <Stack
-              direction="row"
-              gap={1}
-              mb={3}
-              className="d-flex justify-content-between align-items-center"
-            >
-              <input
-                type="file"
-                onChange={handleImageChange}
-                accept="image/*"
-              />
-              {selectedImage && (
-                <div>
-                  <img width="80px" src={selectedImage} alt="Preview" />
-                </div>
-              )}
-            </Stack> */}
-
             <ButtonGroup
               fullWidth
               variant="contained"

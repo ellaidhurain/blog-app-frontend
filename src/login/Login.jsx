@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
-import "./App.css";
+import "./style.css";
 import {
   Box,
   Button,
@@ -10,7 +10,7 @@ import {
   Typography,
   FormControlLabel,
 } from "@mui/material";
-import { LoginImage } from "./lottiefiles";
+import { LoginImage } from "../blog/components/LottieFiles";
 import { loginRequest } from "../blog/services/api/userApi";
 import { useForm } from "react-hook-form";
 import Checkbox from "@mui/material/Checkbox";

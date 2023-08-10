@@ -27,6 +27,9 @@ export const colorTokens = {
       800: "#00353F",
       900: "#001519",
     },
+    white:{
+      100:"#FFFFFF",
+    }
   };
   
   // mui theme settings

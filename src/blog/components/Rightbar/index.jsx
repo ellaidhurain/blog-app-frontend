@@ -3,7 +3,7 @@ import { Box } from "@mui/material";
 import Typography from "@mui/material/Typography";
 import StandardImageList from "./LatestSnaps";
 import UserList from "./Friends";
-import ScrollPage from "../scroll/ScrollPage";
+import ScrollPage from "../ScrollToTop";
 
 export default function Rightbar() {
   return (

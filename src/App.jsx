@@ -1,12 +1,13 @@
 import React, { useMemo } from "react";
 import { Navigate, Route, Routes } from "react-router";
 import Login from "./login/Login";
-import SignUp from "./login/Signup";
+import SignUp from "./login/SignUp";
 import Home from "./login/Home";
 import { useSelector } from "react-redux";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { themeSettings } from "./blog/theme/theme";
 import { CssBaseline } from "@mui/material";
+
 
 const App = () => {
   let isLoggedIn = false;

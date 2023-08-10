@@ -1,11 +1,11 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import "./App.css";
+import "./style.css";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { Box, Button, TextField, Typography } from "@mui/material";
-import { LoginImage } from "./lottiefiles";
+import { LoginImage } from "../blog/components/LottieFiles";
 import { signupRequest } from "../blog/services/api/userApi";
 import { useForm } from "react-hook-form";
 import Grid from "@mui/material/Grid";

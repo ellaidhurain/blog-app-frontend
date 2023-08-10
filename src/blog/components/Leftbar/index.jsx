@@ -4,20 +4,13 @@ import List from "@mui/material/List";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import Switch from "@mui/material/Switch";
 import { useNavigate } from "react-router-dom";
 import { NavItems } from "../Navbar/NavList";
 import { useDispatch, useSelector } from "react-redux";
-import axios from "axios";
-import { setLogout } from "../../store/slice/loginSlice";
 import { Logout as LogoutIcon } from "@mui/icons-material";
-import DarkModeIcon from "@mui/icons-material/DarkMode";
-import LightModeIcon from "@mui/icons-material/LightMode";
-import { setMode } from "../../store/slice/blogSlice";
 
-export const Leftbar = (props) => {
+export const Leftbar = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const { mode } = useSelector((state) => state.blog);
 
   // Initialize the active state with the value from localStorage

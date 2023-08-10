@@ -65,7 +65,7 @@ const UserBox = styled(Box)(({ theme }) => ({
   marginLeft: "10px",
 }));
 
-export default function UserBlogs(props) {
+export default function UserBlogs() {
   const userId = localStorage.getItem("userId");
   const { userData } = useSelector((state) => state.user);
   const dispatch = useDispatch();

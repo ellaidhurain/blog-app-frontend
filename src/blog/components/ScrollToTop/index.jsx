@@ -1,15 +1,13 @@
-import React, { useRef } from "react";
+import React from "react";
 import { Button } from "@mui/material";
 import KeyboardDoubleArrowUpIcon from "@mui/icons-material/KeyboardDoubleArrowUp";
-const ScrollPage = () => {
-  const ServicesRef = useRef(null);
+
+const ScrollToTop = () => {
 
   const gotoServices = () =>
     window.scrollTo({
       top: 0,
       behavior: "smooth",
-      // You can also assign value "auto"
-      // to the behavior parameter.
     });
 
   return (
@@ -17,7 +15,6 @@ const ScrollPage = () => {
       <Button
         sx={{
           position: "fixed",
-          //   marginTop: "150vh" ,
           left: "94%",
           top: "85%",
           boxShadow: " rgba(149, 157, 165, 0.172) 0px 8px 24px",
@@ -43,4 +40,4 @@ const ScrollPage = () => {
   );
 };
 
-export default ScrollPage;
+export default ScrollToTop;

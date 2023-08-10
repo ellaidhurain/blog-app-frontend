@@ -13,7 +13,6 @@ import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import CommentIcon from "@mui/icons-material/Comment";
 import ReadMore from "../components/ReadMore";
-import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllBlogsRequest } from "../services/api/blogApi";
 import axios from "axios";
@@ -92,7 +91,7 @@ export default function Feed() {
         <Box>
           {blogs &&
             sortByLatestUpdatedBlog?.map((blog, index) => (
-              <Allblogs key={index} blog={blog} />
+              <BlogCard key={index} blog={blog} />
             ))}
         </Box>
       </Box>
@@ -100,27 +99,20 @@ export default function Feed() {
   );
 }
 
-const Allblogs = ({ blog }) => {
+const BlogCard = ({ blog }) => {
+
   const { _id: blogId, title, description, image, createdAt, user } = blog;
-
   const [comments, setComments] = useState(false);
-
   const [likes, setLikes] = useState([]);
-
-  const { mode } = useSelector((state) => state.blog);
-
+  
   const dispatch = useDispatch();
-
-  const { isUserErr, userFriends, isLoadingUser } = useSelector(
-    (state) => state.user
-  );
-
+  const { mode } = useSelector((state) => state.blog);
+  const { userFriends } = useSelector((state) => state.user);
   const { isBlogErr, isLoadingBlogs } = useSelector((state) => state.blog);
 
   const date = new Date(createdAt); // create Date obj
-
   const timestamp = date.toLocaleString("en-CA", { timeZone: "Asia/Kolkata" }); // convert to local time
-
+  
   const getallLikesForBlog = async (blogId) => {
     try {
       const res = await api.get(`/getallLikesForBlog/${blogId}`);
@@ -342,7 +334,7 @@ const Allblogs = ({ blog }) => {
                   checked={liked}
                 />
               </IconButton>
-              
+
               <Typography variant="subtitle1" sx={{ color: "gray" }}>
                 {liked ? "Liked" : "Like"}
               </Typography>
