@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { Navigate, Route, Routes } from "react-router";
 import Login from "./login/Login";
-import SignUp from "./login/SignUp";
+import SignUp from "./login/Sign";
 import Home from "./login/Home";
 import { useSelector } from "react-redux";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
